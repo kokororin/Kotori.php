@@ -88,13 +88,11 @@ require './Kotori.dll';//正式版
 //require './Kotori.class.php';//开发版
 $config = array(
     'APP_PATH'    => './App/',       #APP代码文件夹
-    'DB_TYPE'     => 'mysql',        #数据库类型
     'DB_HOST'     => 'localhost',    #数据库主机地址
     'DB_PORT'     => '3306',         #数据库端口，默认为3306
     'DB_USER'     => 'root',         #数据库用户名
     'DB_PWD'      => 'root',         #数据库密码
     'DB_NAME'     => 'test',         #数据库名
-    'DB_CHARSET'  => 'utf8',         #数据库编码，默认utf8
     'USE_SESSION' => true,           #是否开启session，默认false
 );
 Kotori::getInstance($config)->run();
@@ -334,15 +332,15 @@ $this->redirect('http://www.qq.com');//跳转到马化腾首页
 
 Kotori Framework不能称为一个MVC框架的原因就是没有M层，然而，小项目写M层有Kotori用？不服来咬我啊~
 
-数据库类直接采用知名的medoo类
+数据库类直接采用某个修改版PDO类。
 
-[详细文档请点击](http://medoo.lvtao.net/doc.php)
+[详细文档请点击](https://github.com/kokororin/PHP-PDO-MySQL-Class)
 
-在入口文件中配置好有关数据库的7个常量后，即可以单例模式调用medoo，例如：
+在入口文件中配置好有关数据库的几个常量后，即可以单例模式调用数据库层，例如：
 
 ```php
 // 查询所有字段
-$datas = M()->select("account", "*");
+$datas = M()->query("SELECT * FROM users");
 print_r($datas);
 ```
 
