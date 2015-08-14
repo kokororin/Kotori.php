@@ -21,8 +21,6 @@
 
 ### 简介
 本框架是一个Controller-View框架，非MVC框架，部分代码来源于ThinkPHP和codeigniter。本文档使您快速熟悉本框架。
-本框架源代码暂不开放，等正式完善后会放出。
-[点此查看本文的MARKDOWN格式](https://kotori.sinaapp.com/?/KotoriFramework?markdown=true)
 KotoriFramework无需任何安装，直接拷贝到你的电脑或者服务器的WEB运行目录下面即可。
 
 ### 环境要求
