@@ -31,20 +31,20 @@ KotoriFramework无需任何安装，直接拷贝到你的电脑或者服务器�
 
 #### PHP版本要求
 
-PHP5.3以上版本（注意：PHP5.3dev版本和PHP6均不支持）
+PHP5.3以上版本（支持PHP7）
 
 #### 支持的服务器和数据库环境
 
 * 支持Windows/Unix服务器环境
 * 可运行于包括Apache、IIS和nginx在内的多种WEB服务器和模式
-* 支持Mysql、MsSQL、PgSQL、Sqlite、Oracle、Ibase、Mongo以及PDO等多种数据库和连接
+* 支持Mysql数据库和连接
 
 ### 目录结构
 
-> htdocs  WEB部署目录（或者子目录）
-> ├─index.php         入口文件
-> ├─App                应用目录
-> └─Kotori.class.php  核心文件
+> htdocs  WEB部署目录（或者子目录）  
+> ├─index.php         入口文件  
+> ├─App                应用目录  
+> └─Kotori.class.php  核心文件  
 
 ### 开发规范
 
@@ -168,8 +168,8 @@ Nginx配置：
 
 如果我们直接访问入口文件的话，由于URL中没有控制器和操作，因此系统会访问默认控制器（Index）的默认操作（index），因此下面的访问是等效的：
 
-> http://serverName/
-> http://serverName/Index/index
+> http://serverName/  
+> http://serverName/Index/index  
 
 其中，若有参数，那么参数将自动转化成$_GET变量：
 
@@ -177,7 +177,7 @@ Nginx配置：
 
 不过，依然可以获取到普通形式的$_GET变量：
 
-> http://localhost/index.php/Index/Login?var=value $_GET['var'] 依然有效
+> http://localhost/index.php/Index/Login?var=value $_GET['var'] 依然有效  
 
 ---
 
@@ -234,20 +234,20 @@ class IndexController extends Controller
 
 URL的访问地址分别是：
 
-> http://serverName/Blog/read/id/5
-> http://serverName/Blog/archive/year/2013/month/11
+> http://serverName/Blog/read/id/5  
+> http://serverName/Blog/archive/year/2013/month/11  
 
 两个URL地址中的id参数和year和month参数会自动和read操作方法以及archive操作方法的同名参数绑定。
 
 按照变量名进行参数绑定的参数必须和URL中传入的变量名称一致，但是参数顺序不需要一致。也就是说
 
-> http://serverName/Blog/archive/month/11/year/2013
+> http://serverName/Blog/archive/month/11/year/2013  
 
 和上面的访问结果是一致的，URL中的参数顺序和操作方法中的参数顺序都可以随意调整，关键是确保参数名称一致即可。
 
 如果用户访问的URL地址是（至于为什么会这么访问暂且不提）：
 
-> http://serverName/Blog/read/
+> http://serverName/Blog/read/  
 
 那么会抛出异常，报错的原因很简单，因为在执行read操作方法的时候，id参数是必须传入参数的，但是方法无法从URL地址中获取正确的id参数信息。由于我们不能相信用户的任何输入，因此建议你给read方法的id参数添加默认值，例如：
 
@@ -412,11 +412,11 @@ KotoriFramework提供了一个简单的日志类，可以分级记录各类信�
 
 ## 更新日志
 
- 2015/8/1 整体框架完成
- 2015/8/2 将数据库操作类改为medoo
- 2015/8/3 修复PATHINFO致命BUG
- 2015/8/5 加入错误提示功能
- 2015/8/9 增加A方法，修复部分小bug
+* 2015/8/1 整体框架完成  
+* 2015/8/2 将数据库操作类改为medoo  
+* 2015/8/3 修复PATHINFO致命BUG  
+* 2015/8/5 加入错误提示功能
+* 2015/8/9 增加A方法，修复部分小bug
 
 ---
 
