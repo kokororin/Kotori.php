@@ -39,8 +39,8 @@ function C($key, $value = null)
 }
 
 /**
- * 输出错误并终止程序
- * @param string $str 出错原因
+ * 输出错误并终止
+ * @param string $str 终止原因
  * @return void
  */
 function halt($str)
@@ -49,14 +49,6 @@ function halt($str)
     exit($html);
 }
 
-/**
- * 框架自定义错误
- * @param int $errno 错误号
- * @param string $errstr 错误信息
- * @param string $errfile 错误文件
- * @param int $errline 错误行号
- * @return void
- */
 function kotori_error($errno, $errstr, $errfile, $errline)
 {
     $text = '<b>信息：</b>' . $errstr . '<br>' . '<b>行数：</b>' . $errline . '<br>' . '<b>文件：</b>' . $errfile;
@@ -66,11 +58,6 @@ function kotori_error($errno, $errstr, $errfile, $errline)
 
 }
 
-/**
- * 框架自定义异常
- * @param string $exception 异常信息
- * @return void
- */
 function kotori_exception($exception)
 {
     $text = '<b>异常：</b>' . $exception->getMessage();
@@ -79,10 +66,6 @@ function kotori_exception($exception)
     halt($text);
 }
 
-/**
- * 框架自定义致命错误
- * @return void
- */
 function kotori_end()
 {
     if (error_get_last()) {
@@ -115,64 +98,36 @@ function A($name)
     return Kotori::call($name);
 }
 
-/**
- * 生成Url
- * @param string $url Url
- * @param array $params 参数数组
- * @return void
- */
 function U($url = '', $params = array())
 {
     return View::url($url, $params);
 }
 
-/**
- * 包含模板文件
- * @param string $path 文件路径
- * @param array $data 需要传入的参数
- * @return void
- */
 function N($path, $data = array())
 {
     View::need($path, $data);
 }
 
-/**
- * 快捷生成link,script标签
- * @param string $type 类型
- * @param string $fiels文件 逗号分隔
- * @param string $base 根路径
- * @return void
- */
 function L($type, $files, $base)
 {
     $file_arr = explode(',', $files);
     switch ($type) {
-        case 'css':
-            foreach ($file_arr as $value) {
-                echo '<link rel="stylesheet" href="' . U($base . '/' . $value . '.css') . '"/>';
-            }
-            break;
-        case 'js':
-            echo '<script src="' . U($base . '/' . $value . '.js') . '"></script>';
-            break;
-        default:
-            return;
+    case 'css':
+        foreach ($file_arr as $value) {
+            echo '<link rel="stylesheet" href="' . U($base . '/' . $value . '.css') . '"/>';
+        }
+        break;
+    case 'js':
+        echo '<script src="' . U($base . '/' . $value . '.js') . '"></script>';
+        break;
+    default:
+        return;
     }
 }
 
 /**
  * 获取输入参数 支持过滤和默认值
- * 使用方法:
- * <code>
- * I('id',0); 获取id参数 自动判断get或者post
- * I('post.name','','htmlspecialchars'); 获取$_POST['name']
- * I('get.'); 获取$_GET
- * </code>
  * @param string $name 变量的名称 支持指定类型
- * @param mixed $default 不存在的时候默认值
- * @param mixed $filter 参数过滤方法
- * @param mixed $datas 要获取的额外数据源
  * @return mixed
  */
 function I($name, $default = '', $filter = null, $datas = null)
@@ -193,60 +148,60 @@ function I($name, $default = '', $filter = null, $datas = null)
         $method = 'param';
     }
     switch (strtolower($method)) {
-        case 'get':
-            $input = &$_GET;
+    case 'get':
+        $input = &$_GET;
+        break;
+    case 'post':
+        $input = &$_POST;
+        break;
+    case 'put':
+        if (is_null($_PUT)) {
+            parse_str(file_get_contents('php://input'), $_PUT);
+        }
+        $input = $_PUT;
+        break;
+    case 'param':
+        switch ($_SERVER['REQUEST_METHOD']) {
+        case 'POST':
+            $input = $_POST;
             break;
-        case 'post':
-            $input = &$_POST;
-            break;
-        case 'put':
+        case 'PUT':
             if (is_null($_PUT)) {
                 parse_str(file_get_contents('php://input'), $_PUT);
             }
             $input = $_PUT;
             break;
-        case 'param':
-            switch ($_SERVER['REQUEST_METHOD']) {
-                case 'POST':
-                    $input = $_POST;
-                    break;
-                case 'PUT':
-                    if (is_null($_PUT)) {
-                        parse_str(file_get_contents('php://input'), $_PUT);
-                    }
-                    $input = $_PUT;
-                    break;
-                default:
-                    $input = $_GET;
-            }
-            break;
-        case 'path':
-            $input = array();
-            if (!empty($_SERVER['PATH_INFO'])) {
-                $depr = '/';
-                $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
-            }
-            break;
-        case 'request':
-            $input = &$_REQUEST;
-            break;
-        case 'session':
-            $input = &$_SESSION;
-            break;
-        case 'cookie':
-            $input = &$_COOKIE;
-            break;
-        case 'server':
-            $input = &$_SERVER;
-            break;
-        case 'globals':
-            $input = &$GLOBALS;
-            break;
-        case 'data':
-            $input = &$datas;
-            break;
         default:
-            return null;
+            $input = $_GET;
+        }
+        break;
+    case 'path':
+        $input = array();
+        if (!empty($_SERVER['PATH_INFO'])) {
+            $depr = '/';
+            $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
+        }
+        break;
+    case 'request':
+        $input = &$_REQUEST;
+        break;
+    case 'session':
+        $input = &$_SESSION;
+        break;
+    case 'cookie':
+        $input = &$_COOKIE;
+        break;
+    case 'server':
+        $input = &$_SERVER;
+        break;
+    case 'globals':
+        $input = &$GLOBALS;
+        break;
+    case 'data':
+        $input = &$datas;
+        break;
+    default:
+        return null;
     }
     if ('' == $name) {
         // 获取全部变量
@@ -291,21 +246,21 @@ function I($name, $default = '', $filter = null, $datas = null)
         }
         if (!empty($type)) {
             switch (strtolower($type)) {
-                case 'a': // 数组
-                    $data = (array) $data;
-                    break;
-                case 'd': // 数字
-                    $data = (int) $data;
-                    break;
-                case 'f': // 浮点
-                    $data = (float) $data;
-                    break;
-                case 'b': // 布尔
-                    $data = (boolean) $data;
-                    break;
-                case 's': // 字符串
-                default:
-                    $data = (string) $data;
+            case 'a': // 数组
+                $data = (array) $data;
+                break;
+            case 'd': // 数字
+                $data = (int) $data;
+                break;
+            case 'f': // 浮点
+                $data = (float) $data;
+                break;
+            case 'b': // 布尔
+                $data = (boolean) $data;
+                break;
+            case 's': // 字符串
+            default:
+                $data = (string) $data;
             }
         }
     } else {
@@ -317,12 +272,6 @@ function I($name, $default = '', $filter = null, $datas = null)
 
 }
 
-/**
- * 回调函数
- * @param string $filter 过滤方法
- * @param $data mixed 源数据
- * @return mixed
- */
 function array_map_recursive($filter, $data)
 {
     $result = array();
@@ -334,23 +283,16 @@ function array_map_recursive($filter, $data)
     return $result;
 }
 
-/**
- * 其他安全过滤
- * @param  $value Value
- * @return void
- */
 function kotori_filter(&$value)
 {
+    // TODO 其他安全过滤
+
     // 过滤查询特殊字符
     if (preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i', $value)) {
         $value .= ' ';
     }
 }
 
-/**
- * 判断是否SSL 用于生成Url
- * @return boolean
- */
 function is_https()
 {
     if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
@@ -360,46 +302,27 @@ function is_https()
     } elseif (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
         return true;
     }
+
     return false;
 }
 
 /**
- * 优化的require 区分大小写
+ * 区分大小写的include
  * @param string $path 文件路径
- * @return boolean
+ * @return void
  */
-function kotori_require($path)
-{
-    static $_importFiles = array();
-
-    if (!isset($_importFiles[$path])) {
-        if (kotori_file_exists($path)) {
-            require $path;
-            $_importFiles[$path] = true;
-        } else {
-            $_importFiles[$path] = false;
-        }
-    }
-    return $_importFiles[$path];
-
-}
-
-/**
- * 区分大小写的文件存在判断
- * @param string $path 文件路径
- * @return boolean
- */
-function kotori_file_exists($path)
+function includeIfExist($path)
 {
     if (is_file($path)) {
         if (strstr(PHP_OS, 'WIN')) {
-            if (basename(realpath($path)) != basename($path)) {
-                return false;
+            if (basename(realpath($path)) == basename($path)) {
+                include $path;
             }
+        } else {
+            include $path;
         }
-        return true;
+
     }
-    return false;
 }
 
 /**
@@ -461,7 +384,7 @@ class Kotori
             session_start();
         }
         C('APP_FULL_PATH', dirname(__FILE__) . '/' . C('APP_PATH'));
-        kotori_require(C('APP_FULL_PATH') . '/common.php');
+        includeIfExist(C('APP_FULL_PATH') . '/common.php');
         spl_autoload_register(array('Kotori', 'autoload'));
         if (isset($_SERVER['PATH_INFO'])) {
             $pathInfo = $_SERVER['PATH_INFO'];
@@ -489,8 +412,8 @@ class Kotori
         } else {
             $this->a = 'index';
         }
-        define('CONTROLLER_NAME', $this->c);
-        define('ACTION_NAME', $this->a);
+        define('CONTROLLER', $this->c);
+        define('ACTION', $this->a);
         unset($pathInfoArr[0], $pathInfoArr[1]);
         $controllerClass = $this->c . 'Controller';
 
@@ -503,19 +426,16 @@ class Kotori
         $params = array();
         //源自ThinkPHP
         preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $pathInfoArr));
+
         $_GET = array_merge($params, $_GET);
+
         //以下来自http://jingyan.todgo.com/jiaoyu/1883184mab.html
         call_user_func_array(array($controller, $this->a), $params);
     }
 
-    /**
-     * 调用控制器核心方法
-     * @param string $controllerClass 控制器名
-     * @return class
-     */
     public static function call($controllerClass)
     {
-        //kotori_require(C('APP_FULL_PATH') . '/Controller/' . $controllerClass . '.class.php');
+        //includeIfExist(C('APP_FULL_PATH') . '/Controller/' . $controllerClass . '.class.php');
         if (!class_exists($controllerClass)) {
             throw new Exception('请求的控制器：' . $controllerClass . '不存在');
         }
@@ -531,9 +451,11 @@ class Kotori
     public static function autoload($class)
     {
         if (substr($class, -10) == 'Controller') {
-            kotori_require(C('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+            includeIfExist(C('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+        } elseif (substr($class, -6) == 'Widget') {
+            includeIfExist(C('APP_FULL_PATH') . '/Widget/' . $class . '.class.php');
         } else {
-            kotori_require(C('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
+            includeIfExist(C('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
         }
     }
 }
@@ -691,12 +613,6 @@ class View
         include self::$tmpData['path'];
     }
 
-    /**
-     * 生成Url核心方法
-     * @param string $url Url
-     * @param array $params 参数数组
-     * @return string
-     */
     public static function url($url = '', $params = array())
     {
         if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST'])) {
@@ -973,3 +889,4 @@ class Log
         self::write($msg, 'SQL');
     }
 }
+
