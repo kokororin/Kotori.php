@@ -324,11 +324,6 @@ $this->redirect('http://www.qq.com');//跳转到马化腾首页
    }
 ```
 
-### 全局变量
-
-> CONTROLLER_NAME 当前控制器名  
-> ACTION_NAME 当前操作名  
-
 ---
 
 ## 数据库操作
@@ -390,16 +385,6 @@ $data = array(
 N('public/header', $data); ?>
 ```
 
-### 快速引入css和js脚本
-
-例子：
-```php
-L('css','common,index','Public/css');
-//将生成<link rel="stylesheet" href="http://serverName/Public/css/common.css"/><link rel="stylesheet" href="http://serverName/Public/css/index.css"/>
-L('js','jquery,main','Public/js');
-//将生成<script src="http://serverName/Public/js/jquery.js"></script><script src="http://serverName/Public/js/main.js"></script>
-```
-
 ---
 
 ## 高级功能
@@ -425,12 +410,12 @@ KotoriFramework提供了一个简单的日志类，可以分级记录各类信�
 
 ## 更新日志
 
-* 2015/8/1  整体框架完成  
-* 2015/8/2  将数据库操作类改为medoo  
-* 2015/8/3  修复PATHINFO致命BUG  
-* 2015/8/5  加入错误提示功能
-* 2015/8/9  增加A方法，修复部分小bug
-* 2015/8/15 增加L方法
+* 2015/8/1 整体框架完成  
+* 2015/8/2 将数据库操作类改为medoo  
+* 2015/8/3 修复PATHINFO致命BUG  
+* 2015/8/5 加入错误提示功能
+* 2015/8/9 增加A方法，修复部分小bug
+
 ---
 
 再一次感谢您花费时间阅读这份说明文档！
