@@ -1,0 +1,6 @@
+[ 2015-08-15 19:36:41 ][NORMAL]错误类型：8 信息：Undefined variable: filename 行数：349 文件：E:\Documents\htdocs\projects\KotoriFramework\Kotori.class.php
+[ 2015-08-15 19:37:13 ][NORMAL]错误类型：8 信息：Undefined variable: filename 行数：370 文件：E:\Documents\htdocs\projects\KotoriFramework\Kotori.class.php
+[ 2015-08-15 19:37:14 ][NORMAL]错误类型：8 信息：Undefined variable: filename 行数：370 文件：E:\Documents\htdocs\projects\KotoriFramework\Kotori.class.php
+[ 2015-08-15 19:37:31 ][NORMAL]错误类型：Exception 信息：请求的控制器：indexController不存在
+[ 2015-08-15 19:37:40 ][NORMAL]错误类型：Exception 信息：请求的控制器：indexdController不存在
+[ 2015-08-15 19:37:43 ][NORMAL]错误类型：Exception 信息：请求的控制器：indexController不存在
