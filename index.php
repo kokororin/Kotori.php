@@ -7,7 +7,7 @@ $config = array(
     'DB_PORT'     => '3306',
     'DB_USER'     => 'root',
     'DB_PWD'      => 'root',
-    'DB_NAME'     => 'blog',
+    'DB_NAME'     => 'typecho',
     'USE_SESSION' => true,
 );
 Kotori::getInstance($config)->run();

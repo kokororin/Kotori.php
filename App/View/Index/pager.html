@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+	<title>Pager Test</title>
+	<meta charset="utf-8"/>
+</head>
+<body>
+
+<table border="1">
+  <tr>
+    <th>coid</th>
+    <th>text</th>
+  </tr>
+  <?php foreach ($list as $value):?>
+  <tr>
+    <td><?php echo $value['coid']?></td>
+    <td><?php echo $value['text']?></td>
+  </tr>
+ <?php endforeach;?>
+</table>
+<?php echo $page?>
+
+</body>
+</html>

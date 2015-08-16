@@ -9,4 +9,15 @@ class IndexController extends Controller
         $this->display();
     }
 
+    public function pager()
+    {
+        $count = M()->count("SELECT coid,text FROM typecho_comments");
+        $Pager = new Page($count, 5);
+        $show = $Pager->show();
+        $list = M()->query("SELECT coid,text FROM typecho_comments LIMIT {$Pager->firstRow},{$Pager->listRows}");
+        $this->assign('list', $list);
+        $this->assign('page',$show);
+        $this->display();
+    }
+
 }
