@@ -1,0 +1,56 @@
+[ 2015-08-16 16:01:11 ][NORMAL]错误类型：Exception 信息：请求的控制器：pagerController不存在
+[ 2015-08-16 16:01:18 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:01:58 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:05:59 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:05:59 ][NORMAL]错误类型：FATAL! 信息：Class 'Pager' not found 行数：15 文件：E:\Documents\htdocs\projects\KotoriFramework\App\Controller\IndexController.class.php
+[ 2015-08-16 16:06:10 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:06:10 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:06:26 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:06:27 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:07:23 ][NORMAL]错误类型：Exception 信息：请求的控制器：pagerController不存在
+[ 2015-08-16 16:07:28 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:07:28 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:08:59 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:08:59 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 5,5
+[ 2015-08-16 16:09:02 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:09:02 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:09:26 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:09:26 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:09:30 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:09:30 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:09:48 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:09:48 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:11:20 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:11:20 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:11:22 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:11:22 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:11:55 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:11:55 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:18:42 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:18:42 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:22:50 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:22:50 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:22:53 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:22:53 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 40,5
+[ 2015-08-16 16:22:55 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:22:55 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:23:14 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:14 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 45,5
+[ 2015-08-16 16:23:16 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:16 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 55,5
+[ 2015-08-16 16:23:17 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:17 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:23:19 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:19 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 10,5
+[ 2015-08-16 16:23:21 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:21 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 20,5
+[ 2015-08-16 16:23:22 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:22 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 30,5
+[ 2015-08-16 16:23:23 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:23 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 45,5
+[ 2015-08-16 16:23:24 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:24 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 50,5
+[ 2015-08-16 16:23:26 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:23:26 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 0,5
+[ 2015-08-16 16:24:10 ][SQL]SELECT coid,text FROM typecho_comments
+[ 2015-08-16 16:24:10 ][SQL]SELECT coid,text FROM typecho_comments LIMIT 30,5
