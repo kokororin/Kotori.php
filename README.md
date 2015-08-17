@@ -20,4 +20,4 @@ KotoriFramework 是一个免费开源的，快速、简单的面向对象的 轻
 
 * Github： [https://github.com/kokororin/KotoriFramework/blob/master/Public/HELP.md](https://github.com/kokororin/KotoriFramework/blob/master/Public/HELP.md)
 
-* SAE镜像： [https://kototi.sinaapp.com/?/KotoriFramework](https://kototi.sinaapp.com/?/KotoriFramework)
+* SAE镜像： [https://kotori.sinaapp.com/?/KotoriFramework](https://kotori.sinaapp.com/?/KotoriFramework)
