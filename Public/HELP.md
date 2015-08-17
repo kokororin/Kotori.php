@@ -92,6 +92,7 @@ $config = array(
     'DB_PWD'      => 'root',         #数据库密码
     'DB_NAME'     => 'test',         #数据库名
     'USE_SESSION' => true,           #是否开启session，默认false
+    'URL_MODEL'   => 'PATH_INFO'     #URL模式，默认PATHINFO
 );
 Kotori::getInstance($config)->run();
 ```
@@ -134,48 +135,27 @@ RewriteRule ^(.*)$ index.php [L,E=PATH_INFO:$1]
 Nginx配置：
 
 ```
-    #去掉$是为了不匹配行末，即可以匹配.php/，以实现pathinfo
-    #如果你不需要用到php5后缀，也可以将其去掉
-    location ~ .php
-        {
-                #原有代码
-                
-                #定义变量 $path_info ，用于存放pathinfo信息
-                set $path_info "";
-                #定义变量 $real_script_name，用于存放真实地址
-                set $real_script_name $fastcgi_script_name;
-                #如果地址与引号内的正则表达式匹配
-                if ($fastcgi_script_name ~ "^(.+?\.php)(/.+)$") {
-                        #将文件地址赋值给变量 $real_script_name
-                        set $real_script_name $1;
-                        #将文件地址后的参数赋值给变量 $path_info
-                        set $path_info $2;
-                }
-                #配置fastcgi的一些参数
-                fastcgi_param SCRIPT_FILENAME $document_root$real_script_name;
-                fastcgi_param SCRIPT_NAME $real_script_name;
-                fastcgi_param PATH_INFO $path_info;
-        }
+    待更新
 ```
 
 ### URL格式
 
-入口文件是应用的单一入口，对应用的所有请求都定向到应用入口文件，系统会从URL参数中解析当前请求的模块、控制器和操作：
+入口文件是应用的单一入口，对应用的所有请求都定向到应用入口文件，系统会从URL参数中解析当前请求的模块、控制器和操作，以下带有(?)表示的是QUERY_STRING模式，不带(?)则是PATH_INFO模式：
 
-> http://localhost/控制器/操作(/参数名/参数值)
+> http://localhost/(?)控制器/操作(/参数名/参数值)
 
 如果我们直接访问入口文件的话，由于URL中没有控制器和操作，因此系统会访问默认控制器（Index）的默认操作（index），因此下面的访问是等效的：
 
 > http://serverName/  
-> http://serverName/Index/index  
+> http://serverName/(?)/Index/index  
 
 其中，若有参数，那么参数将自动转化成$_GET变量：
 
-> http://serverName/Index/index/id/1 $_GET['id']=1
+> http://serverName/(?)/Index/index/id/1 $_GET['id']=1
 
 不过，依然可以获取到普通形式的$_GET变量：
 
-> http://localhost/index.php/Index/Login?var=value $_GET['var'] 依然有效  
+> http://localhost/(?)/Index/Login?var=value $_GET['var'] 依然有效  
 
 ---
 
@@ -420,17 +400,6 @@ class Page{}
 ### 日志记录
 
 KotoriFramework提供了一个简单的日志类，可以分级记录各类信息，目前提供了Normal和Sql 2种级别。日志会存储在App/Log目录下，当然前提条件是该目录是可写的。日志是按天存储的。
-
----
-
-## 更新日志
-
-* 2015/8/1  整体框架完成
-* 2015/8/2  将数据库操作类改为medoo
-* 2015/8/3  修复PATHINFO致命BUG
-* 2015/8/5  加入错误提示功能
-* 2015/8/9  增加A方法，修复部分小bug
-* 2015/8/15 增加L方法
 
 ---
 

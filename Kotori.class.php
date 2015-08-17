@@ -41,11 +41,13 @@ function C($key, $value = null)
 /**
  * 输出错误并终止程序
  * @param string $str 出错原因
+ * @param int $code 状态码
  * @return void
  */
-function halt($str)
+function halt($str, $code = '')
 {
     $html = '<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#"> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> <title>发生错误辣！</title> <style type="text/css"> html { background: #f1f1f1; } body { background: #fff; color: #444; font-family: "Open Sans", sans-serif; margin: 2em auto; padding: 1em 2em; max-width: 700px; -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.13); box-shadow: 0 1px 3px rgba(0,0,0,0.13); } h1 { border-bottom: 1px solid #dadada; clear: both; color: #666; font: 24px "Open Sans", sans-serif; margin: 30px 0 0 0; padding: 0; padding-bottom: 7px; } #error-page { margin-top: 50px; } #error-page p { font-size: 14px; line-height: 1.5; margin: 25px 0 20px; } #error-page code { font-family: Consolas, Monaco, monospace; } ul li { margin-bottom: 10px; font-size: 14px ; } a { color: #21759B; text-decoration: none; } a:hover { color: #D54E21; } .button { background: #f7f7f7; border: 1px solid #cccccc; color: #555; display: inline-block; text-decoration: none; font-size: 13px; line-height: 26px; height: 28px; margin: 0; padding: 0 10px 1px; cursor: pointer; -webkit-border-radius: 3px; -webkit-appearance: none; border-radius: 3px; white-space: nowrap; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; -webkit-box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08); box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08); vertical-align: top; } .button.button-large { height: 29px; line-height: 28px; padding: 0 12px; } .button:hover, .button:focus { background: #fafafa; border-color: #999; color: #222; } .button:focus { -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,.2); box-shadow: 1px 1px 1px rgba(0,0,0,.2); } .button:active { background: #eee; border-color: #999; color: #333; -webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 ); box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 ); } </style> </head> <body id="error-page"> <h1>发生错误辣！</h1><p>' . $str . '</p></p></body> </html>';
+    kotori_set_status($code);
     exit($html);
 }
 
@@ -62,7 +64,7 @@ function kotori_error($errno, $errstr, $errfile, $errline)
     $text = '<b>信息：</b>' . $errstr . '<br>' . '<b>行数：</b>' . $errline . '<br>' . '<b>文件：</b>' . $errfile;
     $txt = '错误类型：' . $errno . ' 信息：' . $errstr . ' 行数：' . $errline . ' 文件：' . $errfile;
     Log::normal($txt);
-    halt($text);
+    halt($text, 500);
 
 }
 
@@ -76,7 +78,7 @@ function kotori_exception($exception)
     $text = '<b>异常：</b>' . $exception->getMessage();
     $txt = '错误类型：Exception' . ' 信息：' . $exception->getMessage();
     Log::normal($txt);
-    halt($text);
+    halt($text, 500);
 }
 
 /**
@@ -85,12 +87,84 @@ function kotori_exception($exception)
  */
 function kotori_end()
 {
-    if (error_get_last()) {
-        $arr = error_get_last();
-        $text = '<b>信息：</b>' . $arr['message'] . '<br>' . '<b>行数：</b>' . $arr['line'] . '<br>' . '<b>文件：</b>' . $arr['file'];
-        $txt = '错误类型：' . 'FATAL!' . ' 信息：' . $arr['message'] . ' 行数：' . $arr['line'] . ' 文件：' . $arr['file'];
-        Log::normal($txt);
-        halt($text);
+    $last_error = error_get_last();
+    if (isset($last_error) &&
+        ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
+        kotori_error($last_error['type'], $last_error['message'], $last_error['file'], $last_error['line']);
+    }
+
+}
+
+/**
+ * 设置状态码
+ * @param int $code 状态码
+ * @param string $text 自定义文本
+ * @return void
+ */
+function kotori_set_status($code = 200, $text = '')
+{
+    if (empty($code) or !is_numeric($code)) {
+        halt('状态码不正确喔~', 500);
+    }
+
+    if (empty($text)) {
+        is_int($code) or $code = (int) $code;
+        $stati = array(
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
+
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            307 => 'Temporary Redirect',
+
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
+            422 => 'Unprocessable Entity',
+
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported',
+        );
+
+        if (isset($stati[$code])) {
+            $text = $stati[$code];
+        } else {
+            halt('状态码不规范或者没有指定文本内容。', 500);
+        }
+    }
+
+    if (strpos(PHP_SAPI, 'cgi') === 0) {
+        header('Status: ' . $code . ' ' . $text, true);
+    } else {
+        $server_protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
+        header($server_protocol . ' ' . $code . ' ' . $text, true, $code);
     }
 }
 
@@ -148,16 +222,16 @@ function L($type, $files, $base)
 {
     $file_arr = explode(',', $files);
     switch ($type) {
-        case 'css':
-            foreach ($file_arr as $value) {
-                echo '<link rel="stylesheet" href="' . U($base . '/' . $value . '.css') . '"/>';
-            }
-            break;
-        case 'js':
-            echo '<script src="' . U($base . '/' . $value . '.js') . '"></script>';
-            break;
-        default:
-            return;
+    case 'css':
+        foreach ($file_arr as $value) {
+            echo '<link rel="stylesheet" href="' . U($base . '/' . $value . '.css') . '"/>';
+        }
+        break;
+    case 'js':
+        echo '<script src="' . U($base . '/' . $value . '.js') . '"></script>';
+        break;
+    default:
+        return;
     }
 }
 
@@ -193,60 +267,60 @@ function I($name, $default = '', $filter = null, $datas = null)
         $method = 'param';
     }
     switch (strtolower($method)) {
-        case 'get':
-            $input = &$_GET;
+    case 'get':
+        $input = &$_GET;
+        break;
+    case 'post':
+        $input = &$_POST;
+        break;
+    case 'put':
+        if (is_null($_PUT)) {
+            parse_str(file_get_contents('php://input'), $_PUT);
+        }
+        $input = $_PUT;
+        break;
+    case 'param':
+        switch ($_SERVER['REQUEST_METHOD']) {
+        case 'POST':
+            $input = $_POST;
             break;
-        case 'post':
-            $input = &$_POST;
-            break;
-        case 'put':
+        case 'PUT':
             if (is_null($_PUT)) {
                 parse_str(file_get_contents('php://input'), $_PUT);
             }
             $input = $_PUT;
             break;
-        case 'param':
-            switch ($_SERVER['REQUEST_METHOD']) {
-                case 'POST':
-                    $input = $_POST;
-                    break;
-                case 'PUT':
-                    if (is_null($_PUT)) {
-                        parse_str(file_get_contents('php://input'), $_PUT);
-                    }
-                    $input = $_PUT;
-                    break;
-                default:
-                    $input = $_GET;
-            }
-            break;
-        case 'path':
-            $input = array();
-            if (!empty($_SERVER['PATH_INFO'])) {
-                $depr = '/';
-                $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
-            }
-            break;
-        case 'request':
-            $input = &$_REQUEST;
-            break;
-        case 'session':
-            $input = &$_SESSION;
-            break;
-        case 'cookie':
-            $input = &$_COOKIE;
-            break;
-        case 'server':
-            $input = &$_SERVER;
-            break;
-        case 'globals':
-            $input = &$GLOBALS;
-            break;
-        case 'data':
-            $input = &$datas;
-            break;
         default:
-            return null;
+            $input = $_GET;
+        }
+        break;
+    case 'path':
+        $input = array();
+        if (!empty($_SERVER['PATH_INFO'])) {
+            $depr = '/';
+            $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
+        }
+        break;
+    case 'request':
+        $input = &$_REQUEST;
+        break;
+    case 'session':
+        $input = &$_SESSION;
+        break;
+    case 'cookie':
+        $input = &$_COOKIE;
+        break;
+    case 'server':
+        $input = &$_SERVER;
+        break;
+    case 'globals':
+        $input = &$GLOBALS;
+        break;
+    case 'data':
+        $input = &$datas;
+        break;
+    default:
+        return null;
     }
     if ('' == $name) {
         // 获取全部变量
@@ -291,21 +365,21 @@ function I($name, $default = '', $filter = null, $datas = null)
         }
         if (!empty($type)) {
             switch (strtolower($type)) {
-                case 'a': // 数组
-                    $data = (array) $data;
-                    break;
-                case 'd': // 数字
-                    $data = (int) $data;
-                    break;
-                case 'f': // 浮点
-                    $data = (float) $data;
-                    break;
-                case 'b': // 布尔
-                    $data = (boolean) $data;
-                    break;
-                case 's': // 字符串
-                default:
-                    $data = (string) $data;
+            case 'a': // 数组
+                $data = (array) $data;
+                break;
+            case 'd': // 数字
+                $data = (int) $data;
+                break;
+            case 'f': // 浮点
+                $data = (float) $data;
+                break;
+            case 'b': // 布尔
+                $data = (boolean) $data;
+                break;
+            case 's': // 字符串
+            default:
+                $data = (string) $data;
             }
         }
     } else {
@@ -463,35 +537,44 @@ class Kotori
         C('APP_FULL_PATH', dirname(__FILE__) . '/' . C('APP_PATH'));
         kotori_require(C('APP_FULL_PATH') . '/common.php');
         spl_autoload_register(array('Kotori', 'autoload'));
-        if (isset($_SERVER['PATH_INFO'])) {
-            $pathInfo = $_SERVER['PATH_INFO'];
-        } else {
-            if (isset($_SERVER['ORIG_PATH_INFO'])) {
-                $pathInfo = $_SERVER['ORIG_PATH_INFO'];
-            } else {
-                if (isset($_SERVER['REDIRECT_PATH_INFO'])) {
-                    $pathInfo = $_SERVER['REDIRECT_PATH_INFO'];
-                } else {
-                    $pathInfo = '';
-                }
+
+        $urlMode = empty(C('URL_MODE')) ? 'PATH_INFO' : C('URL_MODE');
+
+        switch ($urlMode) {
+        case 'PATH_INFO':
+            $uri = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
+            : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
+                : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
+            break;
+        case 'QUERY_STRING':
+            $uri = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
+            if (trim($uri, '/') == '') {
+                $uri = '';
+            } elseif (strncmp($uri, '/', 1) == 0) {
+                $uri = explode('?', $uri, 2);
+                $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
+                $uri = $uri[0];
             }
+            break;
+        default:
+            break;
         }
 
-        $pathInfoArr = ($pathInfo != '') ? explode('/', trim($pathInfo, '/')) : array();
+        $uriArray = ($uri != '') ? explode('/', trim($uri, '/')) : array();
 
-        if (isset($pathInfoArr[0]) && $pathInfoArr[0] !== '') {
-            $this->c = $pathInfoArr[0];
+        if (isset($uriArray[0]) && $uriArray[0] !== '') {
+            $this->c = $uriArray[0];
         } else {
             $this->c = 'Index';
         }
-        if (isset($pathInfoArr[1])) {
-            $this->a = $pathInfoArr[1];
+        if (isset($uriArray[1])) {
+            $this->a = $uriArray[1];
         } else {
             $this->a = 'index';
         }
         define('CONTROLLER_NAME', $this->c);
         define('ACTION_NAME', $this->a);
-        unset($pathInfoArr[0], $pathInfoArr[1]);
+        unset($uriArray[0], $uriArray[1]);
         $controllerClass = $this->c . 'Controller';
 
         $controller = self::call($controllerClass);
@@ -502,7 +585,7 @@ class Kotori
 
         $params = array();
         //源自ThinkPHP
-        preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $pathInfoArr));
+        preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $uriArray));
         $_GET = array_merge($params, $_GET);
         //以下来自http://jingyan.todgo.com/jiaoyu/1883184mab.html
         call_user_func_array(array($controller, $this->a), $params);
@@ -519,7 +602,6 @@ class Kotori
         if (!class_exists($controllerClass)) {
             throw new Exception('请求的控制器：' . $controllerClass . '不存在');
         }
-        $controller = new $controllerClass();
         return new $controllerClass();
 
     }
