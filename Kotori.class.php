@@ -197,7 +197,7 @@ function A($name)
  */
 function U($url = '', $params = array())
 {
-    return View::url($url, $params);
+    return View::buildUrl($url, $params);
 }
 
 /**
@@ -208,7 +208,7 @@ function U($url = '', $params = array())
  */
 function N($path, $data = array())
 {
-    View::need($path, $data);
+    View::includeTpl($path, $data);
 }
 
 /**
@@ -444,17 +444,17 @@ function is_https()
  */
 function kotori_require($path)
 {
-    static $_importFiles = array();
+    static $_require = array();
 
-    if (!isset($_importFiles[$path])) {
+    if (!isset($_require[$path])) {
         if (kotori_file_exists($path)) {
             require $path;
-            $_importFiles[$path] = true;
+            $_require[$path] = true;
         } else {
-            $_importFiles[$path] = false;
+            $_require[$path] = false;
         }
     }
-    return $_importFiles[$path];
+    return $_require[$path];
 
 }
 
@@ -485,52 +485,28 @@ class Kotori
      * 控制器
      * @var string
      */
-    private $c;
+    public static $_controller;
     /**
      * Action
      * @var string
      */
-    private $a;
-    /**
-     * 单例
-     * @var Kotori
-     */
-    private static $_instance;
+    public static $_action;
 
-    /**
-     * 构造函数，初始化配置
-     * @param array $conf
-     */
-    private function __construct($conf)
-    {
-        C($conf);
-    }
-    private function __clone()
-    {}
-
-    /**
-     * 获取单例
-     * @param array $conf
-     * @return Kotori
-     */
-    public static function getInstance($conf)
-    {
-        if (!(self::$_instance instanceof self)) {
-            self::$_instance = new self($conf);
-        }
-        return self::$_instance;
-    }
     /**
      * 运行应用实例
      * @access public
      * @return void
      */
-    public function run()
+    public static function run($conf)
     {
+        C($conf);
         error_reporting(0);
         set_error_handler('kotori_error');
         set_exception_handler('kotori_exception');
         register_shutdown_function('kotori_end');
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            halt('PHP版本过低，必须为5.3以上版本~');
+        }
         if (C('USE_SESSION') == true) {
             session_start();
         }
@@ -563,24 +539,24 @@ class Kotori
         $uriArray = ($uri != '') ? explode('/', trim($uri, '/')) : array();
 
         if (isset($uriArray[0]) && $uriArray[0] !== '') {
-            $this->c = $uriArray[0];
+            self::$_controller = $uriArray[0];
         } else {
-            $this->c = 'Index';
+            self::$_controller = 'Index';
         }
         if (isset($uriArray[1])) {
-            $this->a = $uriArray[1];
+            self::$_action = $uriArray[1];
         } else {
-            $this->a = 'index';
+            self::$_action = 'index';
         }
-        define('CONTROLLER_NAME', $this->c);
-        define('ACTION_NAME', $this->a);
+        define('CONTROLLER_NAME', self::$_controller);
+        define('ACTION_NAME', self::$_action);
         unset($uriArray[0], $uriArray[1]);
-        $controllerClass = $this->c . 'Controller';
+        $controllerClass = self::$_controller . 'Controller';
 
         $controller = self::call($controllerClass);
 
-        if (!method_exists($controller, $this->a)) {
-            throw new Exception('请求的方法：' . $this->a . '不存在');
+        if (!method_exists($controller, self::$_action)) {
+            throw new Exception('请求的方法：' . self::$_action . '不存在');
         }
 
         $params = array();
@@ -588,21 +564,29 @@ class Kotori
         preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $uriArray));
         $_GET = array_merge($params, $_GET);
         //以下来自http://jingyan.todgo.com/jiaoyu/1883184mab.html
-        call_user_func_array(array($controller, $this->a), $params);
+        call_user_func_array(array($controller, self::$_action), $params);
     }
 
     /**
-     * 调用控制器核心方法
+     * 调用控制器
      * @param string $controllerClass 控制器名
      * @return class
      */
     public static function call($controllerClass)
     {
-        //kotori_require(C('APP_FULL_PATH') . '/Controller/' . $controllerClass . '.class.php');
+        //判断是否实例化过，直接调用
+        static $_controller = array();
+        if (isset($_controller[$controllerClass])) {
+            return $_controller[$controllerClass];
+        }
+
         if (!class_exists($controllerClass)) {
             throw new Exception('请求的控制器：' . $controllerClass . '不存在');
+        } else {
+            $controller = new $controllerClass();
+            $_controller[$controllerClass] = $controller;
+            return $controller;
         }
-        return new $controllerClass();
 
     }
 
@@ -623,13 +607,13 @@ class Kotori
 /**
  * 控制器类
  */
-class Controller
+abstract class Controller
 {
     /**
-     * 视图实例
+     * 视图实例对象
      * @var View
      */
-    private $_view;
+    protected $_view;
 
     /**
      * 构造函数，初始化视图实例，调用hook
@@ -761,7 +745,7 @@ class View
      * @param array $data 传递给子模板的变量列表，key为变量名，value为变量值
      * @return void
      */
-    public static function need($path, $data = array())
+    public static function includeTpl($path, $data = array())
     {
         self::$tmpData = array(
             'path' => C('APP_FULL_PATH') . '/View/' . $path . '.html',
@@ -779,7 +763,7 @@ class View
      * @param array $params 参数数组
      * @return string
      */
-    public static function url($url = '', $params = array())
+    public static function buildUrl($url = '', $params = array())
     {
         if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST'])) {
             $base_url = (is_https() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
@@ -802,7 +786,22 @@ class View
         } else {
             $http_query = '';
         }
-        return $base_url . $url . $http_query;
+        $true_url = dirname(__FILE__) . '/' . $url . $http_query;
+        if (is_file($true_url)) {
+            return $base_url . $url . $http_query;
+        }
+        $urlMode = empty(C('URL_MODE')) ? 'PATH_INFO' : C('URL_MODE');
+        switch ($urlMode) {
+        case 'PATH_INFO':
+            return $base_url . $url . $http_query;
+            break;
+        case 'QUERY_STRING':
+            return $base_url . '?' . $url . $http_query;
+            break;
+        default:
+            return;
+            break;
+        }
 
     }
 }

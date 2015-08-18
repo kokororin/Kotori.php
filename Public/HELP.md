@@ -82,19 +82,17 @@ KotoriFramework采用单一入口模式进行项目部署和访问，无论完�
 项目配置需要在入口文件传递给KotoriFramework，目前支持的配置如下：
 
 ```php
-require './Kotori.dll';//正式版
-//require './Kotori.class.php';//开发版
-$config = array(
-    'APP_PATH'    => './App/',       #APP代码文件夹
-    'DB_HOST'     => 'localhost',    #数据库主机地址
-    'DB_PORT'     => '3306',         #数据库端口，默认为3306
-    'DB_USER'     => 'root',         #数据库用户名
-    'DB_PWD'      => 'root',         #数据库密码
-    'DB_NAME'     => 'test',         #数据库名
-    'USE_SESSION' => true,           #是否开启session，默认false
-    'URL_MODEL'   => 'PATH_INFO'     #URL模式，默认PATHINFO
-);
-Kotori::getInstance($config)->run();
+require './Kotori.class.php';
+Kotori::run(array(
+    'APP_PATH' => './App/', //项目目录
+    'DB_HOST' => '127.0.0.1',
+    'DB_PORT' => '3306',
+    'DB_USER' => 'root',
+    'DB_PWD' => 'root',
+    'DB_NAME' => 'typecho',
+    'USE_SESSION' => true,
+    'URL_MODE' => 'PATH_INFO',//默认URL模式为PATH_INFO，另外有QUERY_STRING模式
+));
 ```
 
 ### 读取配置
