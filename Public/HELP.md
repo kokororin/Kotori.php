@@ -85,13 +85,13 @@ KotoriFramework采用单一入口模式进行项目部署和访问，无论完�
 require './Kotori.class.php';
 Kotori::run(array(
     'APP_PATH' => './App/', //项目目录
-    'DB_HOST' => '127.0.0.1',
-    'DB_PORT' => '3306',
-    'DB_USER' => 'root',
-    'DB_PWD' => 'root',
-    'DB_NAME' => 'typecho',
-    'USE_SESSION' => true,
+    'DB_HOST' => '127.0.0.1',//数据库主机
+    'DB_USER' => 'root',//数据库用户名
+    'DB_PWD' => 'root',//数据库密码
+    'DB_NAME' => 'typecho',//数据库名
+    'USE_SESSION' => true,//全局SESSSION配置
     'URL_MODE' => 'PATH_INFO',//默认URL模式为PATH_INFO，另外有QUERY_STRING模式
+    'URL_PARAMS_BIND' => 'ORDER',//URL参数绑定模式，默认为按参数名绑定
 ));
 ```
 
@@ -140,20 +140,23 @@ Nginx配置：
 
 入口文件是应用的单一入口，对应用的所有请求都定向到应用入口文件，系统会从URL参数中解析当前请求的模块、控制器和操作，以下带有(?)表示的是QUERY_STRING模式，不带(?)则是PATH_INFO模式：
 
-> http://localhost/(?)控制器/操作(/参数名/参数值)
+> http://localhost/?控制器/操作(/参数名/参数值)  QUERY_STRING模式
+> http://localhost/控制器/操作(/参数名/参数值)   PATH_INFO模式
+
+**本文档以下默认采用PATH_INFO模式进行解释，不再阐述QUERY_STRING模式。**
 
 如果我们直接访问入口文件的话，由于URL中没有控制器和操作，因此系统会访问默认控制器（Index）的默认操作（index），因此下面的访问是等效的：
 
 > http://serverName/  
-> http://serverName/(?)/Index/index  
+> http://serverName/Index/index  
 
 其中，若有参数，那么参数将自动转化成$_GET变量：
 
-> http://serverName/(?)/Index/index/id/1 $_GET['id']=1
+> http://serverName/Index/index/id/1 $_GET['id']=1
 
 不过，依然可以获取到普通形式的$_GET变量：
 
-> http://localhost/(?)/Index/Login?var=value $_GET['var'] 依然有效  
+> http://localhost/Index/Login?var=value $_GET['var'] 依然有效  
 
 ---
 
@@ -195,7 +198,9 @@ class IndexController extends Controller
 
 参数绑定是通过直接绑定URL地址中的变量作为操作方法的参数，可以简化方法的定义。
 
-例如，我们给Blog控制器定义了两个操作方法read和archive方法，由于read操作需要指定一个id参数，archive方法需要指定年份（year）和月份（month）两个参数，那么我们可以如下定义：
+#### 按变量名绑定
+
+默认的参数绑定方式是按照变量名进行绑定，例如，我们给Blog控制器定义了两个操作方法read和archive方法，由于read操作需要指定一个id参数，archive方法需要指定年份（year）和月份（month）两个参数，那么我们可以如下定义：
 
 ```php
     class BlogController extends Controller{
@@ -232,6 +237,21 @@ public function read($id=0){
         echo 'id='.$id;
     }
 ```
+
+#### 按变量顺序绑定
+
+第二种方式是按照变量的顺序绑定，这种情况下URL地址中的参数顺序非常重要，不能随意调整。要按照变量顺序进行绑定，必须先设置URL_PARAMS_BIND为1。
+
+操作方法的定义不需要改变，URL的访问地址分别改成：
+
+> http://serverName/Blog/read/5  
+> http://serverName/Blog/archive/2013/11  
+
+这个时候如果改成
+
+> http://serverName/Blog/archive/11/2013
+
+那么结果就会不正确。所以不能随意调整参数在URL中的传递顺序，要确保和你的操作方法定义顺序一致。
 
 ### Url生成
 

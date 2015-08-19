@@ -9,5 +9,6 @@ Kotori::run(array(
     'DB_PWD' => 'root',
     'DB_NAME' => 'typecho',
     'USE_SESSION' => true,
-    'URL_MODE' => 'QUERY_STRING',
+    'URL_MODE' => 'PATH_INFO',
+    'URL_PARAMS_BIND' => 'ORDER',
 ));

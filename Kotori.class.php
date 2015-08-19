@@ -1,4 +1,14 @@
 <?php
+// +----------------------------------------------------------------------
+// | Kotori Framework (a Tiny Controller-View PHP Framework)
+// +----------------------------------------------------------------------
+// | Copyright (c) 2015 https://return.moe All rights reserved.
+// +----------------------------------------------------------------------
+// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
+// +----------------------------------------------------------------------
+// | Author: Kokororin <ritsuka.sunny@gmail.com>
+// +----------------------------------------------------------------------
+
 /**
  * 获取和设置配置参数 支持批量定义
  * 如果$key是关联型数组，则会按K-V的形式写入配置
@@ -504,9 +514,6 @@ class Kotori
         set_error_handler('kotori_error');
         set_exception_handler('kotori_exception');
         register_shutdown_function('kotori_end');
-        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
-            halt('PHP版本过低，必须为5.3以上版本~');
-        }
         if (C('USE_SESSION') == true) {
             session_start();
         }
@@ -559,10 +566,17 @@ class Kotori
             throw new Exception('请求的方法：' . self::$_action . '不存在');
         }
 
+        //URL解析方法源自ThinkPHP
         $params = array();
-        //源自ThinkPHP
-        preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $uriArray));
+
+        if (C('URL_PARAMS_BIND') && 'ORDER' == C('URL_PARAMS_BIND')) {
+            $params = $uriArray;
+        } else {
+            preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $uriArray));
+        }
+
         $_GET = array_merge($params, $_GET);
+        $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
         //以下来自http://jingyan.todgo.com/jiaoyu/1883184mab.html
         call_user_func_array(array($controller, self::$_action), $params);
     }
@@ -777,7 +791,12 @@ class View
             $count = count($params);
             $http_query = '/';
             for ($i = 0; $i < $count; $i++) {
-                $http_query .= $keys[$i] . '/' . $values[$i];
+                if (C('URL_PARAMS_BIND') && 'ORDER' == C('URL_PARAMS_BIND')) {
+                    $http_query .= $values[$i];
+                } else {
+                    $http_query .= $keys[$i] . '/' . $values[$i];
+                }
+
                 if ($i != ($count - 1)) {
                     $http_query .= '/';
                 }
@@ -1023,7 +1042,7 @@ class Log
      */
     public static function write($msg, $level = '')
     {
-        if (function_exists('sae_debug')) {
+        if (function_exists('saeAutoLoader')) {
             //如果是SAE，则使用sae_debug函数打日志
             $msg = "[{$level}]" . $msg;
             sae_set_display_errors(false);
