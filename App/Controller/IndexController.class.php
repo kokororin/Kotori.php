@@ -16,8 +16,14 @@ class IndexController extends Controller
         $show = $Pager->show();
         $list = M()->query("SELECT coid,text FROM typecho_comments LIMIT {$Pager->firstRow},{$Pager->listRows}");
         $this->assign('list', $list);
-        $this->assign('page',$show);
+        $this->assign('page', $show);
         $this->display();
+    }
+
+    public function test($id = 1, $type = 'view')
+    {
+        echo 'Type is ' . $type . ' and id is ' . $id;
+        echo '<br>' . U('Index/test', array('id' => 2, 'type' => 'edit'));
     }
 
 }
