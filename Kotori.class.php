@@ -56,9 +56,12 @@ function C($key, $value = null)
  */
 function halt($str, $code = '')
 {
-    $html = '<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#"> <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> <title>发生错误辣！</title> <style type="text/css"> html { background: #f1f1f1; } body { background: #fff; color: #444; font-family: "Open Sans", sans-serif; margin: 2em auto; padding: 1em 2em; max-width: 700px; -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.13); box-shadow: 0 1px 3px rgba(0,0,0,0.13); } h1 { border-bottom: 1px solid #dadada; clear: both; color: #666; font: 24px "Open Sans", sans-serif; margin: 30px 0 0 0; padding: 0; padding-bottom: 7px; } #error-page { margin-top: 50px; } #error-page p { font-size: 14px; line-height: 1.5; margin: 25px 0 20px; } #error-page code { font-family: Consolas, Monaco, monospace; } ul li { margin-bottom: 10px; font-size: 14px ; } a { color: #21759B; text-decoration: none; } a:hover { color: #D54E21; } .button { background: #f7f7f7; border: 1px solid #cccccc; color: #555; display: inline-block; text-decoration: none; font-size: 13px; line-height: 26px; height: 28px; margin: 0; padding: 0 10px 1px; cursor: pointer; -webkit-border-radius: 3px; -webkit-appearance: none; border-radius: 3px; white-space: nowrap; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; -webkit-box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08); box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08); vertical-align: top; } .button.button-large { height: 29px; line-height: 28px; padding: 0 12px; } .button:hover, .button:focus { background: #fafafa; border-color: #999; color: #222; } .button:focus { -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,.2); box-shadow: 1px 1px 1px rgba(0,0,0,.2); } .button:active { background: #eee; border-color: #999; color: #333; -webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 ); box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 ); } </style> </head> <body id="error-page"> <h1>发生错误辣！</h1><p>' . $str . '</p></p></body> </html>';
     kotori_set_status($code);
-    exit($html);
+    $_view = new View();
+    $_view->assign('str', $str);
+    $_view->display(C('ERROR_TPL'));
+    exit;
+
 }
 
 /**
@@ -71,8 +74,26 @@ function halt($str, $code = '')
  */
 function kotori_error($errno, $errstr, $errfile, $errline)
 {
-    $text = '<b>信息：</b>' . $errstr . '<br>' . '<b>行数：</b>' . $errline . '<br>' . '<b>文件：</b>' . $errfile;
-    $txt = '错误类型：' . $errno . ' 信息：' . $errstr . ' 行数：' . $errline . ' 文件：' . $errfile;
+    switch ($errno) {
+    case E_WARNING:
+        $errtype = 'WARNING';
+        break;
+    case E_NOTICE:
+        $errtype = 'NOTICE';
+        break;
+    case E_STRICT:
+        $errtype = 'STRICT';
+        break;
+    case 8192:
+        $errtype = 'DEPRECATED';
+        break;
+    default:
+        $errtype = 'UNKNOWN';
+        break;
+    }
+
+    $text = '<b>错误类型：</b>' . $errtype . '<br>' . '<b>信息：</b>' . $errstr . '<br>' . '<b>行数：</b>' . $errline . '<br>' . '<b>文件：</b>' . $errfile;
+    $txt = '错误类型：' . $errtype . ' 信息：' . $errstr . ' 行数：' . $errline . ' 文件：' . $errfile;
     Log::normal($txt);
     halt($text, 500);
 
@@ -492,38 +513,75 @@ function kotori_file_exists($path)
 class Kotori
 {
     /**
-     * 控制器
-     * @var string
-     */
-    public static $_controller;
-    /**
-     * Action
-     * @var string
-     */
-    public static $_action;
-
-    /**
      * 运行应用实例
-     * @access public
+     * @param mixed $conf 配置文件
      * @return void
      */
     public static function run($conf)
     {
-        C($conf);
         error_reporting(0);
         set_error_handler('kotori_error');
         set_exception_handler('kotori_exception');
         register_shutdown_function('kotori_end');
+
+        self::config($conf);
         if (C('USE_SESSION') == true) {
             session_start();
         }
-        C('APP_FULL_PATH', dirname(__FILE__) . '/' . C('APP_PATH'));
+
         kotori_require(C('APP_FULL_PATH') . '/common.php');
         spl_autoload_register(array('Kotori', 'autoload'));
+        Dispatcher::dispatch();
 
-        $urlMode = empty(C('URL_MODE')) ? 'PATH_INFO' : C('URL_MODE');
+    }
 
-        switch ($urlMode) {
+    /**
+     * 初始化配置
+     * @param mixed $conf 配置文件
+     * @return void
+     */
+    private static function config($conf)
+    {
+        C($conf);
+        if (empty(C('APP_PATH'))) {C('APP_PATH', './App');}
+        C('APP_FULL_PATH', dirname(__FILE__) . '/' . C('APP_PATH'));
+        if (empty(C('DB_HOST'))) {C('DB_HOST', '127.0.0.1');}
+        if (empty(C('DB_USER'))) {C('DB_USER', 'root');}
+        if (empty(C('DB_PWD'))) {C('DB_PWD', 'root');}
+        if (empty(C('DB_NAME'))) {C('DB_NAME', 'test');}
+        if (empty(C('USE_SESSION'))) {C('USE_SESSION', true);}
+        if (empty(C('URL_MODE'))) {C('URL_MODE', 'PATH_INFO');}
+        if (empty(C('URL_PARAMS_BIND'))) {C('URL_PARAMS_BIND', 'NORMAL');}
+        if (empty(C('ERROR_TPL'))) {C('ERROR_TPL', 'Public/error');}
+    }
+
+    /**
+     * 自动加载函数
+     * @param string $class 类名
+     * @return void
+     */
+    private static function autoload($class)
+    {
+        if (substr($class, -10) == 'Controller') {
+            kotori_require(C('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+        } else {
+            kotori_require(C('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
+        }
+    }
+}
+
+/**
+ * URL调度类
+ */
+class Dispatcher
+{
+    /**
+     * URL映射到控制器和操作
+     */
+    public static function dispatch()
+    {
+
+        switch (C('URL_MODE')) {
         case 'PATH_INFO':
             $uri = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
             : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
@@ -544,26 +602,17 @@ class Kotori
         }
 
         $uriArray = ($uri != '') ? explode('/', trim($uri, '/')) : array();
-
-        if (isset($uriArray[0]) && $uriArray[0] !== '') {
-            self::$_controller = $uriArray[0];
-        } else {
-            self::$_controller = 'Index';
-        }
-        if (isset($uriArray[1])) {
-            self::$_action = $uriArray[1];
-        } else {
-            self::$_action = 'index';
-        }
-        define('CONTROLLER_NAME', self::$_controller);
-        define('ACTION_NAME', self::$_action);
+        $_controller = self::getController($uriArray);
+        $_action = self::getAction($uriArray);
+        define('CONTROLLER_NAME', $_controller);
+        define('ACTION_NAME', $_action);
         unset($uriArray[0], $uriArray[1]);
-        $controllerClass = self::$_controller . 'Controller';
+        $controllerClass = $_controller . 'Controller';
 
-        $controller = self::call($controllerClass);
+        $controller = Controller::call($controllerClass);
 
-        if (!method_exists($controller, self::$_action)) {
-            throw new Exception('请求的方法：' . self::$_action . '不存在');
+        if (!method_exists($controller, $_action)) {
+            throw new Exception('请求的方法：' . $_action . '不存在');
         }
 
         //URL解析方法源自ThinkPHP
@@ -578,43 +627,38 @@ class Kotori
         $_GET = array_merge($params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
         //以下来自http://jingyan.todgo.com/jiaoyu/1883184mab.html
-        call_user_func_array(array($controller, self::$_action), $params);
-    }
-
-    /**
-     * 调用控制器
-     * @param string $controllerClass 控制器名
-     * @return class
-     */
-    public static function call($controllerClass)
-    {
-        //判断是否实例化过，直接调用
-        static $_controller = array();
-        if (isset($_controller[$controllerClass])) {
-            return $_controller[$controllerClass];
-        }
-
-        if (!class_exists($controllerClass)) {
-            throw new Exception('请求的控制器：' . $controllerClass . '不存在');
-        } else {
-            $controller = new $controllerClass();
-            $_controller[$controllerClass] = $controller;
-            return $controller;
-        }
+        call_user_func_array(array($controller, $_action), $params);
 
     }
 
     /**
-     * 自动加载函数
-     * @param string $class 类名
+     * 获得实际的控制器名称
+     * @param $uriArray 解析的uri数组
+     * @return string
      */
-    public static function autoload($class)
+    private static function getController($uriArray)
     {
-        if (substr($class, -10) == 'Controller') {
-            kotori_require(C('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+        if (isset($uriArray[0]) && $uriArray[0] !== '') {
+            $_controller = $uriArray[0];
         } else {
-            kotori_require(C('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
+            $_controller = 'Index';
         }
+        return strip_tags($_controller);
+    }
+
+    /**
+     * 获得实际的操作名称
+     * @param $uriArray 解析的uri数组
+     * @return string
+     */
+    private static function getAction($uriArray)
+    {
+        if (isset($uriArray[1])) {
+            $_action = $uriArray[1];
+        } else {
+            $_action = 'index';
+        }
+        return strip_tags($_action);
     }
 }
 
@@ -690,6 +734,29 @@ abstract class Controller
     {
         header("Location: $url");
         exit;
+    }
+
+    /**
+     * 调用控制器
+     * @param string $controllerClass 控制器名
+     * @return class
+     */
+    public static function call($controllerClass)
+    {
+        //判断是否实例化过，直接调用
+        static $_controller = array();
+        if (isset($_controller[$controllerClass])) {
+            return $_controller[$controllerClass];
+        }
+
+        if (!class_exists($controllerClass)) {
+            throw new Exception('请求的控制器：' . $controllerClass . '不存在');
+        } else {
+            $controller = new $controllerClass();
+            $_controller[$controllerClass] = $controller;
+            return $controller;
+        }
+
     }
 }
 
@@ -791,7 +858,7 @@ class View
             $count = count($params);
             $http_query = '/';
             for ($i = 0; $i < $count; $i++) {
-                if (C('URL_PARAMS_BIND') && 'ORDER' == C('URL_PARAMS_BIND')) {
+                if ('ORDER' == C('URL_PARAMS_BIND')) {
                     $http_query .= $values[$i];
                 } else {
                     $http_query .= $keys[$i] . '/' . $values[$i];
@@ -809,8 +876,8 @@ class View
         if (is_file($true_url)) {
             return $base_url . $url . $http_query;
         }
-        $urlMode = empty(C('URL_MODE')) ? 'PATH_INFO' : C('URL_MODE');
-        switch ($urlMode) {
+
+        switch (C('URL_MODE')) {
         case 'PATH_INFO':
             return $base_url . $url . $http_query;
             break;
@@ -1040,7 +1107,7 @@ class Log
      * @param string $msg 日志内容
      * @param string $level 日志等级
      */
-    public static function write($msg, $level = '')
+    private static function write($msg, $level = '')
     {
         if (function_exists('saeAutoLoader')) {
             //如果是SAE，则使用sae_debug函数打日志

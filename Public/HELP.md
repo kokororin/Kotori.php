@@ -92,6 +92,8 @@ Kotori::run(array(
     'USE_SESSION' => true,//全局SESSSION配置
     'URL_MODE' => 'PATH_INFO',//默认URL模式为PATH_INFO，另外有QUERY_STRING模式
     'URL_PARAMS_BIND' => 'ORDER',//URL参数绑定模式，默认为按参数名绑定
+    'ERROR_TPL' = > 'Public/error',//默认错误页面
+    //注意，以上配置都可为空，系统将自动获取默认配置
 ));
 ```
 
@@ -326,6 +328,10 @@ $this->redirect('http://www.qq.com');//跳转到马化腾首页
 
 > CONTROLLER_NAME 当前控制器名  
 > ACTION_NAME 当前操作名  
+
+### 错误页面
+
+当你的系统发生错误时，将输出错误页面，默认模板位于Public/error.html。
 
 ---
 
