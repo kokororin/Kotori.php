@@ -9,7 +9,7 @@
     <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
   <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="<?php echo U('Public/css/kf.css')?>">
+    <link rel="stylesheet" href="<?php echo PUBLIC_DIR?>/css/kf.css">
 	<style>.spinner{width:100px;height:100px;position:relative;margin:100px auto}.double-bounce1,.double-bounce2{width:100%;height:100%;border-radius:50%;background-color:#e74430;opacity:.6;position:absolute;top:50%;left:45%;-webkit-animation:bounce 2.0s infinite ease-in-out;animation:bounce 2.0s infinite ease-in-out}.double-bounce2{-webkit-animation-delay:-1.0s;animation-delay:-1.0s}@-webkit-keyframes bounce{0%,100%{-webkit-transform:scale(0.0)}50%{-webkit-transform:scale(1.0)}}@keyframes bounce{0%,100%{transform:scale(0.0);-webkit-transform:scale(0.0)}50%{transform:scale(1.0);-webkit-transform:scale(1.0)}}</style>
 </head>
 
@@ -26,7 +26,7 @@
 
     <nav class="main">
         <div class="container">
-            <a href="<?php echo U('Index/index')?>" class="brand">
+            <a href="<?php echo Util::url('Index/index')?>" class="brand">
                Kotori Framework
             </a>
 
@@ -36,11 +36,11 @@
           
 
             <ul class="main-nav">
-                <li><a href="<?php echo U('Index/index')?>">中文文档</a>
+                <li><a href="<?php echo Util::url('Index/index')?>">中文文档</a>
                 </li>
-                <li><a href="http://post.return.moe" target="_blank">问答社区</a>
+                <li><a href="http://post.kotori.love" target="_blank">问答社区</a>
                 </li>
-                <li><a href="https://return.moe" target="_blank">博客</a>
+                <li><a href="https://kotori.love" target="_blank">博客</a>
                 </li>        
             </ul>
         </div>
@@ -49,7 +49,7 @@
     <nav id="slide-menu" class="slide-menu" role="navigation">
 
         <ul class="slide-main-nav">
-            <li><a href="<?php echo U('Index/index')?>">中文文档</a>
+            <li><a href="<?php echo Util::url('Index/index')?>">中文文档</a>
             </li>
             <li><a href="http://post.return.moe" target="_blank">问答社区</a>
             </li>
@@ -77,11 +77,11 @@
 
     <footer class="main">
         <ul>
-            <li><a href="?/KotoriFramwork" target="_blank">中文文档</a>
+            <li><a href="<?php echo Util::url('Index/index')?>" target="_blank">中文文档</a>
             </li>
-            <li><a href="http://post.return.moe" target="_blank">问答社区</a>
+            <li><a href="http://post.kotori.love" target="_blank">问答社区</a>
             </li>
-            <li><a href="https://return.moe" target="_blank">博客</a>
+            <li><a href="https://kotori.love" target="_blank">博客</a>
             </li>
 
         </ul>
@@ -95,7 +95,7 @@
     
     <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/prettify/r298/prettify.js"></script>
-    <script src="<?php echo U('Public/js/kf.js')?>"></script>
+    <script src="<?php echo PUBLIC_DIR?>/js/kf.js"></script>
 	
     
 </body>
