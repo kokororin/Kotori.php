@@ -833,7 +833,7 @@ class Request
             // 变量默认值
             $data = isset($default) ? $default : null;
         }
-        is_array($data) && self::array_walk_recursive($data, array('Request', 'filter'));
+        is_array($data) && array_walk_recursive($data, array('Request', 'filter'));
         return $data;
 
     }
@@ -1030,10 +1030,10 @@ class Response
      * 抛出json回执信息
      *
      * @access public
-     * @param string $message 消息体
+     * @param string $data 消息体
      * @return void
      */
-    public static function throwJson($message)
+    public static function throwJson($data)
     {
         header('Content-Type:application/json; charset=utf-8');
         exit(json_encode($data));
