@@ -21,8 +21,7 @@ class Kotori
      */
     public static function run($conf)
     {
-        //error_reporting(0);
-
+        error_reporting(0);
         Config::init($conf);
         self::init();
     }
@@ -476,11 +475,11 @@ abstract class Controller
 
     /**
      * 初始化数据库类
-     * @return DB
+     * @return void
      */
     private function dbInit()
     {
-        return new medoo(array(
+        $this->db = new medoo(array(
             'database_type' => Config::get('DB_TYPE'),
             'database_name' => Config::get('DB_NAME'),
             'server' => Config::get('DB_HOST'),
@@ -1030,7 +1029,7 @@ class Response
      * 抛出json回执信息
      *
      * @access public
-     * @param string $data 消息体
+     * @param string $message 消息体
      * @return void
      */
     public static function throwJson($data)
@@ -1086,7 +1085,6 @@ class medoo
     // Variable
     protected $logs = array();
     protected $debug_mode = false;
-    protected $_instance = array();
 
     public function __construct($options = null)
     {
