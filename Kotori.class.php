@@ -1,16 +1,35 @@
 <?php
-// +----------------------------------------------------------------------
-// | Kotori Framework (a Tiny Controller-View PHP Framework)
-// +----------------------------------------------------------------------
-// | Copyright (c) 2015 https://kotori.love All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: Kokororin <ritsuka.sunny@gmail.com>
-// +----------------------------------------------------------------------
+/**
+ * Kotori Framework
+ *
+ * a Tiny Controller-View PHP Framework
+ *
+ * This content is released under the Apache 2 License
+ *
+ * Copyright (c) 2015 https://kotori.love All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 /**
- * Kotori核心类
+ * Kotori Initialization Class
+ *
+ * Loads the base classes and executes the request.
+ *
+ * @package     Kotori
+ * @subpackage  Kotori
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
 class Kotori
 {
@@ -27,11 +46,13 @@ class Kotori
     }
 
     /**
-     * 框架初始化
+     * Instantiate the Framework
      * @return void
      */
     private static function init()
     {
+
+        //Define a custom error handler so we can log PHP errors
         set_error_handler(array('Handle', 'error'));
         set_exception_handler(array('Handle', 'exception'));
         register_shutdown_function(array('Handle', 'end'));
@@ -39,17 +60,16 @@ class Kotori
         if (Config::get('USE_SESSION') == true) {
             session_start();
         }
-
+        //Load application's common functions
         Common::need(Config::get('APP_FULL_PATH') . '/common.php');
 
         spl_autoload_register(array('Kotori', 'autoload'));
-        //定义一些常用的常量
-
+        //Define some variables
         define('PUBLIC_DIR', Request::getBaseUrl() . 'Public');
-        //装载路由类
+        //Load dispatcher class
         Dispatcher::dispatch();
 
-        //全局安全过滤
+        //Global security filter
         array_walk_recursive($_GET, array('Request', 'filter'));
         array_walk_recursive($_POST, array('Request', 'filter'));
         array_walk_recursive($_REQUEST, array('Request', 'filter'));
@@ -121,9 +141,15 @@ class Common
 }
 
 /**
- * 配置类
+ * Config Class
+ *
+ * This class contains functions that enable config files to be managed
+ *
+ * @package     Kotori
+ * @subpackage  Config
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
-
 class Config
 {
     /**
@@ -170,13 +196,14 @@ class Config
             'URL_MODE' => 'QUERY_STRING',
             'URL_PARAMS_BIND' => 'NORMAL',
             'ERROR_TPL' => 'Public/error',
+            'SHOW_ERROR' => true,
         );
 
     }
     /**
-     * 设置配置值
-     * @param string $key 配置名
-     * @param $key 配置值
+     * Set the specified config item
+     * @param string $key Config item name
+     * @param mixed $value Config item value
      * @return void
      */
     public static function set($key, $value)
@@ -189,8 +216,9 @@ class Config
     }
 
     /**
-     * 获取配置值
-     * @param $key 配置值
+     * Returns the specified config item
+     *
+     * @param string $key Config item name
      * @return mixed
      */
     public static function get($key)
@@ -223,14 +251,21 @@ class Handle
 
     }
 
-/**
- * 框架自定义错误
- * @param int $errno 错误号
- * @param string $errstr 错误信息
- * @param string $errfile 错误文件
- * @param int $errline 错误行号
- * @return void
- */
+    /**
+     * Error Handler
+     *
+     * This function lets us invoke the exception class and
+     * display errors using the standard error template located
+     * in App/View/Public/error.html
+     * This function will send the error page directly to the
+     * browser and exit.
+     *
+     * @param string $errno Error number
+     * @param int $errstr Error string
+     * @param string $errfile Error filepath
+     * @param int $errline Error line
+     * @return void
+     */
     public static function error($errno, $errstr, $errfile, $errline)
     {
         switch ($errno) {
@@ -254,15 +289,22 @@ class Handle
         $text = '<b>错误类型：</b>' . $errtype . '<br>' . '<b>信息：</b>' . $errstr . '<br>' . '<b>行数：</b>' . $errline . '<br>' . '<b>文件：</b>' . $errfile;
         $txt = '错误类型：' . $errtype . ' 信息：' . $errstr . ' 行数：' . $errline . ' 文件：' . $errfile;
         Log::normal($txt);
-        self::halt($text, 500);
+        if (Config::get('SHOW_ERROR') == true) {
+            self::halt($text, 500);
+        }
 
     }
 
-/**
- * 框架自定义异常
- * @param string $exception 异常信息
- * @return void
- */
+    /**
+     * Exception Handler
+     *
+     * Sends uncaught exceptions to the logger and displays them
+     * only if display_errors is On so that they don't show up in
+     * production environments.
+     *
+     * @param Exception $exception The exception
+     * @return void
+     */
     public static function exception($exception)
     {
         $text = '<b>异常：</b>' . $exception->getMessage();
@@ -271,10 +313,18 @@ class Handle
         self::halt($text, 500);
     }
 
-/**
- * 框架自定义致命错误
- * @return void
- */
+    /**
+     * Shutdown Handler
+     *
+     * This is the shutdown handler that is declared in framework.
+     * The main reason we use this is to simulate
+     * a complete custom exception handler.
+     *
+     * E_STRICT is purposively neglected because such events may have
+     * been caught. Duplication or none? None is preferred for now.
+     *
+     * @return  void
+     */
     public static function end()
     {
         $last_error = error_get_last();
@@ -287,7 +337,14 @@ class Handle
 }
 
 /**
- * URL调度类
+ * URL dispatcher class
+ *
+ * Parses URIs and determines routing
+ *
+ * @package     Kotori
+ * @subpackage  Dispatcher
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
 class Dispatcher
 {
@@ -335,15 +392,14 @@ class Dispatcher
 
         $_GET = array_merge($params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
-        //以下来自http://jingyan.todgo.com/jiaoyu/1883184mab.html
 
         call_user_func_array(array($controller, $_action), $params);
 
     }
 
     /**
-     * 获得实际的控制器名称
-     * @param $uriArray 解析的uri数组
+     * Returns the controller name
+     * @param array $uriArray parsed uri array
      * @return string
      */
     private static function getController($uriArray)
@@ -360,8 +416,8 @@ class Dispatcher
     }
 
     /**
-     * 获得实际的操作名称
-     * @param $uriArray 解析的uri数组
+     * Returns the action name
+     * @param array $uriArray parsed uri array
      * @return string
      */
     private static function getAction($uriArray)
@@ -378,8 +434,8 @@ class Dispatcher
     }
 
     /**
-     * 获得请求参数
-     * @param $uriArray 解析的uri数组
+     * Returns the request params
+     * @param array $uriArray parsed uri array
      * @return array
      */
     private static function getParams($uriArray)
@@ -404,30 +460,36 @@ class Dispatcher
 }
 
 /**
- * 控制器类
+ * Application Controller Class
+ *
+ * This class object is the super class .
  */
 abstract class Controller
 {
     /**
-     * 视图实例对象
+     * View object
      * @var View
      */
     protected $_view;
 
     /**
-     * 数据库实例对象
+     * Database object
      * @var DB
      */
     protected $db;
 
     /**
-     * 实例化过的控制器
+     * Controllers which have initialized
      * @var array
      */
     private $_controller = array();
 
     /**
-     * 构造函数，初始化视图实例，调用hook
+     * Class constructor
+     *
+     * Initialize view and database classes.
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -437,7 +499,7 @@ abstract class Controller
     }
 
     /**
-     * 前置hook
+     * Front hook
      */
     protected function _init()
     {}
@@ -868,8 +930,12 @@ class Request
     }
 
     /**
-     * 判断是否SSL 用于生成Url
-     * @return boolean
+     * Is HTTPS?
+     *
+     * Determines if the application is accessed via an encrypted
+     * (HTTPS) connection.
+     *
+     * @return  boolean
      */
     public static function isSecure()
     {
@@ -884,7 +950,10 @@ class Request
     }
 
     /**
-     * 获取根地址
+     * Base URL
+     *
+     * Returns base_url
+     *
      * @return string
      */
     public static function getBaseUrl()
@@ -1054,6 +1123,11 @@ class Response
             exit;
         }
     }
+
+}
+
+class Database
+{
 
 }
 
