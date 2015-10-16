@@ -34,8 +34,8 @@
 class Kotori
 {
     /**
-     * 运行应用实例
-     * @param mixed $conf 配置文件
+     * Run!!
+     * @param mixed $conf Config array
      * @return void
      */
     public static function run($conf)
@@ -77,8 +77,8 @@ class Kotori
     }
 
     /**
-     * 自动加载函数
-     * @param string $class 类名
+     * Global autoload function
+     * @param string $class Class name
      * @return void
      */
     private static function autoload($class)
@@ -355,11 +355,13 @@ class Dispatcher
     {
 
         switch (Config::get('URL_MODE')) {
+            //Will parse PATH_INFO and automatically detect the URI from it,
             case 'PATH_INFO':
                 $uri = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
                 : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
                     : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
                 break;
+            //Will parse QUERY_STRING and automatically detect the URI from it.
             case 'QUERY_STRING':
                 $uri = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
                 if (trim($uri, '/') == '') {
@@ -387,12 +389,12 @@ class Dispatcher
         if (!method_exists($controller, $_action)) {
             throw new Exception('请求的方法：' . $_action . '不存在');
         }
-
+        //Parse params from uri
         $params = self::getParams($uriArray);
-
+        //Do some final cleaning of the params
         $_GET = array_merge($params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
-
+        //Bind
         call_user_func_array(array($controller, $_action), $params);
 
     }
@@ -1007,7 +1009,8 @@ class Request
 class Response
 {
     /**
-     * 状态码数组
+     * Status array
+     *
      * @var array
      */
     private static $_httpCode = array(
@@ -1053,10 +1056,12 @@ class Response
         504 => 'Gateway Timeout',
         505 => 'HTTP Version Not Supported',
     );
+
     /**
-     * 设置状态码
-     * @param int $code 状态码
-     * @param string $text 自定义文本
+     * Set HTTP Status Header
+     *
+     * @param int $code Status code
+     * @param string $text Custom text
      * @return void
      */
     public static function setStatus($code = 200, $text = '')
@@ -1084,9 +1089,12 @@ class Response
     }
 
     /**
-     * 设置http头
-     * @param string $name 名称
-     * @param string $value 对应值
+     * Set Header
+     *
+     * Lets you set a server header which will be sent with the final output.
+     *
+     * @param string $name Header
+     * @param string $value Value
      * @return void
      */
     public static function setHeader($name, $value)
@@ -1095,7 +1103,7 @@ class Response
     }
 
     /**
-     * 抛出json回执信息
+     * Thown JSON to output
      *
      * @access public
      * @param string $message 消息体
@@ -1108,9 +1116,10 @@ class Response
     }
 
     /**
-     * 重定向函数
-     * @param string $location 重定向路径
-     * @param boolean $isPermanently 是否为永久重定向
+     * Header Redirect
+     *
+     * @param string $location Redirect url
+     * @param boolean $isPermanently 301 or 302
      * @return void
      */
     public static function redirect($location, $isPermanently = false)
