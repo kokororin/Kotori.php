@@ -34,7 +34,7 @@
 class Kotori
 {
     /**
-     * Run!!
+     * biu~ biu~ biu~ Run!!
      * @param mixed $conf Config array
      * @return void
      */
@@ -92,19 +92,27 @@ class Kotori
 }
 
 /**
- * 通用类
+ * Common Class
+ *
+ * Common APIs.
+ *
+ * @package     Kotori
+ * @subpackage  Common
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
 class Common
 {
     /**
-     * require存放数组
+     * Require Array
      * @var array
      */
     private static $_require = array();
 
     /**
-     * 优化的require 区分大小写
-     * @param string $path 文件路径
+     * Include One File
+     *
+     * @param string $path File Path
      * @return boolean
      */
     public static function need($path)
@@ -122,8 +130,9 @@ class Common
     }
 
     /**
-     * 区分大小写的文件存在判断
-     * @param string $path 文件路径
+     * Detect whether file is existed
+     *
+     * @param string $path File Path
      * @return boolean
      */
     private static function isFile($path)
@@ -153,14 +162,14 @@ class Common
 class Config
 {
     /**
-     * 配置数组
+     * Config Array
      * @var config
      */
     private static $config = array();
 
     /**
-     * 初始化配置
-     * @param mixed $conf 配置文件
+     * Initialize Config
+     * @param mixed $conf Config
      * @return void
      */
     public static function init($conf)
@@ -175,7 +184,7 @@ class Config
     }
 
     /**
-     * 默认配置
+     * Default Config
      * @return array
      *
      */
@@ -202,6 +211,7 @@ class Config
     }
     /**
      * Set the specified config item
+     *
      * @param string $key Config item name
      * @param mixed $value Config item value
      * @return void
@@ -211,7 +221,7 @@ class Config
         if (is_string($key)) {
             $_config[$key] = $value;
         } else {
-            Handle::halt('配置出错啦~');
+            Handle::halt('Config Error.');
         }
     }
 
@@ -230,24 +240,136 @@ class Config
     }
 }
 
+/**
+ * Handle Class
+ *
+ * @package     Kotori
+ * @subpackage  Handle
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
 class Handle
 {
-    /**
-     * 输出错误并终止程序
-     * @param string $str 出错原因
-     * @param int $code 状态码
-     * @return void
-     */
+/**
+ * General Error Page
+ *
+ * Takes an error message as input
+ * and displays it using the specified template.
+ *
+ * @param string $str Error string
+ * @param int $code HTTP Header code
+ *
+ * @return void
+ */
     public static function halt($str, $code = '')
     {
         Response::setStatus($code);
-        $_view = new View();
         if (Config::get('APP_DEBUG') == false) {
-            $str = '404';
+            $str = '404 Not Found.';
         }
-        $_view->assign('str', $str);
-        $_view->display(Config::get('ERROR_TPL'));
-        exit;
+        $tpl = '<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Error Occured.</title>
+<style type="text/css">
+html {
+    background: #f1f1f1;
+}
+body {
+    background: #fff;
+    color: #444;
+    font-family: "Open Sans", sans-serif;
+    margin: 2em auto;
+    padding: 1em 2em;
+    max-width: 700px;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.13);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.13);
+}
+h1 {
+    border-bottom: 1px solid #dadada;
+    clear: both;
+    color: #666;
+    font: 24px "Open Sans", sans-serif;
+    margin: 30px 0 0 0;
+    padding: 0;
+    padding-bottom: 7px;
+}
+#error-page {
+    margin-top: 50px;
+}
+#error-page p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 25px 0 20px;
+}
+#error-page code {
+    font-family: Consolas, Monaco, monospace;
+}
+ul li {
+    margin-bottom: 10px;
+    font-size: 14px ;
+}
+a {
+    color: #21759B;
+    text-decoration: none;
+}
+a:hover {
+    color: #D54E21;
+}
+.button {
+    background: #f7f7f7;
+    border: 1px solid #cccccc;
+    color: #555;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 13px;
+    line-height: 26px;
+    height: 28px;
+    margin: 0;
+    padding: 0 10px 1px;
+    cursor: pointer;
+    -webkit-border-radius: 3px;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08);
+    box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08);
+    vertical-align: top;
+}
+.button.button-large {
+    height: 29px;
+    line-height: 28px;
+    padding: 0 12px;
+}
+.button:hover, .button:focus {
+    background: #fafafa;
+    border-color: #999;
+    color: #222;
+}
+.button:focus {
+    -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,.2);
+    box-shadow: 1px 1px 1px rgba(0,0,0,.2);
+}
+.button:active {
+    background: #eee;
+    border-color: #999;
+    color: #333;
+    -webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
+    box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
+}
+</style>
+</head>
+
+<body id="error-page">
+    <h1>Error Occured.</h1>
+    <p>' . $str . '</p>
+</body>
+</html>';
+        exit($tpl);
 
     }
 
@@ -269,25 +391,49 @@ class Handle
     public static function error($errno, $errstr, $errfile, $errline)
     {
         switch ($errno) {
+            case E_ERROR:
+                $errtype = 'Error';
+                break;
             case E_WARNING:
-                $errtype = 'WARNING';
+                $errtype = 'Warning';
+                break;
+            case E_PARSE:
+                $errtype = 'Parsing Error';
                 break;
             case E_NOTICE:
-                $errtype = 'NOTICE';
+                $errtype = 'Notice';
+                break;
+            case E_CORE_ERROR:
+                $errtype = 'Core Error';
+                break;
+            case E_CORE_WARNING:
+                $errtype = 'Core Warning';
+                break;
+            case E_COMPILE_ERROR:
+                $errtype = 'Compile Error';
+                break;
+            case E_COMPILE_WARNING:
+                $errtype = 'Compile Warning';
+                break;
+            case E_USER_ERROR:
+                $errtype = 'User Error';
+                break;
+            case E_USER_WARNING:
+                $errtype = 'User Warning';
+                break;
+            case E_USER_NOTICE:
+                $errtype = 'User Notice';
                 break;
             case E_STRICT:
-                $errtype = 'STRICT';
-                break;
-            case 8192:
-                $errtype = 'DEPRECATED';
+                $errtype = 'Runtime Notice';
                 break;
             default:
-                $errtype = 'UNKNOWN';
+                $errtype = 'Unknown';
                 break;
         }
 
-        $text = '<b>错误类型：</b>' . $errtype . '<br>' . '<b>信息：</b>' . $errstr . '<br>' . '<b>行数：</b>' . $errline . '<br>' . '<b>文件：</b>' . $errfile;
-        $txt = '错误类型：' . $errtype . ' 信息：' . $errstr . ' 行数：' . $errline . ' 文件：' . $errfile;
+        $text = '<b>Error Type:</b>' . $errtype . '<br>' . '<b>Info:</b>' . $errstr . '<br>' . '<b>Line:</b>' . $errline . '<br>' . '<b>File:</b>' . $errfile;
+        $txt = 'Info:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
         Log::normal($txt);
         if (Config::get('SHOW_ERROR') == true) {
             self::halt($text, 500);
@@ -307,10 +453,12 @@ class Handle
      */
     public static function exception($exception)
     {
-        $text = '<b>异常：</b>' . $exception->getMessage();
-        $txt = '错误类型：Exception' . ' 信息：' . $exception->getMessage();
+        $text = '<b>Exception:</b>' . $exception->getMessage();
+        $txt = 'Error Type:Exception' . ' Info:' . $exception->getMessage();
         Log::normal($txt);
-        self::halt($text, 500);
+        if (Config::get('SHOW_ERROR') == true) {
+            self::halt($text, 500);
+        }
     }
 
     /**
@@ -349,11 +497,12 @@ class Handle
 class Dispatcher
 {
     /**
-     * URL映射到控制器和操作
+     * Map URL to controller and action
+     *
+     * @return void
      */
     public static function dispatch()
     {
-
         switch (Config::get('URL_MODE')) {
             //Will parse PATH_INFO and automatically detect the URI from it,
             case 'PATH_INFO':
@@ -387,7 +536,7 @@ class Dispatcher
         $controller = Util::call($_controller);
 
         if (!method_exists($controller, $_action)) {
-            throw new Exception('请求的方法：' . $_action . '不存在');
+            throw new Exception('Request Action ' . $_action . 'is not Found.');
         }
         //Parse params from uri
         $params = self::getParams($uriArray);
@@ -465,8 +614,13 @@ class Dispatcher
  * Application Controller Class
  *
  * This class object is the super class .
+ *
+ * @package     Kotori
+ * @subpackage  Controller
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
-abstract class Controller
+class Controller
 {
     /**
      * View object
@@ -496,19 +650,23 @@ abstract class Controller
     public function __construct()
     {
         $this->_view = new View();
-        $this->_init();
-        $this->dbInit();
+        $this->db = new Database(array(
+            'database_type' => Config::get('DB_TYPE'),
+            'database_name' => Config::get('DB_NAME'),
+            'server' => Config::get('DB_HOST'),
+            'username' => Config::get('DB_USER'),
+            'password' => Config::get('DB_PWD'),
+            'charset' => Config::get('DB_CHARSET'),
+            'port' => Config::get('DB_PORT'),
+        ));
     }
 
     /**
-     * Front hook
-     */
-    protected function _init()
-    {}
-
-    /**
-     * 渲染模板并输出
-     * @param string $tpl 模板文件路径
+     * Display Output
+     *
+     * Processes and sends finalized output data to the browser along
+     *
+     * @param string $tpl Template Path
      * @return void
      */
     protected function display($tpl = '')
@@ -527,62 +685,56 @@ abstract class Controller
     }
 
     /**
-     * 为视图引擎设置一个模板变量
-     * @param string $name 要在模板中使用的变量名
-     * @param mixed $value 模板中该变量名对应的值
+     * Set variables for Template
+     * @param string $name key
+     * @param mixed $value value
      * @return void
      */
     protected function assign($name, $value)
     {
         $this->_view->assign($name, $value);
     }
-
-    /**
-     * 初始化数据库类
-     * @return void
-     */
-    private function dbInit()
-    {
-        $this->db = new medoo(array(
-            'database_type' => Config::get('DB_TYPE'),
-            'database_name' => Config::get('DB_NAME'),
-            'server' => Config::get('DB_HOST'),
-            'username' => Config::get('DB_USER'),
-            'password' => Config::get('DB_PWD'),
-            'charset' => Config::get('DB_CHARSET'),
-            'port' => Config::get('DB_PORT'),
-        ));
-    }
 }
 
 /**
- * 视图类
+ * View Class
+ *
+ * @package     Kotori
+ * @subpackage  View
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
 class View
 {
     /**
-     * 视图文件目录
+     * Template Direcory
+     *
      * @var string
      */
     private $_tplDir;
+
     /**
-     * 视图文件路径
+     *
+     * Template Path
      * @var string
      */
     private $_viewPath;
+
     /**
-     * 视图变量列表
+     * Variable List
+     *
      * @var array
      */
     private $_data = array();
+
     /**
-     * 给tplInclude用的变量列表
+     * Variable List for TplInclude
      * @var array
      */
     private static $tmpData;
 
     /**
-     * @param string $tplDir
+     * @param string $tplDir Template Directory
      */
     public function __construct($tplDir = '')
     {
@@ -593,19 +745,24 @@ class View
         }
 
     }
+
     /**
-     * 为视图引擎设置一个模板变量
-     * @param string $key 要在模板中使用的变量名
-     * @param mixed $value 模板中该变量名对应的值
+     * Set variables for Template
+     * @param string $name key
+     * @param mixed $value value
      * @return void
      */
     public function assign($key, $value)
     {
         $this->_data[$key] = $value;
     }
+
     /**
-     * 渲染模板并输出
-     * @param null|string $tplFile 模板文件路径，相对于App/View/文件的相对路径，不包含后缀名，例如index/index
+     * Display Output
+     *
+     * Processes and sends finalized output data to the browser along
+     *
+     * @param string $tpl Template Path
      * @return void
      */
     public function display($tplFile)
@@ -615,10 +772,12 @@ class View
         extract($this->_data);
         include $this->_viewPath;
     }
+
     /**
-     * 模板文件中包含其他模板
-     * @param string $path 相对于View目录的路径
-     * @param array $data 传递给子模板的变量列表，key为变量名，value为变量值
+     * Include Template
+     *
+     * @param string $path Template Path
+     * @param array $data Data Array
      * @return void
      */
     public static function includeTpl($path, $data = array())
@@ -634,9 +793,10 @@ class View
     }
 
     /**
-     * 生成Url核心方法
+     * Build Full URL
+     *
      * @param string $url Url
-     * @param array $params 参数数组
+     * @param array $params Params Array
      * @return string
      */
     public static function buildUrl($url = '', $params = array())
@@ -678,21 +838,28 @@ class View
     }
 }
 /**
- * 实用工具类
+ * Util CLass
+ *
+ * @package     Kotori
+ * @subpackage  Util
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
 class Util
 {
 
     /**
-     * 缓存控制器数组
+     * Controllers Array
+     *
      * @var array
      */
     private static $_controller = array();
 
     /**
-     * 生成Url
+     * Build Url
+     *
      * @param string $url Url
-     * @param array $params 参数数组
+     * @param array $params Params Array
      * @return void
      */
     public static function url($url = '', $params = array())
@@ -701,9 +868,10 @@ class Util
     }
 
     /**
-     * 包含模板文件
-     * @param string $path 文件路径
-     * @param array $data 需要传入的参数
+     * Include Templates
+     *
+     * @param string $path Template Path
+     * @param array $data Data Source
      * @return void
      */
     public static function need($path, $data = array())
@@ -712,20 +880,21 @@ class Util
     }
 
     /**
-     * 调用控制器
-     * @param string $controller 控制器名
+     * Call Controller
+     *
+     * @param string $controller Controller Name
      * @return class
      */
     public static function call($controllerName)
     {
-        //判断是否实例化过，直接调用
+        //If is already initialized
         $controllerClass = $controllerName . 'Controller';
         if (isset(self::$_controller[$controllerClass])) {
             return self::$_controller[$controllerClass];
         }
 
         if (!class_exists($controllerClass)) {
-            throw new Exception('请求的控制器：' . $controllerClass . '不存在');
+            throw new Exception('Request Controller ' . $controllerClass . 'is not Found');
         } else {
             $controller = new $controllerClass();
             self::$_controller[$controllerClass] = $controller;
@@ -736,44 +905,40 @@ class Util
 }
 
 /**
- * 服务器处理类
+ * Request Class
+ *
+ * @package     Kotori
+ * @subpackage  Request
+ * @author      Kokororin
+ * @link        https://kotori.love
  */
 class Request
 {
     /**
-     * 获取参数
+     * Params
      * @var string
      */
     private static $_put = null;
 
     /**
-     * 获取输入参数 支持过滤和默认值
-     * 使用方法:
-     * <code>
-     * I('id',0); 获取id参数 自动判断get或者post
-     * I('post.name','','htmlspecialchars'); 获取$_POST['name']
-     * I('get.'); 获取$_GET
-     * </code>
-     * @param string $name 变量的名称 支持指定类型
-     * @param mixed $default 不存在的时候默认值
-     * @param mixed $filter 参数过滤方法
-     * @param mixed $datas 要获取的额外数据源
+     * Safe Inputs
+     *
+     * @param string $name Param Name
+     * @param mixed $default Default Value
+     * @param mixed $filter Filter
+     * @param mixed $datas Extend Data Source
      * @return mixed
      */
     public static function input($name, $default = '', $filter = null, $datas = null)
     {
         if (strpos($name, '/')) {
-            // 指定修饰符
             list($name, $type) = explode('/', $name, 2);
         } else {
-            // 默认强制转换为字符串
             $type = 's';
         }
         if (strpos($name, '.')) {
-            // 指定参数来源
             list($method, $name) = explode('.', $name, 2);
         } else {
-            // 默认为自动判断
             $method = 'param';
         }
         switch (strtolower($method)) {
@@ -833,7 +998,6 @@ class Request
                 return null;
         }
         if ('' == $name) {
-            // 获取全部变量
             $data = $input;
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
             if ($filters) {
@@ -845,13 +1009,11 @@ class Request
                 }
             }
         } elseif (isset($input[$name])) {
-            // 取值操作
             $data = $input[$name];
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
             if ($filters) {
                 if (is_string($filters)) {
                     if (0 === strpos($filters, '/') && 1 !== preg_match($filters, (string) $data)) {
-                        // 支持正则验证
                         return isset($default) ? $default : null;
                     } else {
                         $filters = explode(',', $filters);
@@ -863,7 +1025,7 @@ class Request
                 if (is_array($filters)) {
                     foreach ($filters as $filter) {
                         if (function_exists($filter)) {
-                            $data = is_array($data) ? self::array_map_recursive($filter, $data) : $filter($data); // 参数过滤
+                            $data = is_array($data) ? self::array_map_recursive($filter, $data) : $filter($data);
                         } else {
                             $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
                             if (false === $data) {
@@ -875,25 +1037,25 @@ class Request
             }
             if (!empty($type)) {
                 switch (strtolower($type)) {
-                    case 'a': // 数组
+                    case 'a':
                         $data = (array) $data;
                         break;
-                    case 'd': // 数字
+                    case 'd':
                         $data = (int) $data;
                         break;
-                    case 'f': // 浮点
+                    case 'f':
                         $data = (float) $data;
                         break;
-                    case 'b': // 布尔
+                    case 'b':
                         $data = (boolean) $data;
                         break;
-                    case 's': // 字符串
+                    case 's':
                     default:
                         $data = (string) $data;
                 }
             }
         } else {
-            // 变量默认值
+            // default
             $data = isset($default) ? $default : null;
         }
         is_array($data) && array_walk_recursive($data, array('Request', 'filter'));
@@ -902,9 +1064,10 @@ class Request
     }
 
     /**
-     * 回调函数
-     * @param string $filter 过滤方法
-     * @param $data mixed 源数据
+     * Callback Function
+     *
+     * @param string $filter Filter
+     * @param $data mixed Orginal data
      * @return mixed
      */
     private static function array_map_recursive($filter, $data)
@@ -919,13 +1082,13 @@ class Request
     }
 
     /**
-     * 其他安全过滤
+     * Security Filter
+     *
      * @param  $value Value
      * @return void
      */
     public static function filter(&$value)
     {
-        // 过滤查询特殊字符
         if (preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i', $value)) {
             $value .= ' ';
         }
@@ -954,7 +1117,7 @@ class Request
     /**
      * Base URL
      *
-     * Returns base_url
+     * Returns base url
      *
      * @return string
      */
@@ -970,7 +1133,8 @@ class Request
     }
 
     /**
-     * 判断是否为get
+     * Detect whether request method is GET
+     *
      * @return boolean
      */
     public static function isGet()
@@ -979,7 +1143,8 @@ class Request
     }
 
     /**
-     * 判断是否为post
+     * Detect whether request method is POST
+     *
      * @return boolean
      */
     public static function isPost()
@@ -988,7 +1153,8 @@ class Request
     }
 
     /**
-     * 判断是否为put
+     * Detect whether request method is PUT
+     *
      * @return boolean
      */
     public static function isPut()
@@ -997,7 +1163,8 @@ class Request
     }
 
     /**
-     * 判断是否为ajax
+     * Detect whether request method is AJAX
+     *
      * @return boolean
      */
     public static function isAjax()
@@ -1005,7 +1172,14 @@ class Request
         return ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) ? true : false;
     }
 }
-
+/**
+ * Response Class
+ *
+ * @package     Kotori
+ * @subpackage  Response
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
 class Response
 {
     /**
@@ -1067,7 +1241,7 @@ class Response
     public static function setStatus($code = 200, $text = '')
     {
         if (empty($code) or !is_numeric($code)) {
-            Handle::halt('状态码不正确喔~', 500);
+            Handle::halt('Status codes must be numeric.', 500);
         }
 
         if (empty($text)) {
@@ -1076,7 +1250,7 @@ class Response
             if (isset(self::$_httpCode[$code])) {
                 $text = self::$_httpCode[$code];
             } else {
-                Handle::halt('状态码不规范或者没有指定文本内容。', 500);
+                Handle::halt('No status text available. Please check your status code number or supply your own message text.', 500);
             }
         }
 
@@ -1106,7 +1280,7 @@ class Response
      * Thown JSON to output
      *
      * @access public
-     * @param string $message 消息体
+     * @param mixed $data Original Data
      * @return void
      */
     public static function throwJson($data)
@@ -1135,11 +1309,6 @@ class Response
 
 }
 
-class Database
-{
-
-}
-
 /*!
  * Medoo database framework
  * http://medoo.in
@@ -1148,7 +1317,7 @@ class Database
  * Copyright 2015, Angel Lai
  * Released under the MIT license
  */
-class medoo
+class Database
 {
     // General
     protected $database_type;
@@ -1783,15 +1952,19 @@ class medoo
 }
 
 /**
- * 日志类
- * 保存路径为 App/Log，按天存放
+ * Logging Class
+ *
  */
 class Log
 {
     /**
-     * 打日志，支持SAE环境
-     * @param string $msg 日志内容
-     * @param string $level 日志等级
+     * Write Log File
+     *
+     * Support Sina App Engine
+     *
+     * @param string $msg Message
+     * @param string $level Log level
+     * @return void
      */
     private static function write($msg, $level = '')
     {
@@ -1812,8 +1985,9 @@ class Log
     }
 
     /**
-     * 打印非SQL日志
-     * @param string $msg 日志信息
+     * Write Normal Log
+     *
+     * @param string $msg Message
      */
     public static function normal($msg)
     {
@@ -1821,8 +1995,8 @@ class Log
     }
 
     /**
-     * 打印sql日志
-     * @param string $msg 日志信息
+     * Write SQL Log
+     * @param string $msg Message
      */
     public static function sql($msg)
     {

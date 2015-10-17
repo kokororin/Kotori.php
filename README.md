@@ -1,12 +1,12 @@
-## 简介
+## Intro
 
-KotoriFramework 是一个免费开源的，快速、简单的面向对象的 轻量级PHP开发框架 ，遵循Apache2开源协议发布。
+KotoriFramework -- a Tiny Controller-View PHP Framework
 
-## 开源协议
+## LICENSE
 
-遵循Apache2开源协议发布。Apache Licence是著名的非盈利开源组织Apache采用的协议。该协议和BSD类似，鼓励代码共享和尊重原作者的著作权，同样允许代码修改，再作为开源或商业软件发布。
+Licensed under the Apache License, Version 2.0 (the "License").
 
-## 更新日志
+## Update Logs(Chinese)
 
 * 2015/8/1   整体框架完成
 * 2015/8/2   将数据库操作类改为medoo
@@ -20,8 +20,6 @@ KotoriFramework 是一个免费开源的，快速、简单的面向对象的 轻
 * 2015/9/3   增加默认配置，自定义错误模板设置
 * 2015/10/4  弃用ThinkPHP单字母方法名
 
-## 文档
+## Document(Chinese)
 
 * Github： [https://github.com/kokororin/KotoriFramework/blob/master/Public/HELP.md](https://github.com/kokororin/KotoriFramework/blob/master/Public/HELP.md)
-
-* SAE镜像： [https://kotori.sinaapp.com/?/KotoriFramework](https://kotori.sinaapp.com/?/KotoriFramework)
