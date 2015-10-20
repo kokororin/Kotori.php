@@ -457,9 +457,9 @@ a:hover {
     {
         $text = '<b>Exception:</b>' . $exception->getMessage();
         $txt = 'Type:Exception' . ' Info:' . $exception->getMessage();
-        array_push(self::$errors, $txt);
+        //array_push(self::$errors, $txt);
         Log::normal($txt);
-        //self::halt($text, 500);
+        self::halt($text, 500);
     }
 
     /**
