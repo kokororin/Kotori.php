@@ -479,7 +479,9 @@ a:hover {
         $last_error = error_get_last();
         if (isset($last_error) &&
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
-            self::error($last_error['type'], $last_error['message'], $last_error['file'], $last_error['line']);
+            $text = '<b>Error Type:</b>' . $last_error['type'] . '<br>' . '<b>Info:</b>' . $last_error['message'] . '<br>' . '<b>Line:</b>' . $last_error['line'] . '<br>' . '<b>File:</b>' . $last_error['file'];
+            $txt = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
+            self::halt($text, 500);
         }
 
     }
