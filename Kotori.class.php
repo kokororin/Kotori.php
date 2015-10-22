@@ -2,7 +2,7 @@
 /**
  * Kotori Framework
  *
- * a Tiny Controller-View PHP Framework
+ * A Tiny Controller-View PHP Framework
  *
  * This content is released under the Apache 2 License
  *
