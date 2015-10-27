@@ -65,9 +65,9 @@ class Kotori
         Common::need(Config::get('APP_FULL_PATH') . '/common.php');
 
         spl_autoload_register(array('Kotori', 'autoload'));
-        
-        //Load dispatcher class
-        Dispatcher::dispatch();
+
+        //Load route class
+        Route::dispatch();
 
         //Global security filter
         array_walk_recursive($_GET, array('Request', 'filter'));
@@ -176,11 +176,6 @@ class Config
     private static $defaults = array(
         'APP_DEBUG' => 'false',
         'APP_PATH' => './App',
-        'DB_TYPE' => 'mysql',
-        'DB_HOST' => '127.0.0.1',
-        'DB_USER' => 'root',
-        'DB_PWD' => 'root',
-        'DB_NAME' => 'test',
         'DB_PORT' => 3306,
         'DB_CHARSET' => 'utf8',
         'USE_SESSION' => true,
@@ -533,17 +528,25 @@ a:hover {
 }
 
 /**
- * URL dispatcher class
+ * Route class
  *
  * Parses URIs and determines routing
  *
  * @package     Kotori
- * @subpackage  Dispatcher
+ * @subpackage  Route
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Dispatcher
+class Route
 {
+
+    /**
+     * Controllers Array
+     *
+     * @var array
+     */
+    private static $_controller = array();
+
     /**
      * Map URL to controller and action
      *
@@ -583,7 +586,7 @@ class Dispatcher
         define('PUBLIC_DIR', Request::getBaseUrl() . 'Public');
         unset($uriArray[0], $uriArray[1]);
 
-        $controller = Util::call($_controller);
+        $controller = Route::controller($_controller);
 
         if (!method_exists($controller, $_action)) {
             throw new Exception('Request Action ' . $_action . ' is not Found.');
@@ -664,6 +667,75 @@ class Dispatcher
         return $params;
     }
 
+    /**
+     * Build Full URL
+     *
+     * @param string $url Url
+     * @param array $params Params Array
+     * @return string
+     */
+    public static function url($url = '', $params = array())
+    {
+        $base_url = Request::getBaseUrl();
+        if (!empty($params)) {
+            $keys = array_keys($params);
+            $values = array_values($params);
+            $count = count($params);
+            $http_query = '/';
+            for ($i = 0; $i < $count; $i++) {
+                if ('ORDER' == Config::get('URL_PARAMS_BIND')) {
+                    $http_query .= $values[$i];
+                } else {
+                    $http_query .= $keys[$i] . '/' . $values[$i];
+                }
+
+                if ($i != ($count - 1)) {
+                    $http_query .= '/';
+                }
+            }
+
+        } else {
+            $http_query = '';
+        }
+
+        switch (Config::get('URL_MODE')) {
+            case 'PATH_INFO':
+                return $base_url . $url . $http_query;
+                break;
+            case 'QUERY_STRING':
+                return $base_url . '?' . $url . $http_query;
+                break;
+            default:
+                return;
+                break;
+        }
+
+    }
+
+     /**
+     * Call Controller
+     *
+     * @param string $controller Controller Name
+     * @return class
+     */
+    public static function controller($controllerName)
+    {
+        //If is already initialized
+        $controllerClass = $controllerName . 'Controller';
+        if (isset(self::$_controller[$controllerClass])) {
+            return self::$_controller[$controllerClass];
+        }
+
+        if (!class_exists($controllerClass)) {
+            throw new Exception('Request Controller ' . $controllerClass . ' is not Found');
+        } else {
+            $controller = new $controllerClass();
+            self::$_controller[$controllerClass] = $controller;
+            return $controller;
+        }
+
+    }
+
 }
 
 /**
@@ -709,6 +781,10 @@ class Controller
     public function __construct()
     {
         $this->_view = new View();
+        if (Config::get('DB_TYPE') == null) {
+            $this->db = null;
+            return;
+        }
         $this->db = Database::getInstance(array(
             'database_type' => Config::get('DB_TYPE'),
             'database_name' => Config::get('DB_NAME'),
@@ -924,7 +1000,7 @@ parseInt(history[0]) && open.click();
      * @param array $data Data Array
      * @return void
      */
-    public static function includeTpl($path, $data = array())
+    public static function need($path, $data = array())
     {
         self::$tmpData = array(
             'path' => Config::get('APP_FULL_PATH') . '/View/' . $path . '.html',
@@ -936,116 +1012,7 @@ parseInt(history[0]) && open.click();
         include self::$tmpData['path'];
     }
 
-    /**
-     * Build Full URL
-     *
-     * @param string $url Url
-     * @param array $params Params Array
-     * @return string
-     */
-    public static function buildUrl($url = '', $params = array())
-    {
-        $base_url = Request::getBaseUrl();
-        if (!empty($params)) {
-            $keys = array_keys($params);
-            $values = array_values($params);
-            $count = count($params);
-            $http_query = '/';
-            for ($i = 0; $i < $count; $i++) {
-                if ('ORDER' == Config::get('URL_PARAMS_BIND')) {
-                    $http_query .= $values[$i];
-                } else {
-                    $http_query .= $keys[$i] . '/' . $values[$i];
-                }
-
-                if ($i != ($count - 1)) {
-                    $http_query .= '/';
-                }
-            }
-
-        } else {
-            $http_query = '';
-        }
-
-        switch (Config::get('URL_MODE')) {
-            case 'PATH_INFO':
-                return $base_url . $url . $http_query;
-                break;
-            case 'QUERY_STRING':
-                return $base_url . '?' . $url . $http_query;
-                break;
-            default:
-                return;
-                break;
-        }
-
-    }
-}
-/**
- * Util CLass
- *
- * @package     Kotori
- * @subpackage  Util
- * @author      Kokororin
- * @link        https://kotori.love
- */
-class Util
-{
-
-    /**
-     * Controllers Array
-     *
-     * @var array
-     */
-    private static $_controller = array();
-
-    /**
-     * Build Url
-     *
-     * @param string $url Url
-     * @param array $params Params Array
-     * @return void
-     */
-    public static function url($url = '', $params = array())
-    {
-        return View::buildUrl($url, $params);
-    }
-
-    /**
-     * Include Templates
-     *
-     * @param string $path Template Path
-     * @param array $data Data Source
-     * @return void
-     */
-    public static function need($path, $data = array())
-    {
-        return View::includeTpl($path, $data);
-    }
-
-    /**
-     * Call Controller
-     *
-     * @param string $controller Controller Name
-     * @return class
-     */
-    public static function call($controllerName)
-    {
-        //If is already initialized
-        $controllerClass = $controllerName . 'Controller';
-        if (isset(self::$_controller[$controllerClass])) {
-            return self::$_controller[$controllerClass];
-        }
-
-        if (!class_exists($controllerClass)) {
-            throw new Exception('Request Controller ' . $controllerClass . ' is not Found');
-        } else {
-            $controller = new $controllerClass();
-            self::$_controller[$controllerClass] = $controller;
-            return $controller;
-        }
-
-    }
+    
 }
 
 /**
@@ -1860,8 +1827,8 @@ class Database
                                     // For ['column1' => 'column2']
                                     $table . '."' . $key . '"'
                                 ) .
-                                ' = ' .
-                                '"' . (isset($match[5]) ? $match[5] : $match[3]) . '"."' . $value . '"';
+                                    ' = ' .
+                                    '"' . (isset($match[5]) ? $match[5] : $match[3]) . '"."' . $value . '"';
                             }
                             $relation = 'ON ' . implode($joins, ' AND ');
                         }
