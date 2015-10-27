@@ -6,6 +6,9 @@ KotoriFramework -- a Tiny Controller-View PHP Framework
 
 Licensed under the Apache License, Version 2.0 (the "License").
 
+## Thanks
+ThinkPHP && CodeIgniter && Typecho
+
 ## Update Logs(Chinese)
 
 * 2015/8/1   整体框架完成

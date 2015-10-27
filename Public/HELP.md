@@ -87,7 +87,7 @@ require './Kotori.class.php';
 Kotori::run(array(
     'APP_DEBUG' => false,//开发模式
     'APP_PATH' => './App/', //项目目录
-    'DB_TYPE' => 'mysql',//数据库类型
+    'DB_TYPE' => 'mysql',//数据库类型 必须指定，没有的话默认不启用数据库
     'DB_HOST' => '127.0.0.1',//数据库主机
     'DB_USER' => 'root',//数据库用户名
     'DB_PWD' => 'root',//数据库密码
@@ -97,8 +97,6 @@ Kotori::run(array(
     'USE_SESSION' => true,//全局SESSSION配置
     'URL_MODE' => 'QUERY_STRING',//默认URL模式为QUERY_STRING
     'URL_PARAMS_BIND' => 'NORMAL',//URL参数绑定模式，默认为按参数名绑定
-    'ERROR_TPL' => 'Public/error',//默认错误页面
-    'SHOW_ERROR' => false,//抑制错误输出
 ));
 ```
 
@@ -261,9 +259,9 @@ public function read($id=0){
 示例如下：
 
 ```php
-echo Util::url('Index/show',array('id'=>1));
+echo Route::url('Index/show',array('id'=>1));
 //即http://localhost/Index/show/id/1
-echo Util::url('Blog/index');
+echo Route::url('Blog/index');
 //如果不需要传GET变量，只需写第一个参数
 ```
 
@@ -319,7 +317,7 @@ Response::redirect('http://www.qq.com',true);//跳转到马化腾首页
 ```php
    public function index()
    {
-       Util::call('Blog')->show();
+       Route::controller('Blog')->show();
    }
 ```
 
@@ -331,6 +329,17 @@ Response::redirect('http://www.qq.com',true);//跳转到马化腾首页
 ### 错误页面
 
 当你的系统发生错误时，将输出错误页面。
+
+---
+
+## 系统常量
+
+CONTROLLER_NAME 当前控制器名
+ACTION_NAME 当前操作名
+PUBLIC_DIR Public路径
+Request::isPost() 是否POST方式
+Request::isGet() 是否GET方式
+Request::isAjax() 是否AJAX方式
 
 ---
 
@@ -390,7 +399,7 @@ class IndexController extends Controller {
 $data = array(
         'title' => 'Welcome',  //设置title变量为Welcome
         );
-Util::need('Public/header', $data); ?>
+View::need('Public/header', $data); ?>
 ```
 
 
