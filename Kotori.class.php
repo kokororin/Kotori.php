@@ -41,7 +41,7 @@ class Kotori
      */
     public static function run($conf)
     {
-        //error_reporting(0);
+        error_reporting(0);
         Config::init($conf);
         self::init();
     }
@@ -54,9 +54,9 @@ class Kotori
     {
         define('START_TIME', microtime(true));
         //Define a custom error handler so we can log PHP errors
-        //set_error_handler(array('Handle', 'error'));
-        //set_exception_handler(array('Handle', 'exception'));
-        //register_shutdown_function(array('Handle', 'end'));
+        set_error_handler(array('Handle', 'error'));
+        set_exception_handler(array('Handle', 'exception'));
+        register_shutdown_function(array('Handle', 'end'));
 
         if (Config::get('USE_SESSION') == true) {
             session_start();
