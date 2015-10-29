@@ -96,7 +96,6 @@ Kotori::run(array(
     'DB_CHARSET' => 'utf8',//数据库收集类型
     'USE_SESSION' => true,//全局SESSSION配置
     'URL_MODE' => 'QUERY_STRING',//默认URL模式为QUERY_STRING
-    'URL_PARAMS_BIND' => 'NORMAL',//URL参数绑定模式，默认为按参数名绑定
 ));
 ```
 
@@ -139,118 +138,118 @@ Nginx配置：
 
 入口文件是应用的单一入口，对应用的所有请求都定向到应用入口文件，系统会从URL参数中解析当前请求的模块、控制器和操作，以下带有(?)表示的是QUERY_STRING模式，不带(?)则是PATH_INFO模式，默认采用的是QUERT_STRING模式，保证最高兼容性。
 
-> http://localhost/?控制器/操作(/参数名/参数值)  QUERY_STRING模式
-> http://localhost/控制器/操作(/参数名/参数值)   PATH_INFO模式
+> http://example.com/?控制器/操作(/参数值)  QUERY_STRING模式
+> http://example.com/控制器/操作(参数值)   PATH_INFO模式
 
 **本文档以下默认采用PATH_INFO模式进行解释，不再阐述QUERY_STRING模式。**
 
 如果我们直接访问入口文件的话，由于URL中没有控制器和操作，因此系统会访问默认控制器（Index）的默认操作（index），因此下面的访问是等效的：
 
-> http://serverName/  
-> http://serverName/Index/index  
+> http://example.com/  
+> http://example.com/Index/index  
 
 其中，若有参数，那么参数将自动转化成$_GET变量：
 
-> http://serverName/Index/index/id/1 $_GET['id']=1
+> http://example.com/Index/index/1 $_GET['xx']=1
 
 不过，依然可以获取到普通形式的$_GET变量：
 
-> http://localhost/Index/Login?var=value $_GET['var'] 依然有效  
+> http://example.com/Index/Login?var=value $_GET['var'] 依然有效  
 
 ---
 
 ## 控制器
 
-### 控制器定义
+### 什么是控制器？
 
-一般来说，控制器是一个类，而操作则是控制器类的一个公共方法。
+**简而言之，一个控制器就是一个类文件，是以一种能够和 URI 关联在一起的方式来命名的。**
 
-下面就是一个典型的控制器类的定义：
+考虑下面的 URI:
 
-```php
-class IndexController extends Controller
-{
-    protected function __construct()
-    {
-       parent::__construct();
-    }
+```
+http://example.com/Blog/
+```
+上例中，KotoriFramework 将会尝试查询一个名为 BlogController.php 的控制器并加载它。
+
+**当控制器的名称和 URI 的第一段匹配上时，它将会被加载。**
+
+### 让我们试试看：Hello World！
+接下来你会看到如何创建一个简单的控制器，打开你的文本编辑器，新建一个文件 Blog.php ， 然后放入以下代码:
+```
+
+class BlogController extends Controller {
 
     public function index()
     {
-        echo 'Hello Kotori';
+        echo 'Hello World!';
     }
-
-    public function form()
-    {
-        echo $_GET['testword'];
-    }
-
 }
+```
+然后将文件保存到 App/Controller 目录下。
+
+现在使用类似下面的 URL 来访问你的站点:
+
+http://example.com/Blog/
+
+如果一切正常，你将看到：
+
+Hello World!
+
+另外，一定要确保你的控制器继承了父控制器类，这样它才能使用父类的方法。
+
+方法
+上例中，方法名为 index() 。"index" 方法总是在 URI 的 第二段 为空时被调用。 另一种显示 "Hello World" 消息的方法是:
+
+example.com/index.php/blog/index/
+URI 中的第二段用于决定调用控制器中的哪个方法。
+
+让我们试一下，向你的控制器添加一个新的方法:
 
 ```
+class BlogController extends Controller {
 
-所有的控制器必须继承Controller类或其子类，并且类名必须以Controller结尾，统一放置在Controller目录下，文件名必须是“类名.class.php”。
-
-每一个Action对应控制器类的一个方法，方法名建议按开发规范来命名，同时必须是public权限，不然URL无法访问到。
-
-### Action参数绑定
-
-参数绑定是通过直接绑定URL地址中的变量作为操作方法的参数，可以简化方法的定义。
-
-#### 按变量名绑定
-
-默认的参数绑定方式是按照变量名进行绑定，例如，我们给Blog控制器定义了两个操作方法read和archive方法，由于read操作需要指定一个id参数，archive方法需要指定年份（year）和月份（month）两个参数，那么我们可以如下定义：
-
-```php
-    class BlogController extends Controller{
-        public function read($id){
-            echo 'id='.$id;
-        }
-        public function archive($year='2013',$month='01'){
-            echo 'year='.$year.'&month='.$month;
-        }
+    public function index()
+    {
+        echo 'Hello World!';
     }
-```
 
-URL的访问地址分别是：
-
-> http://serverName/Blog/read/id/5  
-> http://serverName/Blog/archive/year/2013/month/11  
-
-两个URL地址中的id参数和year和month参数会自动和read操作方法以及archive操作方法的同名参数绑定。
-
-按照变量名进行参数绑定的参数必须和URL中传入的变量名称一致，但是参数顺序不需要一致。也就是说
-
-> http://serverName/Blog/archive/month/11/year/2013  
-
-和上面的访问结果是一致的，URL中的参数顺序和操作方法中的参数顺序都可以随意调整，关键是确保参数名称一致即可。
-
-如果用户访问的URL地址是（至于为什么会这么访问暂且不提）：
-
-> http://serverName/Blog/read/  
-
-那么会抛出异常，报错的原因很简单，因为在执行read操作方法的时候，id参数是必须传入参数的，但是方法无法从URL地址中获取正确的id参数信息。由于我们不能相信用户的任何输入，因此建议你给read方法的id参数添加默认值，例如：
-
-```php
-public function read($id=0){
-        echo 'id='.$id;
+    public function comments()
+    {
+        echo 'Look at this!';
     }
+}
+```
+现在，通过下面的 URL 来调用 comments 方法:
+```
+http://example.com/Blog/comments/
+```
+你应该能看到你的新消息了。
+
+### 通过 URI 分段向你的方法传递参数
+
+如果你的 URI 多于两个段，多余的段将作为参数传递到你的方法中。
+
+例如，假设你的 URI 是这样:
+```
+http://example.com/Products/shoes/sandals/123
+```
+你的方法将会收到第三段和第四段两个参数（"sandals" 和 "123"）:
+
+```
+class ProductsController extends Controller {
+
+    public function shoes($sandals, $id)
+    {
+        echo $sandals;
+        echo $id;
+    }
+}
 ```
 
-#### 按变量顺序绑定
+> **重要**
+> 如果你使用了 URI 路由 ，传递到你的方法的参数将是路由后的参数。
 
-第二种方式是按照变量的顺序绑定，这种情况下URL地址中的参数顺序非常重要，不能随意调整。要按照变量顺序进行绑定，必须先设置URL_PARAMS_BIND为ORDER。（第一种按变量名绑定的参数值为NORMAL）
 
-操作方法的定义不需要改变，URL的访问地址分别改成：
-
-> http://serverName/Blog/read/5  
-> http://serverName/Blog/archive/2013/11  
-
-这个时候如果改成
-
-> http://serverName/Blog/archive/11/2013
-
-那么结果就会不正确。所以不能随意调整参数在URL中的传递顺序，要确保和你的操作方法定义顺序一致。
 
 ### Url生成
 
@@ -260,7 +259,7 @@ public function read($id=0){
 
 ```php
 echo Route::url('Index/show',array('id'=>1));
-//即http://localhost/Index/show/id/1
+//即http://example.com/Index/show/id/1
 echo Route::url('Blog/index');
 //如果不需要传GET变量，只需写第一个参数
 ```
@@ -321,43 +320,10 @@ Response::redirect('http://www.qq.com',true);//跳转到马化腾首页
    }
 ```
 
-### 全局变量
-
-> CONTROLLER_NAME 当前控制器名  
-> ACTION_NAME 当前操作名  
 
 ### 错误页面
 
 当你的系统发生错误时，将输出错误页面。
-
----
-
-## 系统常量
-
-CONTROLLER_NAME 当前控制器名
-ACTION_NAME 当前操作名
-PUBLIC_DIR Public路径
-Request::isPost() 是否POST方式
-Request::isGet() 是否GET方式
-Request::isAjax() 是否AJAX方式
-
----
-
-## 数据库操作
-
-Kotori Framework不能称为一个MVC框架的原因就是没有M层，然而，小项目写M层有Kotori用？不服来咬我啊~
-
-数据库类直接采用Medoo。
-
-[详细文档请点击](http://medoo.in/doc)
-
-在入口文件中配置好有关数据库的几个常量后，即可以单例模式调用数据库层，例如：
-
-```php
-// 查询所有字段
-$datas = $this->db->query("SELECT * FROM users");
-print_r($datas);
-```
 
 ---
 
@@ -401,6 +367,100 @@ $data = array(
         );
 View::need('Public/header', $data); ?>
 ```
+
+---
+
+## 路由
+
+一般情况下，一个 URL 字符串和它对应的控制器中类和方法是一一对应的关系。 URL 中的每一段通常遵循下面的规则:
+
+http://example.com/class/function/id/
+但是有时候，你可能想改变这种映射关系，调用一个不同的类和方法，而不是 URL 中对应的那样。
+
+例如，假设你希望你的 URL 变成下面这样:
+```
+http://example.com/product/1/
+http://example.com/product/2/
+http://example.com/product/3/
+http://example.com/product/4/
+```
+
+URL 的第二段通常表示方法的名称，但在上面的例子中，第二段是一个商品 ID ， 为了实现这一点，CodeIgniter 允许你重新定义 URL 的处理流程。
+
+
+### 设置你自己的路由规则
+
+在入口文件中设置URL_ROUTE数组：
+```
+'URL_ROUTE' => array(
+  'product/([0-9])'=>'catalog/product_lookup',
+);
+```
+
+在一个路由规则中，数组的键表示要匹配的 URI ，而数组的值表示要重定向的位置。 上面的例子中，如果 URL 的第一段是字符串 "product" ，第二段是个数字，那么， 将调用 "catalog" 类的 "product_lookup" 方法。
+
+### 例子
+
+这里是一些路由的例子:
+
+```
+'journals' => 'blogs',
+```
+URL 的第一段是单词 "journals" 时，将重定向到 "blogs" 类。
+
+```
+'blog/joe' => 'blogs/users/34',
+```
+URL 包含 blog/joe 的话，将重定向到 "blogs" 类和 "users" 方法。ID 参数设为 "34" 。
+
+```
+'product/([^/]+)'] => 'catalog/product_lookup',
+```
+URL 的第一段是 "product" ，第二段是任意字符时，将重定向到 "catalog" 类的 "product_lookup" 方法。
+
+```
+'product/(([0-9])' => 'catalog/product_lookup_by_id/$1',
+URL 的第一段是 "product" ，第二段是数字时，将重定向到 "catalog" 类的 "product_lookup_by_id" 方法，并将第二段的数字作为参数传递给它。
+
+### 回调函数
+
+如果你正在使用的 PHP 版本高于或等于 5.3 ，你还可以在路由规则中使用回调函数来处理逆向引用。 例如:
+```
+'products/([a-zA-Z]+)/edit/(\d+)' => function ($product_type, $id)
+{
+    return 'catalog/product_edit/' . strtolower($product_type) . '/' . $id;
+},
+
+---
+
+## 系统常量
+
+CONTROLLER_NAME 当前控制器名
+ACTION_NAME 当前操作名
+PUBLIC_DIR Public路径
+Request::isPost() 是否POST方式
+Request::isGet() 是否GET方式
+Request::isAjax() 是否AJAX方式
+
+---
+
+## 数据库操作
+
+Kotori Framework不能称为一个MVC框架的原因就是没有M层，然而，小项目写M层有Kotori用？不服来咬我啊~
+
+数据库类直接采用Medoo。
+
+[详细文档请点击](http://medoo.in/doc)
+
+在入口文件中配置好有关数据库的几个常量后，即可以单例模式调用数据库层，例如：
+
+```php
+// 查询所有字段
+$datas = $this->db->query("SELECT * FROM users");
+print_r($datas);
+```
+
+---
 
 
 ---

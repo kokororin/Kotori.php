@@ -23,6 +23,7 @@ ThinkPHP && CodeIgniter && Typecho
 * 2015/9/3   增加默认配置，自定义错误模板设置
 * 2015/10/4  弃用ThinkPHP单字母方法名
 * 2015/10/20 增加TRACE信息
+* 2015/10/29 增加路由
 
 ## Document(Chinese)
 

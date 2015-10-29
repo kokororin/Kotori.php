@@ -14,4 +14,9 @@ class IndexController extends Controller
         $this->display();
     }
 
+    public function showNews($id)
+    {
+        echo 'This is news No.' . $id;
+    }
+
 }

@@ -7,4 +7,7 @@ Kotori::run(array(
     'DB_USER' => 'root',
     'DB_PWD' => 'root',
     'DB_NAME' => 'test',
+    'URL_ROUTE' => array(
+        'news/([0-9])' => 'Index/showNews/$1',
+    ),
 ));
