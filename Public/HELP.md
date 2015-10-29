@@ -175,8 +175,8 @@ http://example.com/Blog/
 
 ### 让我们试试看：Hello World！
 接下来你会看到如何创建一个简单的控制器，打开你的文本编辑器，新建一个文件 Blog.php ， 然后放入以下代码:
-```
 
+```php
 class BlogController extends Controller {
 
     public function index()
@@ -205,7 +205,7 @@ URI 中的第二段用于决定调用控制器中的哪个方法。
 
 让我们试一下，向你的控制器添加一个新的方法:
 
-```
+```php
 class BlogController extends Controller {
 
     public function index()
@@ -235,7 +235,7 @@ http://example.com/Products/shoes/sandals/123
 ```
 你的方法将会收到第三段和第四段两个参数（"sandals" 和 "123"）:
 
-```
+```php
 class ProductsController extends Controller {
 
     public function shoes($sandals, $id)
@@ -385,7 +385,7 @@ http://example.com/product/3/
 http://example.com/product/4/
 ```
 
-URL 的第二段通常表示方法的名称，但在上面的例子中，第二段是一个商品 ID ， 为了实现这一点，CodeIgniter 允许你重新定义 URL 的处理流程。
+URL 的第二段通常表示方法的名称，但在上面的例子中，第二段是一个商品 ID ， 为了实现这一点，KotoriFramework 允许你重新定义 URL 的处理流程。
 
 
 ### 设置你自己的路由规则
@@ -420,6 +420,7 @@ URL 的第一段是 "product" ，第二段是任意字符时，将重定向到 "
 
 ```
 'product/(([0-9])' => 'catalog/product_lookup_by_id/$1',
+```
 URL 的第一段是 "product" ，第二段是数字时，将重定向到 "catalog" 类的 "product_lookup_by_id" 方法，并将第二段的数字作为参数传递给它。
 
 ### 回调函数
