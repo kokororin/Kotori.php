@@ -41,7 +41,7 @@ class Kotori
      */
     public static function run($conf)
     {
-        error_reporting(0);
+        //error_reporting(0);
         Config::init($conf);
         self::init();
     }
@@ -54,9 +54,9 @@ class Kotori
     {
         define('START_TIME', microtime(true));
         //Define a custom error handler so we can log PHP errors
-        set_error_handler(array('Handle', 'error'));
-        set_exception_handler(array('Handle', 'exception'));
-        register_shutdown_function(array('Handle', 'end'));
+        //set_error_handler(array('Handle', 'error'));
+        //set_exception_handler(array('Handle', 'exception'));
+        //register_shutdown_function(array('Handle', 'end'));
 
         if (Config::get('USE_SESSION') == true) {
             session_start();
@@ -180,7 +180,6 @@ class Config
         'DB_CHARSET' => 'utf8',
         'USE_SESSION' => true,
         'URL_MODE' => 'QUERY_STRING',
-        'URL_PARAMS_BIND' => 'NORMAL',
     );
     /**
      * Initialize Config
@@ -575,6 +574,10 @@ class Route
             default:
                 break;
         }
+        $parsedRoute = self::parseRoutes($uri);
+        if ($parsedRoute) {
+            $uri = $parsedRoute;
+        }
 
         $uriArray = ($uri != '') ? explode('/', trim($uri, '/')) : array();
 
@@ -659,12 +662,52 @@ class Route
             return $params;
         }
 
-        if (Config::get('URL_PARAMS_BIND') && 'ORDER' == Config::get('URL_PARAMS_BIND')) {
-            $params = $uriArray;
-        } else {
-            preg_replace_callback('/(\w+)\/([^\/]+)/', function ($match) use (&$params) {$params[$match[1]] = strip_tags($match[2]);}, implode('/', $uriArray));
-        }
+        $params = $uriArray;
+
         return $params;
+    }
+
+    /**
+     * Parse Routes
+     *
+     * Matches any routes that may exist in URL_ROUTE array
+     * against the URI to determine if the class/method need to be remapped.
+     *
+     * @param string $uri URI
+     *
+     * @return string
+     */
+    private static function parseRoutes($uri)
+    {
+        $routes = Config::get('URL_ROUTE');
+
+        if ($routes != null) {
+            foreach ($routes as $key => $val) {
+                if (is_array($val)) {
+                    Handle::halt('Route Rules Error.');
+                }
+                // Does the RegEx match?
+                if (preg_match('#^' . $key . '$#', $uri, $matches)) {
+
+                    // Are we using callbacks to process back-references?
+                    if (!is_string($val) && is_callable($val)) {
+                        // Remove the original string from the matches array.
+                        array_shift($matches);
+
+                        // Execute the callback using the values in matches as its parameters.
+                        $val = call_user_func_array($val, $matches);
+                    }
+                    // Are we using the default routing method for back-references?
+                    elseif (strpos($val, '$') !== false && strpos($key, '(') !== false) {
+                        $val = preg_replace('#^' . $key . '$#', $val, $uri);
+                    }
+
+                    return $val;
+                }
+
+            }
+        }
+
     }
 
     /**
@@ -677,18 +720,14 @@ class Route
     public static function url($url = '', $params = array())
     {
         $base_url = Request::getBaseUrl();
+       
         if (!empty($params)) {
             $keys = array_keys($params);
             $values = array_values($params);
             $count = count($params);
             $http_query = '/';
             for ($i = 0; $i < $count; $i++) {
-                if ('ORDER' == Config::get('URL_PARAMS_BIND')) {
-                    $http_query .= $values[$i];
-                } else {
-                    $http_query .= $keys[$i] . '/' . $values[$i];
-                }
-
+                $http_query .= $values[$i];
                 if ($i != ($count - 1)) {
                     $http_query .= '/';
                 }
@@ -712,7 +751,7 @@ class Route
 
     }
 
-     /**
+    /**
      * Call Controller
      *
      * @param string $controller Controller Name
@@ -748,7 +787,7 @@ class Route
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Controller
+abstract class Controller
 {
     /**
      * View object
@@ -1012,7 +1051,6 @@ parseInt(history[0]) && open.click();
         include self::$tmpData['path'];
     }
 
-    
 }
 
 /**
