@@ -103,14 +103,20 @@ Kotori::run(array(
 
 定义了配置文件之后，统一使用系统提供的Config方法来读取已有的配置。
 
-获取已经设置的参数值：Config::get('参数名称')
-设置自定义配置值：Config::set('参数名称','参数值')
+获取已经设置的参数值：
+```
+Config::get('参数名称')
+```
+设置自定义配置值：
+```
+Config::set('参数名称','参数值')
+```
 
 因为配置参数是全局有效的，因此本方法可以在任何地方读取任何配置，即使某个设置参数已经生效过期了。
 
 ---
 
-## 路由
+## URL
 
 ### 使用须知
 
@@ -130,9 +136,8 @@ RewriteRule ^(.*)$ index.php [L,E=PATH_INFO:$1]
 ```
 Nginx配置：
 
-```
-    待更新
-```
+建议直接使用QUERY_STRING模式或者开启PATH_INFO功能。
+
 
 ### URL格式
 
@@ -148,13 +153,7 @@ Nginx配置：
 > http://example.com/  
 > http://example.com/Index/index  
 
-其中，若有参数，那么参数将自动转化成$_GET变量：
-
-> http://example.com/Index/index/1 $_GET['xx']=1
-
-不过，依然可以获取到普通形式的$_GET变量：
-
-> http://example.com/Index/Login?var=value $_GET['var'] 依然有效  
+关于参数，详见控制器部分。
 
 ---
 
@@ -255,14 +254,23 @@ class ProductsController extends Controller {
 
 为了配合URL格式，我们需要能够动态的根据当前的URL设置生成对应的URL地址，为此，内置提供了url方法，用于URL的动态生成，可以确保项目在移植过程中不受环境的影响。
 
-示例如下：
+推荐在任何时候都使用这种方法来生成你的 URL ，这样在你的 URL 变动时你的代码将具有可移植性。
 
-```php
-echo Route::url('Index/show',array('id'=>1));
-//即http://example.com/Index/show/id/1
-echo Route::url('Blog/index');
-//如果不需要传GET变量，只需写第一个参数
+传给函数的 URI 段参数可以是一个字符串，也可以是个数组，下面是字符串的例子:
 ```
+echo Route::url('News/local/123');
+```
+上例将返回类似于：
+```
+http://example.com/News/local/123
+```
+
+下面是使用数组的例子:
+```
+echo Route::url(array('news', 'local', '123'));
+```
+
+
 
 ### AJAX返回
 
@@ -324,6 +332,7 @@ Response::redirect('http://www.qq.com',true);//跳转到马化腾首页
 ### 错误页面
 
 当你的系统发生错误时，将输出错误页面。
+如果你打开了APP_DEBUG模式，将在视图右下角现实Trace信息，方便进行错误、SQL调试。
 
 ---
 
@@ -335,7 +344,7 @@ Response::redirect('http://www.qq.com',true);//跳转到马化腾首页
 
 assign方法接受两个参数，第一个参数是模板变量名，第二个参数是模板变量值。
 
-display方法可以接受1个或0个参数。当没有参数时，则默认使用View/控制器名/Action名.php作为模板；如果参数值不带有'/'，则默认使用View/控制器名/参数值.html作为模板；如果参数值带有1个'/'，则会使用View/参数值.html作为模板。
+display方法可以接受1个或0个参数。当没有参数时，则默认使用View/控制器名/Action名.html作为模板；如果参数值不带有'/'，则默认使用View/控制器名/参数值.html作为模板；如果参数值带有1个'/'，则会使用View/参数值.html作为模板。
 
 示例：
 
@@ -351,21 +360,20 @@ class IndexController extends Controller {
 }
 ```
 
-模板include功能，通过N来引入其他模板，该静态方法接受1个或2个参数，第一个参数是模板，规则与display的参数相同，第二个参数是传递给该模板的模板变量，必须是关联型数组。
+模板继承功能，通过View::need来引入其他模板，该方法接受1个或2个参数，第一个参数是模板，规则与display的参数相同，第二个参数是传递给该模板的模板变量，必须是关联型数组，**一般第二个参数无需传入**。
 
-比如有一个公共header文件位于View/Public/header.html，下面进行引入
+比如有一个公共header文件位于View/Public/header.html：
 ```php
-<!DOCTYPE html>
 <head>
     <title><?php echo $title;?></title>
 </head>
 ```
-当前模板如下引入
+我们需要在主页面中引入该头部模板：
 ```php
-$data = array(
-        'title' => 'Welcome',  //设置title变量为Welcome
-        );
-View::need('Public/header', $data); ?>
+<html>
+<?php View::need('Public/header', $data); ?>
+<body>
+    ...
 ```
 
 ---
@@ -463,8 +471,6 @@ print_r($datas);
 
 ---
 
-
----
 
 ## 高级功能
 

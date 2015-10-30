@@ -713,36 +713,21 @@ class Route
     /**
      * Build Full URL
      *
-     * @param string $url Url
+     * @param string $uri URI
      * @param array $params Params Array
      * @return string
      */
-    public static function url($url = '', $params = array())
+    public static function url($uri = '')
     {
         $base_url = Request::getBaseUrl();
-       
-        if (!empty($params)) {
-            $keys = array_keys($params);
-            $values = array_values($params);
-            $count = count($params);
-            $http_query = '/';
-            for ($i = 0; $i < $count; $i++) {
-                $http_query .= $values[$i];
-                if ($i != ($count - 1)) {
-                    $http_query .= '/';
-                }
-            }
-
-        } else {
-            $http_query = '';
-        }
+        $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
 
         switch (Config::get('URL_MODE')) {
             case 'PATH_INFO':
-                return $base_url . $url . $http_query;
+                return $base_url . $uri;
                 break;
             case 'QUERY_STRING':
-                return $base_url . '?' . $url . $http_query;
+                return $base_url . '?' . $uri;
                 break;
             default:
                 return;
