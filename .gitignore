@@ -1,1 +1,4 @@
 App/Log/*.log
+Public/css/*
+Public/img/*
+Public/js/*

@@ -2,102 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <title>KotoriFramework 中文文档</title>
+    <title>KotoriFramework Running!</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--[if lte IE 9]>
-    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-  <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="<?php echo PUBLIC_DIR?>/css/kf.css">
-	<style>.spinner{width:100px;height:100px;position:relative;margin:100px auto}.double-bounce1,.double-bounce2{width:100%;height:100%;border-radius:50%;background-color:#e74430;opacity:.6;position:absolute;top:50%;left:45%;-webkit-animation:bounce 2.0s infinite ease-in-out;animation:bounce 2.0s infinite ease-in-out}.double-bounce2{-webkit-animation-delay:-1.0s;animation-delay:-1.0s}@-webkit-keyframes bounce{0%,100%{-webkit-transform:scale(0.0)}50%{-webkit-transform:scale(1.0)}}@keyframes bounce{0%,100%{transform:scale(0.0);-webkit-transform:scale(0.0)}50%{transform:scale(1.0);-webkit-transform:scale(1.0)}}</style>
+    
 </head>
 
 <body class="docs">
 
-   <div class="spinner" id="spinner">
-      <div class="double-bounce1"></div>
-      <div class="double-bounce2"></div>
-   </div>
-
-  <div id="main" style="display:none;">
-
-    <span class="overlay"></span>
-
-    <nav class="main">
-        <div class="container">
-            <a href="<?php echo Route::url('Index/index')?>" class="brand">
-               Kotori Framework
-            </a>
-
-            <div class="responsive-sidebar-nav">
-                <a href="#" class="toggle-slide menu-link btn">&#9776;</a>
-            </div>
-          
-
-            <ul class="main-nav">
-                <li><a href="<?php echo Route::url('Index/index')?>">中文文档</a>
-                </li>
-                <li><a href="http://post.kotori.love" target="_blank">问答社区</a>
-                </li>
-                <li><a href="https://kotori.love" target="_blank">博客</a>
-                </li>        
-            </ul>
-        </div>
-    </nav>
-
-    <nav id="slide-menu" class="slide-menu" role="navigation">
-
-        <ul class="slide-main-nav">
-            <li><a href="<?php echo Route::url('Index/index')?>">中文文档</a>
-            </li>
-            <li><a href="http://post.return.moe" target="_blank">问答社区</a>
-            </li>
-            <li><a href="https://return.moe" target="_blank">博客</a>
-            </li> 
-		 </ul>
-
-        <div class="slide-docs-nav">            
-
-        </div>
-
-    </nav>
-
-    <div class="docs-wrapper container">
-
-        <section class="sidebar">            
-
-        </section>
-
-        <article id="content">
-<?php echo $content?>
-        </article>
-    </div>
 
 
-    <footer class="main">
-        <ul>
-            <li><a href="<?php echo Route::url('Index/index')?>" target="_blank">中文文档</a>
-            </li>
-            <li><a href="http://post.kotori.love" target="_blank">问答社区</a>
-            </li>
-            <li><a href="https://kotori.love" target="_blank">博客</a>
-            </li>
-
-        </ul>
-        <p>Kotori Framework. Copyright &copy; Kokororin.</p>
-        <p class="less-significant"><a href="http://www.golaravel.com/" target="_blank">Theme From Laravel</a>
-        </p>
-    </footer>
-	
-	</div><!-- end of #main-->
-
-    
-    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//cdn.bootcss.com/prettify/r298/prettify.js"></script>
-    <script src="<?php echo PUBLIC_DIR?>/js/kf.js"></script>
-	
-    
 </body>
 
 </html>
