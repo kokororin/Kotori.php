@@ -27,4 +27,4 @@ ThinkPHP && CodeIgniter && Typecho
 
 ## Document(Chinese)
 
-* Github： [https://github.com/kokororin/KotoriFramework/wiki/Documentation](https://github.com/kokororin/KotoriFramework/wiki/Documentation)
+* Github： [https://github.com/kokororin/KotoriFramework/wiki](https://github.com/kokororin/KotoriFramework/wiki)
