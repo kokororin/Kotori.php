@@ -11,7 +11,7 @@ ThinkPHP && CodeIgniter && Typecho
 
 ## ScreenShots
 -------------
-![image](https://raw.githubusercontent.com/kokororin/KotoriFramework/Public/img/screenshot.png)
+![image](https://raw.githubusercontent.com/kokororin/KotoriFramework/master/Public/img/screenshot.jpg)
 
 ## Update Logs(Chinese)
 
