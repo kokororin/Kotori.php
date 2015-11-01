@@ -1,0 +1,16 @@
+{
+    "name": "kotori/kotori-framework",
+    "description": "Tiny PHP Framework.",
+    "type":"project",
+    "license": "Apache",
+    "authors": [
+        {
+            "name": "空樱酱",
+            "email": "ritsuka.sunny@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=5.4.0"
+    }
+}

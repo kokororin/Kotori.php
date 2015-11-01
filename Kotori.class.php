@@ -135,7 +135,7 @@ class Common
      * @param string $path File Path
      * @return boolean
      */
-    private static function isFile($path)
+    public static function isFile($path)
     {
         if (is_file($path)) {
             if (strstr(PHP_OS, 'WIN')) {
@@ -856,6 +856,7 @@ abstract class Controller
     }
 }
 
+
 /**
  * View Class
  *
@@ -931,6 +932,9 @@ class View
     public function display($tplFile)
     {
         $this->_viewPath = $this->_tplDir . $tplFile . '.html';
+        if (!Common::isFile($this->_viewPath)) {
+            Handle::halt('Template is not existed.');
+        }
         unset($tplFile);
         extract($this->_data);
         include $this->_viewPath;

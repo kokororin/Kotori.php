@@ -9,6 +9,10 @@ Licensed under the Apache License, Version 2.0 (the "License").
 ## Thanks
 ThinkPHP && CodeIgniter && Typecho
 
+## ScreenShots
+-------------
+![image](https://raw.githubusercontent.com/kokororin/KotoriFramework/Public/img/screenshot.png)
+
 ## Update Logs(Chinese)
 
 * 2015/8/1   整体框架完成
