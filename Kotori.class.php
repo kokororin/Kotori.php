@@ -2,11 +2,11 @@
 /**
  * Kotori Framework
  *
- * A Tiny Controller-View PHP Framework
+ * A Tiny Model-View-Controller PHP Framework
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015 https://kotori.love All rights reserved.
+ * Copyright (c) 2015 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,16 @@ class Kotori
      */
     public static function run($conf)
     {
-        error_reporting(0);
-        Config::init($conf);
-        self::init();
+        //error_reporting(0);
+        Config::getInstance()->initialize($conf);
+        Kotori::initialize();
     }
 
     /**
      * Instantiate the Framework
      * @return void
      */
-    private static function init()
+    private static function initialize()
     {
         define('START_TIME', microtime(true));
         //Define a custom error handler so we can log PHP errors
@@ -58,16 +58,17 @@ class Kotori
         set_exception_handler(array('Handle', 'exception'));
         register_shutdown_function(array('Handle', 'end'));
 
-        if (Config::get('USE_SESSION') == true) {
+        if (Config::getInstance()->get('USE_SESSION') == true) {
             session_start();
         }
+
         //Load application's common functions
-        Common::need(Config::get('APP_FULL_PATH') . '/common.php');
+        Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/common.php');
 
         spl_autoload_register(array('Kotori', 'autoload'));
 
         //Load route class
-        Route::dispatch();
+        Route::getInstance()->dispatch();
 
         //Global security filter
         array_walk_recursive($_GET, array('Request', 'filter'));
@@ -84,9 +85,11 @@ class Kotori
     private static function autoload($class)
     {
         if (substr($class, -10) == 'Controller') {
-            Common::need(Config::get('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+            Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+        } elseif (substr($class, -5) == 'Model') {
+            Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/Model/' . $class . '.class.php');
         } else {
-            Common::need(Config::get('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
+            Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
         }
     }
 }
@@ -115,7 +118,7 @@ class Common
      * @param string $path File Path
      * @return boolean
      */
-    public static function need($path)
+    public static function import($path)
     {
         if (!isset(self::$_require[$path])) {
             if (self::isFile($path)) {
@@ -165,37 +168,37 @@ class Common
      */
     public static function authCode($string, $operation, $expiry = 0)
     {
-        $key = Config::get('SECRET_KEY');
-        $ckey_length = 4;
-        $key = md5($key);
-        $keya = md5(substr($key, 0, 16));
-        $keyb = md5(substr($key, 16, 16));
-        $keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length) : substr(md5(microtime()), -$ckey_length)) : '';
-        $cryptkey = $keya . md5($keya . $keyc);
-        $key_length = strlen($cryptkey);
-        $string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string . $keyb), 0, 16) . $string;
+        $key           = Config::getInstance()->get('SECRET_KEY');
+        $ckey_length   = 4;
+        $key           = md5($key);
+        $keya          = md5(substr($key, 0, 16));
+        $keyb          = md5(substr($key, 16, 16));
+        $keyc          = $ckey_length ? ('DECODE' == $operation ? substr($string, 0, $ckey_length) : substr(md5(microtime()), -$ckey_length)) : '';
+        $cryptkey      = $keya . md5($keya . $keyc);
+        $key_length    = strlen($cryptkey);
+        $string        = 'DECODE' == $operation ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string . $keyb), 0, 16) . $string;
         $string_length = strlen($string);
-        $result = '';
-        $box = range(0, 255);
-        $rndkey = array();
+        $result        = '';
+        $box           = range(0, 255);
+        $rndkey        = array();
         for ($i = 0; $i <= 255; $i++) {
             $rndkey[$i] = ord($cryptkey[$i % $key_length]);
         }
         for ($j = $i = 0; $i < 256; $i++) {
-            $j = ($j + $box[$i] + $rndkey[$i]) % 256;
-            $tmp = $box[$i];
+            $j       = ($j + $box[$i] + $rndkey[$i]) % 256;
+            $tmp     = $box[$i];
             $box[$i] = $box[$j];
             $box[$j] = $tmp;
         }
         for ($a = $j = $i = 0; $i < $string_length; $i++) {
-            $a = ($a + 1) % 256;
-            $j = ($j + $box[$a]) % 256;
-            $tmp = $box[$a];
+            $a       = ($a + 1) % 256;
+            $j       = ($j + $box[$a]) % 256;
+            $tmp     = $box[$a];
             $box[$a] = $box[$j];
             $box[$j] = $tmp;
             $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
         }
-        if ($operation == 'DECODE') {
+        if ('DECODE' == $operation) {
             if ((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26) . $keyb), 0, 16)) {
                 return substr($result, 26);
             } else {
@@ -219,39 +222,59 @@ class Common
  */
 class Config
 {
+
+    /**
+     * Instance Handle
+     *
+     * @var object
+     */
+    private static $_instance = null;
+
     /**
      * Config Array
      *
      * @var array
      */
-    private static $config = array();
+    private $_config = array();
 
     /**
      * Default Config Array
      *
      * @var array
      */
-    private static $defaults = array(
-        'APP_DEBUG' => 'false',
-        'APP_PATH' => './App',
-        'DB_PORT' => 3306,
-        'DB_CHARSET' => 'utf8',
+    private $_defaults = array(
+        'APP_DEBUG'   => 'false',
+        'APP_PATH'    => './App',
+        'DB_PORT'     => 3306,
+        'DB_CHARSET'  => 'utf8',
         'USE_SESSION' => true,
-        'URL_MODE' => 'QUERY_STRING',
-        'SECRET_KEY' => 'KOTORI',
+        'URL_MODE'    => 'QUERY_STRING',
+        'SECRET_KEY'  => 'KOTORI',
     );
+
+    /**
+     * get singleton
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
     /**
      * Initialize Config
      * @param mixed $conf Config
      * @return void
      */
-    public static function init($conf)
+    public function initialize($conf)
     {
         if (is_array($conf)) {
             if (array_keys($conf) !== range(0, count($conf) - 1)) {
-                self::$config = array_merge(self::$config, $conf);
-                self::$config = array_merge(self::$defaults, self::$config);
-                self::$config = array_merge(array('APP_FULL_PATH' => dirname(__FILE__) . '/' . self::get('APP_PATH')), self::$config);
+                $this->_config = array_merge($this->_config, $conf);
+                $this->_config = array_merge($this->_defaults, $this->_config);
+                $this->_config = array_merge(array('APP_FULL_PATH' => dirname(__FILE__) . '/' . $this->get('APP_PATH')), $this->_config);
             }
         }
         return false;
@@ -264,10 +287,10 @@ class Config
      * @param mixed $value Config item value
      * @return void
      */
-    public static function set($key, $value)
+    public function set($key, $value)
     {
         if (is_string($key)) {
-            $_config[$key] = $value;
+            $this->_config[$key] = $value;
         } else {
             Handle::halt('Config Error.');
         }
@@ -279,10 +302,10 @@ class Config
      * @param string $key Config item name
      * @return mixed
      */
-    public static function get($key)
+    public function get($key)
     {
         if (is_string($key)) {
-            return isset(self::$config[$key]) ? self::$config[$key] : null;
+            return isset($this->_config[$key]) ? $this->_config[$key] : null;
         }
         return null;
     }
@@ -318,8 +341,8 @@ class Handle
      */
     public static function halt($str, $code = 500)
     {
-        Response::setStatus($code);
-        if (Config::get('APP_DEBUG') == false) {
+        Response::getInstance()->setStatus($code);
+        if (Config::getInstance()->get('APP_DEBUG') == false) {
             $str = '404 Not Found.';
         }
         $tpl = '<!DOCTYPE html>
@@ -488,7 +511,7 @@ a:hover {
         }
 
         $text = '<b>Error Type:</b>' . $errtype . '<br>' . '<b>Info:</b>' . $errstr . '<br>' . '<b>Line:</b>' . $errline . '<br>' . '<b>File:</b>' . $errfile;
-        $txt = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
+        $txt  = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
         array_push(self::$errors, $txt);
         Log::normal($txt);
         //self::halt($text, 500);
@@ -508,7 +531,7 @@ a:hover {
     public static function exception($exception)
     {
         $text = '<b>Exception:</b>' . $exception->getMessage();
-        $txt = 'Type:Exception' . ' Info:' . $exception->getMessage();
+        $txt  = 'Type:Exception' . ' Info:' . $exception->getMessage();
         //array_push(self::$errors, $txt);
         Log::normal($txt);
         self::halt($text, 500);
@@ -532,7 +555,7 @@ a:hover {
         if (isset($last_error) &&
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
             $text = '<b>Error Type:</b>' . $last_error['type'] . '<br>' . '<b>Info:</b>' . $last_error['message'] . '<br>' . '<b>Line:</b>' . $last_error['line'] . '<br>' . '<b>File:</b>' . $last_error['file'];
-            $txt = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
+            $txt  = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
             Log::normal($txt);
             self::halt($text, 500);
         }
@@ -547,20 +570,20 @@ a:hover {
     public static function getTrace()
     {
         $files = get_included_files();
-        $info = array();
+        $info  = array();
         foreach ($files as $key => $file) {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
         $error = Handle::$errors;
-        $sql = Database::$queries;
+        $sql   = Database::$queries;
         $trace = array();
-        $base = array(
+        $base  = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
-            'Run Time' => RUN_TIME . 's',
-            'TPR' => number_format(1 / RUN_TIME, 2) . 'req/s',
-            'Memory Uses' => number_format(memory_get_usage() / 1024, 2) . ' kb',
-            'SQL Queries' => count($sql) . ' queries ',
-            'File Loaded' => count(get_included_files()),
+            'Run Time'     => RUN_TIME . 's',
+            'TPR'          => number_format(1 / RUN_TIME, 2) . 'req/s',
+            'Memory Uses'  => number_format(memory_get_usage() / 1024, 2) . ' kb',
+            'SQL Queries'  => count($sql) . ' queries ',
+            'File Loaded'  => count(get_included_files()),
             'Session Info' => 'SESSION_ID=' . session_id(),
         );
 
@@ -597,22 +620,40 @@ a:hover {
  */
 class Route
 {
+    /**
+     * Instance Handle
+     *
+     * @var object
+     */
+    private static $_instance = null;
 
     /**
      * Controllers Array
      *
      * @var array
      */
-    private static $_controller = array();
+    private $_controller = array();
+
+    /**
+     * get singleton
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     /**
      * Map URL to controller and action
      *
      * @return void
      */
-    public static function dispatch()
+    public function dispatch()
     {
-        switch (Config::get('URL_MODE')) {
+        switch (Config::getInstance()->get('URL_MODE')) {
             //Will parse PATH_INFO and automatically detect the URI from it,
             case 'PATH_INFO':
                 $uri = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
@@ -625,38 +666,38 @@ class Route
                 if (trim($uri, '/') == '') {
                     $uri = '';
                 } elseif (strncmp($uri, '/', 1) == 0) {
-                    $uri = explode('?', $uri, 2);
+                    $uri                     = explode('?', $uri, 2);
                     $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
-                    $uri = $uri[0];
+                    $uri                     = $uri[0];
                 }
                 break;
             default:
                 break;
         }
-        $parsedRoute = self::parseRoutes($uri);
+        $parsedRoute = $this->parseRoutes($uri);
         if ($parsedRoute) {
             $uri = $parsedRoute;
         }
 
-        $uriArray = ($uri != '') ? explode('/', trim($uri, '/')) : array();
+        $uriArray = ('' != $uri) ? explode('/', trim($uri, '/')) : array();
 
-        $_controller = self::getController($uriArray);
-        $_action = self::getAction($uriArray);
+        $_controller = $this->getController($uriArray);
+        $_action     = $this->getAction($uriArray);
         //Define some variables
         define('CONTROLLER_NAME', $_controller);
         define('ACTION_NAME', $_action);
-        define('PUBLIC_DIR', Request::getBaseUrl() . 'Public');
+        define('PUBLIC_DIR', Request::getInstance()->getBaseUrl() . 'Public');
         unset($uriArray[0], $uriArray[1]);
 
-        $controller = Route::controller($_controller);
+        $controller = Route::getInstance()->controller($_controller);
 
         if (!method_exists($controller, $_action)) {
             throw new Exception('Request Action ' . $_action . ' is not Found.');
         }
         //Parse params from uri
-        $params = self::getParams($uriArray);
+        $params = $this->getParams($uriArray);
         //Do some final cleaning of the params
-        $_GET = array_merge($params, $_GET);
+        $_GET     = array_merge($params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
         //Endtime
         define('END_TIME', microTime(true));
@@ -672,12 +713,12 @@ class Route
      * @param array $uriArray parsed uri array
      * @return string
      */
-    private static function getController($uriArray)
+    private function getController($uriArray)
     {
         if (isset($_GET['_controller']) && isset($_GET['_action'])) {
             return strip_tags($_GET['_controller']);
         }
-        if (isset($uriArray[0]) && $uriArray[0] !== '') {
+        if (isset($uriArray[0]) && '' !== $uriArray[0]) {
             $_controller = $uriArray[0];
         } else {
             $_controller = 'Index';
@@ -691,7 +732,7 @@ class Route
      * @param array $uriArray parsed uri array
      * @return string
      */
-    private static function getAction($uriArray)
+    private function getAction($uriArray)
     {
         if (isset($_GET['_controller']) && isset($_GET['_action'])) {
             return strip_tags($_GET['_action']);
@@ -710,7 +751,7 @@ class Route
      * @param array $uriArray parsed uri array
      * @return array
      */
-    private static function getParams($uriArray)
+    private function getParams($uriArray)
     {
 
         $params = array();
@@ -736,11 +777,11 @@ class Route
      *
      * @return string
      */
-    private static function parseRoutes($uri)
+    private function parseRoutes($uri)
     {
-        $routes = Config::get('URL_ROUTE');
+        $routes = Config::getInstance()->get('URL_ROUTE');
 
-        if ($routes != null) {
+        if (null != $routes) {
             foreach ($routes as $key => $val) {
                 if (is_array($val)) {
                     Handle::halt('Route Rules Error.');
@@ -776,12 +817,12 @@ class Route
      * @param array $params Params Array
      * @return string
      */
-    public static function url($uri = '')
+    public function url($uri = '')
     {
-        $base_url = Request::getBaseUrl();
-        $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
+        $base_url = Request::getInstance()->getBaseUrl();
+        $uri      = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
 
-        switch (Config::get('URL_MODE')) {
+        switch (Config::getInstance()->get('URL_MODE')) {
             case 'PATH_INFO':
                 return $base_url . $uri;
                 break;
@@ -801,19 +842,19 @@ class Route
      * @param string $controller Controller Name
      * @return class
      */
-    public static function controller($controllerName)
+    public function controller($controllerName)
     {
         //If is already initialized
         $controllerClass = $controllerName . 'Controller';
-        if (isset(self::$_controller[$controllerClass])) {
-            return self::$_controller[$controllerClass];
+        if (isset($this->_controller[$controllerClass])) {
+            return $this->_controller[$controllerClass];
         }
 
         if (!class_exists($controllerClass)) {
             throw new Exception('Request Controller ' . $controllerClass . ' is not Found');
         } else {
-            $controller = new $controllerClass();
-            self::$_controller[$controllerClass] = $controller;
+            $controller                          = new $controllerClass();
+            $this->_controller[$controllerClass] = $controller;
             return $controller;
         }
 
@@ -831,28 +872,24 @@ class Route
  * @author      Kokororin
  * @link        https://kotori.love
  */
-abstract class Controller
+class Controller
 {
-    /**
-     * View object
-     *
-     * @var View
-     */
-    protected $_view;
 
     /**
-     * Database object
+     * Instance Handle
      *
-     * @var DB
+     * @var object
      */
-    protected $db;
+    private static $_instance;
 
     /**
-     * Controllers which have initialized
-     *
-     * @var array
+     * get singleton
+     * @return object
      */
-    private $_controller = array();
+    public static function &getInstance()
+    {
+        return self::$_instance;
+    }
 
     /**
      * Class constructor
@@ -863,55 +900,53 @@ abstract class Controller
      */
     public function __construct()
     {
-        $this->_view = new View();
-        if (Config::get('DB_TYPE') == null) {
-            $this->db = null;
-            return;
-        }
-        $this->db = Database::getInstance(array(
-            'database_type' => Config::get('DB_TYPE'),
-            'database_name' => Config::get('DB_NAME'),
-            'server' => Config::get('DB_HOST'),
-            'username' => Config::get('DB_USER'),
-            'password' => Config::get('DB_PWD'),
-            'charset' => Config::get('DB_CHARSET'),
-            'port' => Config::get('DB_PORT'),
-        ));
+        self::$_instance = &$this;
+        $this->view      = new View();
+        $this->response  = Response::getInstance();
+        $this->request   = Request::getInstance();
+        $this->route     = Route::getInstance();
+        $this->db        = Database::getInstance();
+
     }
 
     /**
-     * Display Output
+     * __get magic
      *
-     * Processes and sends finalized output data to the browser along
+     * Allows controllers to access model
      *
-     * @param string $tpl Template Path
-     * @return void
+     * @param string $key
      */
-    protected function display($tpl = '')
+    public function __get($key)
     {
-        if ($tpl === '') {
-            $trace = debug_backtrace();
-            $controller = substr($trace[1]['class'], 0, -10);
-            $action = $trace[1]['function'];
-            $tpl = $controller . '/' . $action;
-        } elseif (strpos($tpl, '/') === false) {
-            $trace = debug_backtrace();
-            $controller = substr($trace[1]['class'], 0, -10);
-            $tpl = $controller . '/' . $tpl;
+        if (substr($key, -5) == 'Model') {
+            return new $key();
         }
-        $this->_view->display($tpl);
+        return null;
     }
 
+}
+
+/**
+ * Model Class
+ *
+ * @package     Kotori
+ * @subpackage  Model
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
+class Model
+{
     /**
-     * Set variables for Template
+     * __get magic
      *
-     * @param string $name key
-     * @param mixed $value value
-     * @return void
+     * Allows models to access loaded classes using the same
+     * syntax as controllers.
+     *
+     * @param string $key
      */
-    protected function assign($name, $value)
+    public function __get($key)
     {
-        $this->_view->assign($name, $value);
+        return Controller::getInstance()->$key;
     }
 }
 
@@ -952,15 +987,28 @@ class View
      *
      * @var array
      */
-    private static $tmpData;
+    private $_needData;
+
+    /**
+     * __get magic
+     *
+     * Allows view to access loaded classes using the same
+     * syntax as controllers.
+     *
+     * @param string $key
+     */
+    public function __get($key)
+    {
+        return Controller::getInstance()->$key;
+    }
 
     /**
      * @param string $tplDir Template Directory
      */
     public function __construct($tplDir = '')
     {
-        if ($tplDir == '') {
-            $this->_tplDir = Config::get('APP_FULL_PATH') . '/View/';
+        if ('' == $tplDir) {
+            $this->_tplDir = Config::getInstance()->get('APP_FULL_PATH') . '/View/';
         } else {
             $this->_tplDir = $tplDir;
         }
@@ -987,16 +1035,19 @@ class View
      * @param string $tpl Template Path
      * @return void
      */
-    public function display($tplFile)
+    public function display($tpl = '')
     {
-        $this->_viewPath = $this->_tplDir . $tplFile . '.html';
+        if ('' === $tpl) {
+            $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
+        }
+        $this->_viewPath = $this->_tplDir . $tpl . '.html';
         if (!Common::isFile($this->_viewPath)) {
             Handle::halt('Template is not existed.');
         }
         unset($tplFile);
         extract($this->_data);
         include $this->_viewPath;
-        if (Config::get('APP_DEBUG') == true && !Request::isAjax()) {
+        if (Config::getInstance()->get('APP_DEBUG') == true && !Request::getInstance()->isAjax()) {
             $this->showTrace();
         }
     }
@@ -1009,7 +1060,7 @@ class View
     private function showTrace()
     {
         $trace = Handle::getTrace();
-        $tpl = '<!-- Kotori Page Trace -->
+        $tpl   = '<!-- Kotori Page Trace -->
 <div id="kotori_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
 <div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
 <div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
@@ -1086,16 +1137,16 @@ parseInt(history[0]) && open.click();
      * @param array $data Data Array
      * @return void
      */
-    public static function need($path, $data = array())
+    public function need($path, $data = array())
     {
-        self::$tmpData = array(
-            'path' => Config::get('APP_FULL_PATH') . '/View/' . $path . '.html',
+        $this->_needData = array(
+            'path' => Config::getInstance()->get('APP_FULL_PATH') . '/View/' . $path . '.html',
             'data' => $data,
         );
         unset($path);
         unset($data);
-        extract(self::$tmpData['data']);
-        include self::$tmpData['path'];
+        extract($this->_needData['data']);
+        include $this->_needData['path'];
     }
 
 }
@@ -1111,11 +1162,30 @@ parseInt(history[0]) && open.click();
 class Request
 {
     /**
+     * Instance Handle
+     *
+     * @var object
+     */
+    private static $_instance = null;
+
+    /**
      * Params
      *
      * @var string
      */
-    private static $_put = null;
+    private $_put = null;
+
+    /**
+     * get singleton
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
     /**
      * Safe Inputs
@@ -1126,7 +1196,7 @@ class Request
      * @param mixed $datas Extend Data Source
      * @return mixed
      */
-    public static function input($name, $default = '', $filter = null, $datas = null)
+    public function input($name, $default = '', $filter = null, $datas = null)
     {
         if (strpos($name, '/')) {
             list($name, $type) = explode('/', $name, 2);
@@ -1146,10 +1216,10 @@ class Request
                 $input = &$_POST;
                 break;
             case 'put':
-                if (is_null(self::$_put)) {
-                    parse_str(file_get_contents('php://input'), self::$_put);
+                if (is_null($this->_put)) {
+                    parse_str(file_get_contents('php://input'), $this->_put);
                 }
-                $input = self::$_put;
+                $input = $this->_put;
                 break;
             case 'param':
                 switch ($_SERVER['REQUEST_METHOD']) {
@@ -1157,10 +1227,10 @@ class Request
                         $input = $_POST;
                         break;
                     case 'PUT':
-                        if (is_null(self::$_put)) {
-                            parse_str(file_get_contents('php://input'), self::$_put);
+                        if (is_null($this->_put)) {
+                            parse_str(file_get_contents('php://input'), $this->_put);
                         }
-                        $input = self::$_put;
+                        $input = $this->_put;
                         break;
                     default:
                         $input = $_GET;
@@ -1169,7 +1239,7 @@ class Request
             case 'path':
                 $input = array();
                 if (!empty($_SERVER['PATH_INFO'])) {
-                    $depr = '/';
+                    $depr  = '/';
                     $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
                 }
                 break;
@@ -1195,18 +1265,18 @@ class Request
                 return null;
         }
         if ('' == $name) {
-            $data = $input;
+            $data    = $input;
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
             if ($filters) {
                 if (is_string($filters)) {
                     $filters = explode(',', $filters);
                 }
                 foreach ($filters as $filter) {
-                    $data = self::array_map_recursive($filter, $data); // 参数过滤
+                    $data = $this->array_map_recursive($filter, $data); // 参数过滤
                 }
             }
         } elseif (isset($input[$name])) {
-            $data = $input[$name];
+            $data    = $input[$name];
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
             if ($filters) {
                 if (is_string($filters)) {
@@ -1222,7 +1292,7 @@ class Request
                 if (is_array($filters)) {
                     foreach ($filters as $filter) {
                         if (function_exists($filter)) {
-                            $data = is_array($data) ? self::array_map_recursive($filter, $data) : $filter($data);
+                            $data = is_array($data) ? $this->array_map_recursive($filter, $data) : $filter($data);
                         } else {
                             $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
                             if (false === $data) {
@@ -1272,7 +1342,7 @@ class Request
         $result = array();
         foreach ($data as $key => $val) {
             $result[$key] = is_array($val)
-            ? self::array_map_recursive($filter, $val)
+            ? $this->array_map_recursive($filter, $val)
             : call_user_func($filter, $val);
         }
         return $result;
@@ -1291,34 +1361,6 @@ class Request
         }
     }
 
-    /**
-     * Cookie Helper
-     * 
-     * @param $key Key
-     * @param $value Value
-     * @param $expire Expire Seconds
-     * @return string|null
-     */
-    public static function cookie($key = '', $value = '', $expire = 3600)
-    {
-        if ('' === $value) {
-            if (isset($_COOKIE[$key])) {
-                return Common::authCode($_COOKIE[$key], 'DECODE');
-            } else {
-                return null;
-            }
-        } else {
-            if (is_null($value)) {
-                setcookie($key, '', time() - 3600);
-                unset($_COOKIE[$key]);
-            } else {
-                $authValue = Common::authCode($value, 'ENCODE', $expire);
-                setcookie($key, $authValue, time() + $expire);
-                $_COOKIE[$key] = $authValue;
-            }
-        }
-        return null;
-    }
 
     /**
      * Is HTTPS?
@@ -1328,11 +1370,11 @@ class Request
      *
      * @return  boolean
      */
-    public static function isSecure()
+    public function isSecure()
     {
         if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
             return true;
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO']) {
             return true;
         } elseif (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
             return true;
@@ -1347,10 +1389,10 @@ class Request
      *
      * @return string
      */
-    public static function getBaseUrl()
+    public function getBaseUrl()
     {
         if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST'])) {
-            $base_url = (self::isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
+            $base_url = (Request::getInstance()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
             . substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
         } else {
             $base_url = 'http://localhost/';
@@ -1363,7 +1405,7 @@ class Request
      *
      * @return boolean
      */
-    public static function isGet()
+    public function isGet()
     {
         return 'GET' == $_SERVER['REQUEST_METHOD'];
     }
@@ -1373,7 +1415,7 @@ class Request
      *
      * @return boolean
      */
-    public static function isPost()
+    public function isPost()
     {
         return 'POST' == $_SERVER['REQUEST_METHOD'];
     }
@@ -1383,7 +1425,7 @@ class Request
      *
      * @return boolean
      */
-    public static function isPut()
+    public function isPut()
     {
         return 'PUT' == $_SERVER['REQUEST_METHOD'];
     }
@@ -1393,7 +1435,7 @@ class Request
      *
      * @return boolean
      */
-    public static function isAjax()
+    public function isAjax()
     {
         return ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) ? true : false;
     }
@@ -1409,11 +1451,18 @@ class Request
 class Response
 {
     /**
+     * Instance Handle
+     *
+     * @var object
+     */
+    private static $_instance = null;
+
+    /**
      * Status array
      *
      * @var array
      */
-    private static $_httpCode = array(
+    private $_httpCode = array(
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -1458,13 +1507,25 @@ class Response
     );
 
     /**
+     * get singleton
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (null === self::$_instance) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    /**
      * Set HTTP Status Header
      *
      * @param int $code Status code
      * @param string $text Custom text
      * @return void
      */
-    public static function setStatus($code = 200, $text = '')
+    public function setStatus($code = 200, $text = '')
     {
         if (empty($code) or !is_numeric($code)) {
             Handle::halt('Status codes must be numeric.', 500);
@@ -1473,8 +1534,8 @@ class Response
         if (empty($text)) {
             is_int($code) or $code = (int) $code;
 
-            if (isset(self::$_httpCode[$code])) {
-                $text = self::$_httpCode[$code];
+            if (isset($this->_httpCode[$code])) {
+                $text = $this->_httpCode[$code];
             } else {
                 Handle::halt('No status text available. Please check your status code number or supply your own message text.', 500);
             }
@@ -1497,7 +1558,7 @@ class Response
      * @param string $value Value
      * @return void
      */
-    public static function setHeader($name, $value)
+    public function setHeader($name, $value)
     {
         header($name . ': ' . $value, true);
     }
@@ -1509,7 +1570,7 @@ class Response
      * @param mixed $data Original Data
      * @return void
      */
-    public static function throwJson($data)
+    public function throwJson($data)
     {
         header('Content-Type:application/json; charset=utf-8');
         exit(json_encode($data));
@@ -1522,7 +1583,7 @@ class Response
      * @param boolean $isPermanently 301 or 302
      * @return void
      */
-    public static function redirect($location, $isPermanently = false)
+    public function redirect($location, $isPermanently = false)
     {
         if ($isPermanently) {
             header('Location: ' . $location, false, 301);
@@ -1561,17 +1622,31 @@ class Database
     protected $port;
     protected $option = array();
     // Variable
-    protected $logs = array();
+    protected $logs       = array();
     protected $debug_mode = false;
     //Kotori
     public static $_instance = array();
-    public static $queries = array();
+    public static $queries   = array();
 
-    public static function getInstance($conf)
+    public static function getInstance()
     {
-        $key = $conf['server'];
+        if (Config::getInstance()->get('DB_TYPE') == null) {
+            $config = array();
+            return null;
+        } else {
+            $config = array(
+                'database_type' => Config::getInstance()->get('DB_TYPE'),
+                'database_name' => Config::getInstance()->get('DB_NAME'),
+                'server'        => Config::getInstance()->get('DB_HOST'),
+                'username'      => Config::getInstance()->get('DB_USER'),
+                'password'      => Config::getInstance()->get('DB_PWD'),
+                'charset'       => Config::getInstance()->get('DB_CHARSET'),
+                'port'          => Config::getInstance()->get('DB_PORT'),
+            );
+        }
+        $key = $config['server'] . ':' . $config['port'];
         if (!isset(self::$_instance[$key]) || !(self::$_instance[$key] instanceof self)) {
-            self::$_instance[$key] = new self($conf);
+            self::$_instance[$key] = new self($config);
         }
         return self::$_instance[$key];
     }
@@ -1597,7 +1672,7 @@ class Database
             ) {
                 $port = $this->port;
             }
-            $type = strtolower($this->database_type);
+            $type    = strtolower($this->database_type);
             $is_port = isset($port);
             switch ($type) {
                 case 'mariadb':
@@ -1631,7 +1706,7 @@ class Database
                     $commands[] = 'SET QUOTED_IDENTIFIER ON';
                     break;
                 case 'sqlite':
-                    $dsn = $type . ':' . $this->database_file;
+                    $dsn            = $type . ':' . $this->database_file;
                     $this->username = null;
                     $this->password = null;
                     break;
@@ -1688,7 +1763,7 @@ class Database
     }
     protected function column_push($columns)
     {
-        if ($columns == '*') {
+        if ('*' == $columns) {
             return $columns;
         }
         if (is_string($columns)) {
@@ -1733,9 +1808,7 @@ class Database
         foreach ($data as $key => $value) {
             $type = gettype($value);
             if (
-                preg_match("/^(AND|OR)(\s+#.*)?$/i", $key, $relation_match) &&
-                $type == 'array'
-            ) {
+                preg_match("/^(AND|OR)(\s+#.*)?$/i", $key, $relation_match) && 'array' == $type) {
                 $wheres[] = 0 !== count(array_diff_key($value, array_keys(array_keys($value)))) ?
                 '(' . $this->data_implode($value, ' ' . $relation_match[1]) . ')' :
                 '(' . $this->inner_conjunct($value, ' ' . $relation_match[1], $conjunctor) . ')';
@@ -1744,7 +1817,7 @@ class Database
                 $column = $this->column_quote($match[2]);
                 if (isset($match[4])) {
                     $operator = $match[4];
-                    if ($operator == '!') {
+                    if ('!' == $operator) {
                         switch ($type) {
                             case 'NULL':
                                 $wheres[] = $column . ' IS NOT NULL';
@@ -1764,9 +1837,9 @@ class Database
                                 break;
                         }
                     }
-                    if ($operator == '<>' || $operator == '><') {
-                        if ($type == 'array') {
-                            if ($operator == '><') {
+                    if ('<>' == $operator || '><' == $operator) {
+                        if ('array' == $type) {
+                            if ('><' == $operator) {
                                 $column .= ' NOT';
                             }
                             if (is_numeric($value[0]) && is_numeric($value[1])) {
@@ -1776,14 +1849,14 @@ class Database
                             }
                         }
                     }
-                    if ($operator == '~' || $operator == '!~') {
-                        if ($type == 'string') {
+                    if ('~' == $operator || '!~' == $operator) {
+                        if ('string' == $type) {
                             $value = array($value);
                         }
                         if (!empty($value)) {
                             $like_clauses = array();
                             foreach ($value as $item) {
-                                if ($operator == '!~') {
+                                if ('!~' == $operator) {
                                     $column .= ' NOT';
                                 }
                                 if (preg_match('/^(?!%).+(?<!%)$/', $item)) {
@@ -1831,27 +1904,27 @@ class Database
     {
         $where_clause = '';
         if (is_array($where)) {
-            $where_keys = array_keys($where);
-            $where_AND = preg_grep("/^AND\s*#?$/i", $where_keys);
-            $where_OR = preg_grep("/^OR\s*#?$/i", $where_keys);
+            $where_keys       = array_keys($where);
+            $where_AND        = preg_grep("/^AND\s*#?$/i", $where_keys);
+            $where_OR         = preg_grep("/^OR\s*#?$/i", $where_keys);
             $single_condition = array_diff_key($where, array_flip(
                 explode(' ', 'AND OR GROUP ORDER HAVING LIMIT LIKE MATCH')
             ));
-            if ($single_condition != array()) {
+            if (array() != $single_condition) {
                 $where_clause = ' WHERE ' . $this->data_implode($single_condition, '');
             }
             if (!empty($where_AND)) {
-                $value = array_values($where_AND);
+                $value        = array_values($where_AND);
                 $where_clause = ' WHERE ' . $this->data_implode($where[$value[0]], ' AND');
             }
             if (!empty($where_OR)) {
-                $value = array_values($where_OR);
+                $value        = array_values($where_OR);
                 $where_clause = ' WHERE ' . $this->data_implode($where[$value[0]], ' OR');
             }
             if (isset($where['MATCH'])) {
                 $MATCH = $where['MATCH'];
                 if (is_array($MATCH) && isset($MATCH['columns'], $MATCH['keyword'])) {
-                    $where_clause .= ($where_clause != '' ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($MATCH['columns'], '", "')) . '") AGAINST (' . $this->quote($MATCH['keyword']) . ')';
+                    $where_clause .= ('' != $where_clause ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($MATCH['columns'], '", "')) . '") AGAINST (' . $this->quote($MATCH['keyword']) . ')';
                 }
             }
             if (isset($where['GROUP'])) {
@@ -1892,7 +1965,7 @@ class Database
                     is_numeric($LIMIT[0]) &&
                     is_numeric($LIMIT[1])
                 ) {
-                    if ($this->database_type === 'pgsql') {
+                    if ('pgsql' === $this->database_type) {
                         $where_clause .= ' OFFSET ' . $LIMIT[0] . ' LIMIT ' . $LIMIT[1];
                     } else {
                         $where_clause .= ' LIMIT ' . $LIMIT[0] . ',' . $LIMIT[1];
@@ -1900,7 +1973,7 @@ class Database
                 }
             }
         } else {
-            if ($where != null) {
+            if (null != $where) {
                 $where_clause .= ' ' . $where;
             }
         }
@@ -1908,7 +1981,7 @@ class Database
     }
     protected function select_context($table, $join, &$columns = null, $where = null, $column_fn = null)
     {
-        $table = '"' . $table . '"';
+        $table    = '"' . $table . '"';
         $join_key = is_array($join) ? array_keys($join) : null;
         if (
             isset($join_key[0]) &&
@@ -1916,14 +1989,14 @@ class Database
         ) {
             $table_join = array();
             $join_array = array(
-                '>' => 'LEFT',
-                '<' => 'RIGHT',
+                '>'  => 'LEFT',
+                '<'  => 'RIGHT',
                 '<>' => 'FULL',
                 '><' => 'INNER',
             );
             foreach ($join as $sub_table => $relation) {
                 preg_match('/(\[(\<|\>|\>\<|\<\>)\])?([a-zA-Z0-9_\-]*)\s?(\(([a-zA-Z0-9_\-]*)\))?/', $sub_table, $match);
-                if ($match[2] != '' && $match[3] != '') {
+                if ('' != $match[2] && '' != $match[3]) {
                     if (is_string($relation)) {
                         $relation = 'USING ("' . $relation . '")';
                     }
@@ -1958,23 +2031,23 @@ class Database
                         is_array($join) &&
                         isset($column_fn)
                     ) {
-                        $where = $join;
+                        $where   = $join;
                         $columns = null;
                     } else {
-                        $where = null;
+                        $where   = null;
                         $columns = $join;
                     }
                 } else {
-                    $where = $join;
+                    $where   = $join;
                     $columns = null;
                 }
             } else {
-                $where = $columns;
+                $where   = $columns;
                 $columns = $join;
             }
         }
         if (isset($column_fn)) {
-            if ($column_fn == 1) {
+            if (1 == $column_fn) {
                 $column = '1';
                 if (is_null($where)) {
                     $where = $columns;
@@ -1982,7 +2055,7 @@ class Database
             } else {
                 if (empty($columns)) {
                     $columns = '*';
-                    $where = $join;
+                    $where   = $join;
                 }
                 $column = $column_fn . '(' . $this->column_push($columns) . ')';
             }
@@ -1995,7 +2068,7 @@ class Database
     {
         $query = $this->query($this->select_context($table, $join, $columns, $where));
         return $query ? $query->fetchAll(
-            (is_string($columns) && $columns != '*') ? PDO::FETCH_COLUMN : PDO::FETCH_ASSOC
+            (is_string($columns) && '*' != $columns) ? PDO::FETCH_COLUMN : PDO::FETCH_ASSOC
         ) : false;
     }
     public function insert($table, $datas)
@@ -2006,7 +2079,7 @@ class Database
             $datas = array($datas);
         }
         foreach ($datas as $data) {
-            $values = array();
+            $values  = array();
             $columns = array();
             foreach ($data as $key => $value) {
                 array_push($columns, $this->column_quote($key));
@@ -2083,7 +2156,7 @@ class Database
                 }
             }
             $replace_query = implode(', ', $replace_query);
-            $where = $search;
+            $where         = $search;
         } else {
             if (is_array($search)) {
                 $replace_query = array();
@@ -2091,7 +2164,7 @@ class Database
                     $replace_query[] = $columns . ' = REPLACE(' . $this->column_quote($columns) . ', ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
                 }
                 $replace_query = implode(', ', $replace_query);
-                $where = $replace;
+                $where         = $replace;
             } else {
                 $replace_query = $columns . ' = REPLACE(' . $this->column_quote($columns) . ', ' . $this->quote($search) . ', ' . $this->quote($replace) . ')';
             }
@@ -2104,8 +2177,8 @@ class Database
         if ($query) {
             $data = $query->fetchAll(PDO::FETCH_ASSOC);
             if (isset($data[0])) {
-                $column = $where == null ? $join : $column;
-                if (is_string($column) && $column != '*') {
+                $column = null == $where ? $join : $column;
+                if (is_string($column) && '*' != $column) {
                     return $data[0][$column];
                 }
                 return $data[0];
@@ -2119,7 +2192,7 @@ class Database
     public function has($table, $join, $where = null)
     {
         $column = null;
-        $query = $this->query('SELECT EXISTS(' . $this->select_context($table, $join, $column, $where, 1) . ')');
+        $query  = $this->query('SELECT EXISTS(' . $this->select_context($table, $join, $column, $where, 1) . ')');
         return $query ? $query->fetchColumn() === '1' : false;
     }
     public function count($table, $join = null, $column = null, $where = null)
@@ -2177,10 +2250,10 @@ class Database
     public function info()
     {
         $output = array(
-            'server' => 'SERVER_INFO',
-            'driver' => 'DRIVER_NAME',
-            'client' => 'CLIENT_VERSION',
-            'version' => 'SERVER_VERSION',
+            'server'     => 'SERVER_INFO',
+            'driver'     => 'DRIVER_NAME',
+            'client'     => 'CLIENT_VERSION',
+            'version'    => 'SERVER_VERSION',
             'connection' => 'CONNECTION_STATUS',
         );
         foreach ($output as $key => $value) {
@@ -2207,7 +2280,7 @@ class Log
      */
     private static function write($msg, $level = '')
     {
-        if (Config::get('APP_DEBUG') == false) {
+        if (Config::getInstance()->get('APP_DEBUG') == false) {
             return;
         }
         if (function_exists('saeAutoLoader')) {
@@ -2216,8 +2289,8 @@ class Log
             sae_debug(trim($msg));
             sae_set_display_errors(true);
         } else {
-            $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
-            $logPath = Config::get('APP_FULL_PATH') . '/Log/' . date('Ymd') . '.log';
+            $msg     = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
+            $logPath = Config::getInstance()->get('APP_FULL_PATH') . '/Log/' . date('Ymd') . '.log';
             file_put_contents($logPath, $msg, FILE_APPEND);
         }
     }

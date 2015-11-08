@@ -8,7 +8,8 @@ class IndexController extends Controller
 
     public function index()
     {
-        $this->display();
+        $news_list = $this->NewsModel->getNewsList();
+        $this->view->display();
     }
 
     public function showNews($id)
