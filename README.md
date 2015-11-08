@@ -1,6 +1,6 @@
 ## Intro
 
-KotoriFramework -- a Tiny Controller-View PHP Framework
+KotoriFramework -- a Tiny Model-View-Controller(MVC) PHP Framework
 
 ## LICENSE
 
