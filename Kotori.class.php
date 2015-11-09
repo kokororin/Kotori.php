@@ -41,7 +41,7 @@ class Kotori
      */
     public static function run($conf)
     {
-        //error_reporting(0);
+        ini_set('display_errors', 'off');
         Config::getInstance()->initialize($conf);
         Kotori::initialize();
     }
@@ -874,13 +874,19 @@ class Route
  */
 class Controller
 {
-
     /**
      * Instance Handle
      *
      * @var object
      */
     private static $_instance;
+
+    /**
+     * Initialized Models
+     *
+     * @var array
+     */
+    private $_model = array();
 
     /**
      * get singleton
@@ -919,7 +925,17 @@ class Controller
     public function __get($key)
     {
         if (substr($key, -5) == 'Model') {
-            return new $key();
+            if (isset($this->_model[$key])) {
+                return $this->_model[$key];
+            }
+
+            if (!class_exists($key)) {
+                throw new Exception('Request Model ' . $key . ' is not Found');
+            } else {
+                $model              = new $key();
+                $this->_model[$key] = $model;
+                return $model;
+            }
         }
         return null;
     }
@@ -1337,7 +1353,7 @@ class Request
      * @param $data mixed Orginal data
      * @return mixed
      */
-    private static function array_map_recursive($filter, $data)
+    private function array_map_recursive($filter, $data)
     {
         $result = array();
         foreach ($data as $key => $val) {
@@ -1360,7 +1376,6 @@ class Request
             $value .= ' ';
         }
     }
-
 
     /**
      * Is HTTPS?
@@ -1624,7 +1639,7 @@ class Database
     // Variable
     protected $logs       = array();
     protected $debug_mode = false;
-    //Kotori
+    // Kotori
     public static $_instance = array();
     public static $queries   = array();
 
