@@ -653,27 +653,23 @@ class Route
      */
     public function dispatch()
     {
-        switch (Config::getInstance()->get('URL_MODE')) {
-            //Will parse PATH_INFO and automatically detect the URI from it,
-            case 'PATH_INFO':
-                $uri = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
-                : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
-                    : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
-                break;
-            //Will parse QUERY_STRING and automatically detect the URI from it.
-            case 'QUERY_STRING':
-                $uri = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : @getenv('QUERY_STRING');
-                if (trim($uri, '/') == '') {
-                    $uri = '';
-                } elseif (strncmp($uri, '/', 1) == 0) {
-                    $uri                     = explode('?', $uri, 2);
-                    $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
-                    $uri                     = $uri[0];
-                }
-                break;
-            default:
-                break;
+        if (isset($_GET['route'])) {
+            $_SERVER['PATH_INFO'] = $_GET['route'];
         }
+        $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
+        : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
+            : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
+
+        $uri = $_SERVER['PATH_INFO'];
+
+        if (trim($uri, '/') == '') {
+            $uri = '';
+        } elseif (strncmp($uri, '/', 1) == 0) {
+            $uri                     = explode('?', $uri, 2);
+            $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
+            $uri                     = $uri[0];
+        }
+
         $parsedRoute = $this->parseRoutes($uri);
         if ($parsedRoute) {
             $uri = $parsedRoute;
@@ -703,7 +699,7 @@ class Route
         define('END_TIME', microTime(true));
         define('RUN_TIME', END_TIME - START_TIME);
         //Bind
-        call_user_func_array(array($controller, $_action), $params);
+        call_user_func_array(array($controller, $_action), $_GET);
 
     }
 
@@ -715,9 +711,6 @@ class Route
      */
     private function getController($uriArray)
     {
-        if (isset($_GET['_controller']) && isset($_GET['_action'])) {
-            return strip_tags($_GET['_controller']);
-        }
         if (isset($uriArray[0]) && '' !== $uriArray[0]) {
             $_controller = $uriArray[0];
         } else {
@@ -734,9 +727,6 @@ class Route
      */
     private function getAction($uriArray)
     {
-        if (isset($_GET['_controller']) && isset($_GET['_action'])) {
-            return strip_tags($_GET['_action']);
-        }
         if (isset($uriArray[1])) {
             $_action = $uriArray[1];
         } else {
@@ -753,17 +743,8 @@ class Route
      */
     private function getParams($uriArray)
     {
-
         $params = array();
-
-        if (isset($_GET['_controller']) && isset($_GET['_action'])) {
-            unset($_GET['_controller'], $_GET['_action']);
-            $params = $_GET;
-            return $params;
-        }
-
         $params = $uriArray;
-
         return $params;
     }
 
@@ -827,7 +808,7 @@ class Route
                 return $base_url . $uri;
                 break;
             case 'QUERY_STRING':
-                return $base_url . '?' . $uri;
+                return $base_url . 'index.php?route=' . $uri;
                 break;
             default:
                 return;
