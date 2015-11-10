@@ -699,7 +699,7 @@ class Route
         define('END_TIME', microTime(true));
         define('RUN_TIME', END_TIME - START_TIME);
         //Bind
-        call_user_func_array(array($controller, $_action), $_GET);
+        call_user_func_array(array($controller, $_action), $params);
 
     }
 
