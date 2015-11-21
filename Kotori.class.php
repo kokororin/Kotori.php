@@ -42,6 +42,7 @@ class Kotori
     public static function run($conf)
     {
         ini_set('display_errors', 'off');
+        ini_set('date.timezone', 'Asia/Shanghai');
         Config::getInstance()->initialize($conf);
         Kotori::initialize();
     }
@@ -151,63 +152,6 @@ class Common
         return false;
     }
 
-    /**
-     * discuz UC Auth Code
-     *
-     * @param string $string word
-     * @param string $operation Operation
-     * @param string $key Secret Key
-     * @param int $expiry Expiry Time
-     * @return string
-     * @example
-     *   $a = authcode('abc', 'ENCODE', 'key');
-     *   $b = authcode($a, 'DECODE', 'key');  // $b(abc)
-     *
-     *   $a = authcode('abc', 'ENCODE', 'key', 3600);
-     *   $b = authcode('abc', 'DECODE', 'key'); // $b(abc) in one hour
-     */
-    public static function authCode($string, $operation, $expiry = 0)
-    {
-        $key           = Config::getInstance()->get('SECRET_KEY');
-        $ckey_length   = 4;
-        $key           = md5($key);
-        $keya          = md5(substr($key, 0, 16));
-        $keyb          = md5(substr($key, 16, 16));
-        $keyc          = $ckey_length ? ('DECODE' == $operation ? substr($string, 0, $ckey_length) : substr(md5(microtime()), -$ckey_length)) : '';
-        $cryptkey      = $keya . md5($keya . $keyc);
-        $key_length    = strlen($cryptkey);
-        $string        = 'DECODE' == $operation ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string . $keyb), 0, 16) . $string;
-        $string_length = strlen($string);
-        $result        = '';
-        $box           = range(0, 255);
-        $rndkey        = array();
-        for ($i = 0; $i <= 255; $i++) {
-            $rndkey[$i] = ord($cryptkey[$i % $key_length]);
-        }
-        for ($j = $i = 0; $i < 256; $i++) {
-            $j       = ($j + $box[$i] + $rndkey[$i]) % 256;
-            $tmp     = $box[$i];
-            $box[$i] = $box[$j];
-            $box[$j] = $tmp;
-        }
-        for ($a = $j = $i = 0; $i < $string_length; $i++) {
-            $a       = ($a + 1) % 256;
-            $j       = ($j + $box[$a]) % 256;
-            $tmp     = $box[$a];
-            $box[$a] = $box[$j];
-            $box[$j] = $tmp;
-            $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
-        }
-        if ('DECODE' == $operation) {
-            if ((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26) . $keyb), 0, 16)) {
-                return substr($result, 26);
-            } else {
-                return '';
-            }
-        } else {
-            return $keyc . str_replace('=', '', base64_encode($result));
-        }
-    }
 }
 
 /**
@@ -249,7 +193,6 @@ class Config
         'DB_CHARSET'  => 'utf8',
         'USE_SESSION' => true,
         'URL_MODE'    => 'QUERY_STRING',
-        'SECRET_KEY'  => 'KOTORI',
     );
 
     /**
@@ -334,21 +277,24 @@ class Handle
      * Takes an error message as input
      * and displays it using the specified template.
      *
-     * @param string $str Error string
+     * @param string $message Error Message
      * @param int $code HTTP Header code
      *
      * @return void
      */
-    public static function halt($str, $code = 500)
+    public static function halt($message, $code = 500)
     {
         Response::getInstance()->setStatus($code);
         if (Config::getInstance()->get('APP_DEBUG') == false) {
-            $str = '404 Not Found.';
+            $message = '404 Not Found.';
         }
-        $tpl = '<!DOCTYPE html>
+        echo
+            <<<EOF
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>Error Occured.</title>
 <style type="text/css">
 html {
@@ -440,15 +386,27 @@ a:hover {
     box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
 }
 </style>
+<script>
+function open_link(url){
+ var el = document.createElement('a');
+ document.body.appendChild(el);
+ el.href = url;
+ el.target = '_blank';
+ el.click();
+ document.body.removeChild(el);
+}
+</script>
 </head>
 
 <body id="error-page">
     <h1>Error Occured.</h1>
-    <p>' . $str . '</p>
+    <p>{$message}</p>
+    <button class="button" onclick="open_link('https://github.com/kokororin/KotoriFramework')">Go to GitHub Page</button>
+    <button class="button" onclick="open_link('https://github.com/kokororin/KotoriFramework/issues')">Report a Bug</button>
 </body>
-</html>';
-        exit($tpl);
-
+</html>
+EOF;
+        exit;
     }
 
     /**
@@ -562,50 +520,6 @@ a:hover {
 
     }
 
-    /**
-     * Get Page Trace
-     *
-     * @return array
-     */
-    public static function getTrace()
-    {
-        $files = get_included_files();
-        $info  = array();
-        foreach ($files as $key => $file) {
-            $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
-        }
-        $error = Handle::$errors;
-        $sql   = Database::getInstance()->queries;
-        $trace = array();
-        $base  = array(
-            'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
-            'Run Time'     => RUN_TIME . 's',
-            'TPR'          => number_format(1 / RUN_TIME, 2) . 'req/s',
-            'Memory Uses'  => number_format(memory_get_usage() / 1024, 2) . ' kb',
-            'SQL Queries'  => count($sql) . ' queries ',
-            'File Loaded'  => count(get_included_files()),
-            'Session Info' => 'SESSION_ID=' . session_id(),
-        );
-
-        $tabs = array('BASE' => 'Basic', 'FILE' => 'File', 'ERROR' => 'Error', 'SQL' => 'SQL');
-        foreach ($tabs as $name => $title) {
-            switch (strtoupper($name)) {
-                case 'BASE':
-                    $trace[$title] = $base;
-                    break;
-                case 'FILE':
-                    $trace[$title] = $info;
-                    break;
-                case 'ERROR':
-                    $trace[$title] = $error;
-                    break;
-                case 'SQL':
-                    $trace[$title] = $sql;
-                    break;
-            }
-        }
-        return $trace;
-    }
 }
 
 /**
@@ -893,7 +807,6 @@ class Controller
         $this->request   = Request::getInstance();
         $this->route     = Route::getInstance();
         $this->db        = Database::getInstance();
-
     }
 
     /**
@@ -919,6 +832,19 @@ class Controller
             }
         }
         return null;
+    }
+
+    /**
+     * Class destructor
+     *
+     * In order to show Trace.
+     *
+     * @return void
+     */
+    public function __destruct(){
+        if (Config::getInstance()->get('APP_DEBUG') == true && !Request::getInstance()->isAjax()) {
+            echo Trace::getInstance()->showTrace();
+        }
     }
 
 }
@@ -1047,90 +973,9 @@ class View
         ob_implicit_flush(0);
         extract($this->_data, EXTR_OVERWRITE);
         include $this->_viewPath;
-        if (Config::getInstance()->get('APP_DEBUG') == true && !Request::getInstance()->isAjax()) {
-            $this->showTrace();
-        }
         $content = ob_get_clean();
         header('X-Powered-By:Kotori');
         echo $content;
-    }
-
-    /**
-     * Show Page Trace in Output
-     *
-     * @return void
-     */
-    private function showTrace()
-    {
-        $trace = Handle::getTrace();
-        $tpl   = '<!-- Kotori Page Trace -->
-<div id="kotori_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
-<div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
-<div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
-        foreach ($trace as $key => $value) {
-            $tpl .= '<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
-        }
-        $tpl .= '</div>
-<div id="kotori_page_trace_tab_cont" style="overflow:auto;height:212px;padding: 0; line-height: 24px">';
-        foreach ($trace as $info) {
-            $tpl .= '<div style="display:none;">
-    <ol style="padding: 0; margin:0">';
-            if (is_array($info)) {
-                foreach ($info as $k => $val) {
-                    $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . htmlentities($val, ENT_COMPAT, 'utf-8') . '</li>';
-                }
-            }
-
-            $tpl .= '</ol>
-    </div>';
-        }
-        $tpl .= '</div>
-</div>
-<div id="kotori_page_trace_close" style="display:none;text-align:right;height:15px;position:absolute;top:10px;right:12px;cursor: pointer;"><img style="vertical-align:top;" src="data:image/gif;base64,R0lGODlhDwAPAJEAAAAAAAMDA////wAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IFdpbmRvd3MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MUQxMjc1MUJCQUJDMTFFMTk0OUVGRjc3QzU4RURFNkEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MUQxMjc1MUNCQUJDMTFFMTk0OUVGRjc3QzU4RURFNkEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxRDEyNzUxOUJBQkMxMUUxOTQ5RUZGNzdDNThFREU2QSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxRDEyNzUxQUJBQkMxMUUxOTQ5RUZGNzdDNThFREU2QSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAAAAAAALAAAAAAPAA8AAAIdjI6JZqotoJPR1fnsgRR3C2jZl3Ai9aWZZooV+RQAOw==" /></div>
-</div>
-<div id="kotori_page_trace_open" style="height:30px;float:right;text-align: right;overflow:hidden;position:fixed;bottom:0;right:0;color:#000;line-height:30px;cursor:pointer;"><div style="background:#232323;color:#FFF;padding:0 6px;float:right;line-height:30px;font-size:14px">' . round(RUN_TIME * 1000) . 'ms</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="data:image/png;base64,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"></div>
-<script type="text/javascript">
-(function(){
-var tab_tit  = document.getElementById(\'kotori_page_trace_tab_tit\').getElementsByTagName(\'span\');
-var tab_cont = document.getElementById(\'kotori_page_trace_tab_cont\').getElementsByTagName(\'div\');
-var open     = document.getElementById(\'kotori_page_trace_open\');
-var close    = document.getElementById(\'kotori_page_trace_close\').childNodes[0];
-var trace    = document.getElementById(\'kotori_page_trace_tab\');
-var cookie   = document.cookie.match(/kotori_show_page_trace=(\d\|\d)/);
-var history  = (cookie && typeof cookie[1] != \'undefined\' && cookie[1].split(\'|\')) || [0,0];
-open.onclick = function(){
-    trace.style.display = \'block\';
-    this.style.display = \'none\';
-    close.parentNode.style.display = \'block\';
-    history[0] = 1;
-    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
-}
-close.onclick = function(){
-    trace.style.display = \'none\';
-this.parentNode.style.display = \'none\';
-    open.style.display = \'block\';
-    history[0] = 0;
-    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
-}
-for(var i = 0; i < tab_tit.length; i++){
-    tab_tit[i].onclick = (function(i){
-        return function(){
-            for(var j = 0; j < tab_cont.length; j++){
-                tab_cont[j].style.display = \'none\';
-                tab_tit[j].style.color = \'#999\';
-            }
-            tab_cont[i].style.display = \'block\';
-            tab_tit[i].style.color = \'#000\';
-            history[1] = i;
-            document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
-        }
-    })(i)
-}
-parseInt(history[0]) && open.click();
-(tab_tit[history[1]] || tab_tit[0]).click();
-})();
-</script>';
-        echo $tpl;
     }
 
     /**
@@ -1598,6 +1443,171 @@ class Response
 
 }
 
+/**
+ * Trace Class
+ *
+ * @package     Kotori
+ * @subpackage  Trace
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
+class Trace
+{
+    /**
+     * traceTab
+     *
+     * @var array
+     */
+    private $traceTabs = array(
+        'BASE'  => 'Basic',
+        'FILE'  => 'File',
+        'ERROR' => 'Error',
+        'SQL'   => 'SQL',
+    );
+
+    /**
+     * Instance Handle
+     *
+     * @var object
+     */
+    private static $_instance = null;
+
+    /**
+     * get singleton
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (!(self::$_instance instanceof self)) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    /**
+     * Get Page Trace
+     *
+     * @return array
+     */
+    private function getTrace()
+    {
+        $files = get_included_files();
+        $info  = array();
+        foreach ($files as $key => $file) {
+            $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
+        }
+        $error = Handle::$errors;
+        $sql   = Database::getInstance()->queries;
+        $trace = array();
+        $base  = array(
+            'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
+            'Run Time'     => RUN_TIME . 's',
+            'TPR'          => number_format(1 / RUN_TIME, 2) . 'req/s',
+            'Memory Uses'  => number_format(memory_get_usage() / 1024, 2) . ' kb',
+            'SQL Queries'  => count($sql) . ' queries ',
+            'File Loaded'  => count(get_included_files()),
+            'Session Info' => 'SESSION_ID=' . session_id(),
+        );
+
+        $tabs = $this->traceTabs;
+        foreach ($tabs as $name => $title) {
+            switch (strtoupper($name)) {
+                case 'BASE':
+                    $trace[$title] = $base;
+                    break;
+                case 'FILE':
+                    $trace[$title] = $info;
+                    break;
+                case 'ERROR':
+                    $trace[$title] = $error;
+                    break;
+                case 'SQL':
+                    $trace[$title] = $sql;
+                    break;
+            }
+        }
+        return $trace;
+    }
+
+    /**
+     * Show Page Trace in Output
+     *
+     * @return string
+     */
+    public function showTrace()
+    {
+        $trace = $this->getTrace();
+        $tpl   = '<!-- Kotori Page Trace -->
+<div id="kotori_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
+<div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
+<div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
+        foreach ($trace as $key => $value) {
+            $tpl .= '<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
+        }
+        $tpl .= '</div>
+<div id="kotori_page_trace_tab_cont" style="overflow:auto;height:212px;padding: 0; line-height: 24px">';
+        foreach ($trace as $info) {
+            $tpl .= '<div style="display:none;">
+    <ol style="padding: 0; margin:0">';
+            if (is_array($info)) {
+                foreach ($info as $k => $val) {
+                    $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . htmlentities($val, ENT_COMPAT, 'utf-8') . '</li>';
+                }
+            }
+
+            $tpl .= '</ol>
+    </div>';
+        }
+        $tpl .= '</div>
+</div>
+<div id="kotori_page_trace_close" style="display:none;text-align:right;height:15px;position:absolute;top:10px;right:12px;cursor: pointer;"><img style="vertical-align:top;" src="data:image/gif;base64,R0lGODlhDwAPAJEAAAAAAAMDA////wAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IFdpbmRvd3MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MUQxMjc1MUJCQUJDMTFFMTk0OUVGRjc3QzU4RURFNkEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MUQxMjc1MUNCQUJDMTFFMTk0OUVGRjc3QzU4RURFNkEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxRDEyNzUxOUJBQkMxMUUxOTQ5RUZGNzdDNThFREU2QSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxRDEyNzUxQUJBQkMxMUUxOTQ5RUZGNzdDNThFREU2QSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAAAAAAALAAAAAAPAA8AAAIdjI6JZqotoJPR1fnsgRR3C2jZl3Ai9aWZZooV+RQAOw==" /></div>
+</div>
+<div id="kotori_page_trace_open" style="height:30px;float:right;text-align: right;overflow:hidden;position:fixed;bottom:0;right:0;color:#000;line-height:30px;cursor:pointer;"><div style="background:#232323;color:#FFF;padding:0 6px;float:right;line-height:30px;font-size:14px">' . round(RUN_TIME * 1000) . 'ms</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAKKUlEQVR42sWX6VNb5xXG+VfamU7zqV/6oZ1MM0naZNImaevW2I4bGyfstgGzi00IJCSwJSEkdiF2sW+2AAPGZjEyCIRkQCBALMaAzWpjwAK03Pv0XOHYJkyn+ZKJZp654o7mvr/7POec98ULAPNLyuvNF/aX0vsAng/Lsif19rc/z+cUgNvtxu6rF1hZsuH5yiJ9f0n3XB6YnxXg6OgQq8+ewjTSh/YGNTqq5OiuU6JfV4GttRW4XC44SQzDvIU55dZ7+qmuEQDL2O2v2c6H7YhRRSNOGoJsZTSa1Mm4XZiM5sJUDA93w7A8iTabAVv7O28XcROQfX8Puztb2H25hdd7r+A4OgDjcYz5aQB2+z5jnTKzvreC8IH6In5bchEfq/6DFFUISrNikS2PRHRJIj6pvIGv7/BhWpn2xMRpfeUJjH06dDcVoKshD0PdDZgd02NtZR6v93cJxP1/o/MaHuhi6rWF7BeBf8VvCs7jVzWX8GvNN/iz/FvESAIQkRYAP2kgfJXXEFkci9buOixYTVien0KPrhKVWYnQ3IxCpSIBTYVp6KpWoO+2BuNDHQRiw+Gh/URspwDUkkiGH+rDfnr2I3ygPIfflVyGd14AklShyFFGokgRg4KMCKhSQ5DJvwql4DrU6VGoyk5FTa4AJdJYKATXILhxGfzQy8gRheNOaTp6GpTQt5XCYuzHq52X/xPCS50azAiunWfPnPsUZwQXkJYfjsrCRNSo4iGP90VC4FlIQr9FMT8U1aJI1IijoOFfhyohCFWKOLSXpUNXKkFFVjxEkd8j2v8cJDx/1BcK0VOvRG9TPsz6Dk9ncbGdAki7cZERh33DxgWfhSrtKioyo5CTHIz4AG+IQ33QpkrFRLMGi/fqsdzXgsXOWvQW3UKtlIe2IhHuaW+hq0qKlqJUFKVHQJYQjJig80iL9kOzJo0gstDbkIspYy8OD+ynXPC64fM1w/M/wxakBCFXEARpzHeQhPmgTMKDtasB25ZH2J4awrLxAVZGe7Aw0AZDUxG6ym6iozwD3VUygpCitVSMSnk0tFlxyBaGIjrwPOQUWWuZhBwSo7M2G8sL054oTgDIYnyY/GR/NpfvB1V8IKrT46GvK8LrBTPcazNwr9vg3pyFY82KTQIx6bQYbFTjblkG2krS0E4Pb6dF2in3qsxY1BBAY4EAiuQQxAZdQKmMB60yAfX5Qgx0Np6KwaswJZApSgkkgCB0FcvQpKQHkRqLVLhdmof+Zi1WxwdwuDqF/aUx2PrbMEQO3FanQqcRobU4jUDEaCWY6iwe6rMT0ZDHRwNBpNy4hPRYf5TL45ErDEerNh8HP4rBSxXny2TH+7Hd5VnQqbMQcNEbouQEVFeUQluqQYZQAF5IINrK87Fu0WPV1IsRXTmaC1JpSKWghUBuU/53NEJUyKI8ELXZCQQkRqEkHMKIK1TQfIiifVGVn4GNtWcnAYpSQpi6zER2jfJtpreur6pES0MdBh60Y3FuGrlKGdJFQoT6+5K1CuwvPsaOzQhrfwt66nI8DjRzE7OAD7UoBJXSGIoiznOfcyJXFIq6HD4U/GvIobpafjJ3EuB+sYwxtpSyzifjWJswYGl2EtJoH/SqruBOURqUvMuIuxGMsrwc1ORI4eLqYmMOR89nsUcwswM6dFXK0ZRPi/HpdzcjoJXzoCsWUW2IUZedhBpyRE3DSpoahfXnP3JgtrOeWdF3sO7FcTgXLdi2jaEqNQDVkR/ju88+wE3fP0IcG4TpwV6M32/xFCWzuUiFeSzn+jy2Z0Zg0JWiTpWCWpofNYp4TyStJSKaFTxyIpkGVjRKVBIc2F+fBNga6WZ2TP2s0zIM18QwDkgLPToM1+ehNTeerBRgvK8V9uUpOJ9TG9HbMxvzBEHXrQXSokdHq1YsGe+jry6PaklM7qVQkaYeF2ZOgseJdq3yTQTvWtFrf0LP7Joess7RQbg4mUgWI5xPJ7EzO0qtNwzHKm1A63NvFudkOxZBuDfnPXHszo/D/tSKrekRmDurCYDrkhSU05sXpYeRIxRJuQzGh51wM+9a0csxbWAc1hHWNTZ0vDinMQNcSxa4uYWfzYChBRjO+h8ANo/F1YLz+QyWTf24X10CCxXu9rSRIIYweFvt2c4LhCGQ8r4nIJGnXfUddXA6HG9j8LKP9zGMjQBmjXBZR+CaJM2MwvXUAmZlimQFQxBugnDRYpx+AOHqYW9xDI+7dagqyEEKLxq1eQo8H9dTyxJUlQIaSSQB+EJHkbQXp+Khrgx7u7vvALYG2xj3jIF122jhOdK8Ce6FMbifTIDhICgKDsJNGR/Mm2GfGz0uxDcAdro/T44tzVlgtU4iJSkBZaqbeEEvND90lxaW0oi/jjvkBgfQ06TG9ub6+wA65sDSzzKzBjC2YTAE4SYI18Jj0hhcHpBJuAnmkAAcS/T3ms0TiZuuzyyDKKGMH9VLsEwdVKEpQFhwILrry6gmJmBsq0ZxRhTNiSSKgHbIliK83N54rwbGe5jD8V7WNf0IzMwQyA28MvVAX5KHzhwFlg19OFgYp5qY8EAwq1wk08exkJ4YOpEZ+AnEl36PW5EXwfP5G8SCJEQF+2Fj4hFGWrXQZvLQmJtA3SFA/50S7NPR7S2Ay9LPuCwPWdfkQ6oBPXZG7qFOkIDwz77A9U8+Q4VYgqcTZryYm8ARFw2dDZnld7HsTA+jUy1C3Lk/QH71Q8iC/gQNgfuc+xeWDPdxtzQL2fxA1GbFoDk3EQ9ayuBwHL0DcJIDjok+1jnRh6PxXgxk34LS+wKkX52B8PMvkfD5V/TgUNwtKYa5rQl71mFyYsIDwcF42pV2yQ46jpVnXEGumPJurIOP9xn012poPEchI/IyquQRaM5PxuB9neeY/w7A3M04zQ9Yx+Me7OjbMC9Nx5ooDduSDLqKYQyPhuqf3gj76C+I/fsZDFaq4aIRzHBtSvXhnKG6mDRixzxAe0MJZs0G6O/dpT0gCV2lKiT6nYUs9gqq6XDbrE7Dos164kzg5RztZJyjXaxjtBubHbXYUWXhMDMLRwql52qXZWI5WQjV388i+MOPUS9M8nSLmyvSuceemeHmZod5CE7rKJwEtjNlgKWjno5xYRAEeSMvOQBaWQSaaLunU/iJ/xm8Dg2tjMPYwZKwdbcGO0rFW4AfZJdmYjQ8BoIv/wFTlRruOYphgebGHE1M2sCcJj3co4/gJBgHQb2go7mpuQw5Mf6QRl2GRniVIILR0VBOb/+jA8nLTi1zMNTKHhrasEdb7HpeFvZlchxkHjvB6UCuwNMUEaojwvBqpIvadYjaddgD4qL2dU3S2z8eBLefOG1mbIz0oFaeDGHIBSpAPygoAjkNo4GuFg/A+6dCr9VaFbPf38geDrXicFCH7ZZy7OVknwJYl8uwdLsSrqkBMLOD8MyNWYLgZOPEOTKKDWMPKqTJEFz7Bpm873Ar6hKSA/8NJR33zEO9pwD+C7GUKIVlXfUCAAAAAElFTkSuQmCC"></div>
+<script type="text/javascript">
+(function(){
+var tab_tit  = document.getElementById(\'kotori_page_trace_tab_tit\').getElementsByTagName(\'span\');
+var tab_cont = document.getElementById(\'kotori_page_trace_tab_cont\').getElementsByTagName(\'div\');
+var open     = document.getElementById(\'kotori_page_trace_open\');
+var close    = document.getElementById(\'kotori_page_trace_close\').childNodes[0];
+var trace    = document.getElementById(\'kotori_page_trace_tab\');
+var cookie   = document.cookie.match(/kotori_show_page_trace=(\d\|\d)/);
+var history  = (cookie && typeof cookie[1] != \'undefined\' && cookie[1].split(\'|\')) || [0,0];
+open.onclick = function(){
+    trace.style.display = \'block\';
+    this.style.display = \'none\';
+    close.parentNode.style.display = \'block\';
+    history[0] = 1;
+    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
+}
+close.onclick = function(){
+    trace.style.display = \'none\';
+this.parentNode.style.display = \'none\';
+    open.style.display = \'block\';
+    history[0] = 0;
+    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
+}
+for(var i = 0; i < tab_tit.length; i++){
+    tab_tit[i].onclick = (function(i){
+        return function(){
+            for(var j = 0; j < tab_cont.length; j++){
+                tab_cont[j].style.display = \'none\';
+                tab_tit[j].style.color = \'#999\';
+            }
+            tab_cont[i].style.display = \'block\';
+            tab_tit[i].style.color = \'#000\';
+            history[1] = i;
+            document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
+        }
+    })(i)
+}
+parseInt(history[0]) && open.click();
+(tab_tit[history[1]] || tab_tit[0]).click();
+})();
+</script>';
+        return $tpl;
+    }
+}
+
 /*!
  * Medoo database framework
  * http://medoo.in
@@ -1629,7 +1639,7 @@ class Database
     protected $debug_mode = false;
     // Kotori
     public static $_instance = array();
-    public $queries   = array();
+    public $queries          = array();
 
     public static function getInstance()
     {
@@ -2486,6 +2496,7 @@ class Log
 
     /**
      * Write SQL Log
+     *
      * @param string $msg Message
      */
     public static function sql($msg)
