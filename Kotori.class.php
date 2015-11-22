@@ -43,7 +43,7 @@ class Kotori
     {
         ini_set('display_errors', 'off');
         ini_set('date.timezone', 'Asia/Shanghai');
-        Config::getInstance()->initialize($conf);
+        Kotori_Config::getInstance()->initialize($conf);
         Kotori::initialize();
     }
 
@@ -55,26 +55,26 @@ class Kotori
     {
         define('START_TIME', microtime(true));
         //Define a custom error handler so we can log PHP errors
-        set_error_handler(array('Handle', 'error'));
-        set_exception_handler(array('Handle', 'exception'));
-        register_shutdown_function(array('Handle', 'end'));
+        set_error_handler(array('Kotori_Handle', 'error'));
+        set_exception_handler(array('Kotori_Handle', 'exception'));
+        register_shutdown_function(array('Kotori_Handle', 'end'));
 
-        if (Config::getInstance()->get('USE_SESSION') == true) {
+        if (Kotori_Config::getInstance()->get('USE_SESSION') == true) {
             session_start();
         }
 
         //Load application's common functions
-        Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/common.php');
+        Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/common.php');
 
         spl_autoload_register(array('Kotori', 'autoload'));
 
         //Load route class
-        Route::getInstance()->dispatch();
+        Kotori_Route::getInstance()->dispatch();
 
         //Global security filter
-        array_walk_recursive($_GET, array('Request', 'filter'));
-        array_walk_recursive($_POST, array('Request', 'filter'));
-        array_walk_recursive($_REQUEST, array('Request', 'filter'));
+        array_walk_recursive($_GET, array('Kotori_Request', 'filter'));
+        array_walk_recursive($_POST, array('Kotori_Request', 'filter'));
+        array_walk_recursive($_REQUEST, array('Kotori_Request', 'filter'));
 
     }
 
@@ -85,12 +85,13 @@ class Kotori
      */
     private static function autoload($class)
     {
+        $baseRoot = Kotori_Config::getInstance()->get('APP_FULL_PATH');
         if (substr($class, -10) == 'Controller') {
-            Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/Controller/' . $class . '.class.php');
+            Kotori_Common::import($baseRoot . '/Controller/' . $class . '.class.php');
         } elseif (substr($class, -5) == 'Model') {
-            Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/Model/' . $class . '.class.php');
+            Kotori_Common::import($baseRoot . '/Model/' . $class . '.class.php');
         } else {
-            Common::import(Config::getInstance()->get('APP_FULL_PATH') . '/Lib/' . $class . '.class.php');
+            Kotori_Common::import($baseRoot . '/Lib/' . $class . '.class.php');
         }
     }
 }
@@ -105,7 +106,7 @@ class Kotori
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Common
+class Kotori_Common
 {
     /**
      * Require Array
@@ -164,7 +165,7 @@ class Common
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Config
+class Kotori_Config
 {
 
     /**
@@ -235,7 +236,7 @@ class Config
         if (is_string($key)) {
             $this->_config[$key] = $value;
         } else {
-            Handle::halt('Config Error.');
+            Kotori_Handle::halt('Config Error.');
         }
     }
 
@@ -262,7 +263,7 @@ class Config
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Handle
+class Kotori_Handle
 {
     /**
      * Error Array
@@ -284,8 +285,8 @@ class Handle
      */
     public static function halt($message, $code = 500)
     {
-        Response::getInstance()->setStatus($code);
-        if (Config::getInstance()->get('APP_DEBUG') == false) {
+        Kotori_Response::getInstance()->setStatus($code);
+        if (Kotori_Config::getInstance()->get('APP_DEBUG') == false) {
             $message = '404 Not Found.';
         }
         echo
@@ -471,7 +472,7 @@ EOF;
         $text = '<b>Error Type:</b>' . $errtype . '<br>' . '<b>Info:</b>' . $errstr . '<br>' . '<b>Line:</b>' . $errline . '<br>' . '<b>File:</b>' . $errfile;
         $txt  = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
         array_push(self::$errors, $txt);
-        Log::normal($txt);
+        Kotori_Log::normal($txt);
         //self::halt($text, 500);
 
     }
@@ -491,7 +492,7 @@ EOF;
         $text = '<b>Exception:</b>' . $exception->getMessage();
         $txt  = 'Type:Exception' . ' Info:' . $exception->getMessage();
         //array_push(self::$errors, $txt);
-        Log::normal($txt);
+        Kotori_Log::normal($txt);
         self::halt($text, 500);
     }
 
@@ -514,11 +515,24 @@ EOF;
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
             $text = '<b>Error Type:</b>' . $last_error['type'] . '<br>' . '<b>Info:</b>' . $last_error['message'] . '<br>' . '<b>Line:</b>' . $last_error['line'] . '<br>' . '<b>File:</b>' . $last_error['file'];
             $txt  = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
-            Log::normal($txt);
+            Kotori_Log::normal($txt);
             self::halt($text, 500);
         }
 
     }
+
+}
+
+/**
+ * Exception Class
+ *
+ * @package     Kotori
+ * @subpackage  Exception
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
+class Kotori_Exception extends Exception
+{
 
 }
 
@@ -532,7 +546,7 @@ EOF;
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Route
+class Kotori_Route
 {
     /**
      * Instance Handle
@@ -596,13 +610,13 @@ class Route
         //Define some variables
         define('CONTROLLER_NAME', $_controller);
         define('ACTION_NAME', $_action);
-        define('PUBLIC_DIR', Request::getInstance()->getBaseUrl() . 'Public');
+        define('PUBLIC_DIR', Kotori_Request::getInstance()->getBaseUrl() . 'Public');
         unset($uriArray[0], $uriArray[1]);
 
-        $controller = Route::getInstance()->controller($_controller);
+        $controller = Kotori_Route::getInstance()->controller($_controller);
 
         if (!method_exists($controller, $_action)) {
-            throw new Exception('Request Action ' . $_action . ' is not Found.');
+            throw new Kotori_Exception('Request Action ' . $_action . ' is not Found.');
         }
         //Parse params from uri
         $params = $this->getParams($uriArray);
@@ -612,6 +626,7 @@ class Route
         //Endtime
         define('END_TIME', microTime(true));
         define('RUN_TIME', END_TIME - START_TIME);
+        header('X-Powered-By:Kotori');
         //Bind
         call_user_func_array(array($controller, $_action), $params);
 
@@ -674,12 +689,12 @@ class Route
      */
     private function parseRoutes($uri)
     {
-        $routes = Config::getInstance()->get('URL_ROUTE');
+        $routes = Kotori_Config::getInstance()->get('URL_ROUTE');
 
         if (null != $routes) {
             foreach ($routes as $key => $val) {
                 if (is_array($val)) {
-                    Handle::halt('Route Rules Error.');
+                    Kotori_Handle::halt('Route Rules Error.');
                 }
                 // Does the RegEx match?
                 if (preg_match('#^' . $key . '$#', $uri, $matches)) {
@@ -714,15 +729,16 @@ class Route
      */
     public function url($uri = '')
     {
-        $base_url = Request::getInstance()->getBaseUrl();
+        $base_url = Kotori_Request::getInstance()->getBaseUrl();
         $uri      = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
+        $prefix   = $base_url . 'index.php?route=' . $uri;
 
-        switch (Config::getInstance()->get('URL_MODE')) {
+        switch (Kotori_Config::getInstance()->get('URL_MODE')) {
             case 'PATH_INFO':
                 return $base_url . $uri;
                 break;
             case 'QUERY_STRING':
-                return $base_url . 'index.php?route=' . $uri;
+                return $uri == '' ? $base_url . $uri : $base_url . $prefix . $uri;
                 break;
             default:
                 return;
@@ -746,7 +762,7 @@ class Route
         }
 
         if (!class_exists($controllerClass)) {
-            throw new Exception('Request Controller ' . $controllerClass . ' is not Found');
+            throw new Kotori_Exception('Request Controller ' . $controllerClass . ' is not Found');
         } else {
             $controller                          = new $controllerClass();
             $this->_controller[$controllerClass] = $controller;
@@ -767,7 +783,7 @@ class Route
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Controller
+class Kotori_Controller
 {
     /**
      * Instance Handle
@@ -802,11 +818,11 @@ class Controller
     public function __construct()
     {
         self::$_instance = &$this;
-        $this->view      = new View();
-        $this->response  = Response::getInstance();
-        $this->request   = Request::getInstance();
-        $this->route     = Route::getInstance();
-        $this->db        = Database::getInstance();
+        $this->view      = new Kotori_View();
+        $this->response  = Kotori_Response::getInstance();
+        $this->request   = Kotori_Request::getInstance();
+        $this->route     = Kotori_Route::getInstance();
+        $this->db        = Kotori_Database::getInstance();
     }
 
     /**
@@ -824,7 +840,7 @@ class Controller
             }
 
             if (!class_exists($key)) {
-                throw new Exception('Request Model ' . $key . ' is not Found');
+                throw new Kotori_Exception('Request Model ' . $key . ' is not Found');
             } else {
                 $model              = new $key();
                 $this->_model[$key] = $model;
@@ -841,9 +857,10 @@ class Controller
      *
      * @return void
      */
-    public function __destruct(){
-        if (Config::getInstance()->get('APP_DEBUG') == true && !Request::getInstance()->isAjax()) {
-            echo Trace::getInstance()->showTrace();
+    public function __destruct()
+    {
+        if (Kotori_Config::getInstance()->get('APP_DEBUG') == true && !Kotori_Request::getInstance()->isAjax()) {
+            echo Kotori_Trace::getInstance()->showTrace();
         }
     }
 
@@ -857,7 +874,7 @@ class Controller
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Model
+class Kotori_Model
 {
     /**
      * __get magic
@@ -869,7 +886,7 @@ class Model
      */
     public function __get($key)
     {
-        return Controller::getInstance()->$key;
+        return Kotori_Controller::getInstance()->$key;
     }
 }
 
@@ -881,7 +898,7 @@ class Model
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class View
+class Kotori_View
 {
     /**
      * Template Direcory
@@ -922,7 +939,7 @@ class View
      */
     public function __get($key)
     {
-        return Controller::getInstance()->$key;
+        return Kotori_Controller::getInstance()->$key;
     }
 
     /**
@@ -931,7 +948,7 @@ class View
     public function __construct($tplDir = '')
     {
         if ('' == $tplDir) {
-            $this->_tplDir = Config::getInstance()->get('APP_FULL_PATH') . '/View/';
+            $this->_tplDir = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/View/';
         } else {
             $this->_tplDir = $tplDir;
         }
@@ -964,8 +981,8 @@ class View
             $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
         }
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
-        if (!Common::isFile($this->_viewPath)) {
-            Handle::halt('Template is not existed.');
+        if (!Kotori_Common::isFile($this->_viewPath)) {
+            Kotori_Handle::halt('Template is not existed.');
         }
         unset($tpl);
         //Cache Control
@@ -974,7 +991,6 @@ class View
         extract($this->_data, EXTR_OVERWRITE);
         include $this->_viewPath;
         $content = ob_get_clean();
-        header('X-Powered-By:Kotori');
         echo $content;
     }
 
@@ -988,7 +1004,7 @@ class View
     public function need($path, $data = array())
     {
         $this->_needData = array(
-            'path' => Config::getInstance()->get('APP_FULL_PATH') . '/View/' . $path . '.html',
+            'path' => Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/View/' . $path . '.html',
             'data' => $data,
         );
         unset($path);
@@ -1007,7 +1023,7 @@ class View
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Request
+class Kotori_Request
 {
     /**
      * Instance Handle
@@ -1173,7 +1189,7 @@ class Request
             // default
             $data = isset($default) ? $default : null;
         }
-        is_array($data) && array_walk_recursive($data, array('Request', 'filter'));
+        is_array($data) && array_walk_recursive($data, array('Kotori_Request', 'filter'));
         return $data;
 
     }
@@ -1239,7 +1255,7 @@ class Request
     public function getBaseUrl()
     {
         if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST'])) {
-            $base_url = (Request::getInstance()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
+            $base_url = (Kotori_Request::getInstance()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
             . substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
         } else {
             $base_url = 'http://localhost/';
@@ -1295,7 +1311,7 @@ class Request
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Response
+class Kotori_Response
 {
     /**
      * Instance Handle
@@ -1375,7 +1391,7 @@ class Response
     public function setStatus($code = 200, $text = '')
     {
         if (empty($code) or !is_numeric($code)) {
-            Handle::halt('Status codes must be numeric.', 500);
+            Kotori_Handle::halt('Status codes must be numeric.', 500);
         }
 
         if (empty($text)) {
@@ -1384,7 +1400,7 @@ class Response
             if (isset($this->_httpCode[$code])) {
                 $text = $this->_httpCode[$code];
             } else {
-                Handle::halt('No status text available. Please check your status code number or supply your own message text.', 500);
+                Kotori_Handle::halt('No status text available. Please check your status code number or supply your own message text.', 500);
             }
         }
 
@@ -1451,7 +1467,7 @@ class Response
  * @author      Kokororin
  * @link        https://kotori.love
  */
-class Trace
+class Kotori_Trace
 {
     /**
      * traceTab
@@ -1496,8 +1512,8 @@ class Trace
         foreach ($files as $key => $file) {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
-        $error = Handle::$errors;
-        $sql   = Database::getInstance()->queries;
+        $error = Kotori_Handle::$errors;
+        $sql   = Kotori_Database::getInstance()->queries;
         $trace = array();
         $base  = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
@@ -1616,7 +1632,7 @@ parseInt(history[0]) && open.click();
  * Copyright 2015, Angel Lai
  * Released under the MIT license
  */
-class Database
+class Kotori_Database
 {
     // General
     protected $database_type;
@@ -1643,18 +1659,18 @@ class Database
 
     public static function getInstance()
     {
-        if (Config::getInstance()->get('DB_TYPE') == null) {
+        if (Kotori_Config::getInstance()->get('DB_TYPE') == null) {
             $config = array();
             return null;
         } else {
             $config = array(
-                'database_type' => Config::getInstance()->get('DB_TYPE'),
-                'database_name' => Config::getInstance()->get('DB_NAME'),
-                'server'        => Config::getInstance()->get('DB_HOST'),
-                'username'      => Config::getInstance()->get('DB_USER'),
-                'password'      => Config::getInstance()->get('DB_PWD'),
-                'charset'       => Config::getInstance()->get('DB_CHARSET'),
-                'port'          => Config::getInstance()->get('DB_PORT'),
+                'database_type' => Kotori_Config::getInstance()->get('DB_TYPE'),
+                'database_name' => Kotori_Config::getInstance()->get('DB_NAME'),
+                'server'        => Kotori_Config::getInstance()->get('DB_HOST'),
+                'username'      => Kotori_Config::getInstance()->get('DB_USER'),
+                'password'      => Kotori_Config::getInstance()->get('DB_PWD'),
+                'charset'       => Kotori_Config::getInstance()->get('DB_CHARSET'),
+                'port'          => Kotori_Config::getInstance()->get('DB_PORT'),
             );
         }
         $key = $config['server'] . ':' . $config['port'];
@@ -1757,7 +1773,7 @@ class Database
                 $this->pdo->exec($value);
             }
         } catch (PDOException $e) {
-            throw new Exception($e->getMessage());
+            throw new Kotori_Exception($e->getMessage());
         }
     }
 
@@ -1772,7 +1788,7 @@ class Database
         }
 
         array_push($this->logs, $query);
-        Log::sql($this->last_query());
+        Kotori_Log::sql($this->last_query());
         array_push($this->queries, $this->last_query());
 
         return $this->pdo->query($query);
@@ -1789,7 +1805,7 @@ class Database
         }
 
         array_push($this->logs, $query);
-        Log::sql($this->last_query());
+        Kotori_Log::sql($this->last_query());
         array_push($this->queries, $this->last_query());
 
         return $this->pdo->exec($query);
@@ -2456,7 +2472,7 @@ class Database
  * Logging Class
  *
  */
-class Log
+class Kotori_Log
 {
     /**
      * Write Log File
@@ -2469,7 +2485,7 @@ class Log
      */
     private static function write($msg, $level = '')
     {
-        if (Config::getInstance()->get('APP_DEBUG') == false) {
+        if (Kotori_Config::getInstance()->get('APP_DEBUG') == false) {
             return;
         }
         if (function_exists('saeAutoLoader')) {
@@ -2479,7 +2495,7 @@ class Log
             sae_set_display_errors(true);
         } else {
             $msg     = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
-            $logPath = Config::getInstance()->get('APP_FULL_PATH') . '/Log/' . date('Ymd') . '.log';
+            $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log/' . date('Ymd') . '.log';
             file_put_contents($logPath, $msg, FILE_APPEND);
         }
     }
