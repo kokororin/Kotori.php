@@ -1,5 +1,5 @@
 <?php
-class IndexController extends Controller
+class IndexController extends Kotori_Controller
 {
     public function __construct()
     {
