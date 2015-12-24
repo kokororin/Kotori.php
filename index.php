@@ -1,5 +1,5 @@
 <?php
-require './Kotori.class.php';
+require './Kotori.php';
 
 Kotori::run(array(
 	'APP_PATH'  => './App/',
