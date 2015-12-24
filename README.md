@@ -1,6 +1,6 @@
 ## Intro
 
-KotoriFramework -- a Tiny Model-View-Controller (MVC) PHP Framework
+Kotori.php -- a Tiny Model-View-Controller (MVC) PHP Framework
 
 ## LICENSE
 
@@ -12,8 +12,8 @@ ThinkPHP && CodeIgniter && Typecho
 
 ## ScreenShots
 
-![image](https://raw.githubusercontent.com/kokororin/KotoriFramework/master/Public/img/screenshot.jpg)
+![image](https://raw.githubusercontent.com/kokororin/Kotori.php/master/Public/img/screenshot.jpg)
 
 ## Document(Chinese)
 
-* Github： [https://github.com/kokororin/KotoriFramework/wiki](https://github.com/kokororin/KotoriFramework/wiki)
+* Github： [https://github.com/kokororin/Kotori.php/wiki](https://github.com/kokororin/Kotori.php/wiki)
