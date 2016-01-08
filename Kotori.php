@@ -35,6 +35,7 @@ class Kotori
 {
     /**
      * biu~ biu~ biu~ Run!!
+     *
      * @param mixed $conf Config array
      * @return void
      */
@@ -48,6 +49,7 @@ class Kotori
 
     /**
      * Instantiate the Framework
+     *
      * @return void
      */
     private static function initialize()
@@ -90,6 +92,7 @@ class Kotori
 
     /**
      * Global autoload function
+     *
      * @param string $class Class name
      * @return void
      */
@@ -220,6 +223,7 @@ class Kotori_Config
 
     /**
      * get singleton
+     *
      * @return object
      */
     public static function getInstance()
@@ -232,6 +236,7 @@ class Kotori_Config
     }
     /**
      * Initialize Config
+     *
      * @param mixed $conf Config
      * @return void
      */
@@ -596,6 +601,7 @@ class Kotori_Route
 
     /**
      * get singleton
+     *
      * @return object
      */
     public static function getInstance()
@@ -857,6 +863,7 @@ class Kotori_Controller
 
     /**
      * get singleton
+     *
      * @return object
      */
     public static function &getInstance()
@@ -1058,6 +1065,130 @@ class Kotori_View
         extract($this->_data, EXTR_OVERWRITE);
         include $this->_viewPath;
         $content = ob_get_clean();
+        echo <<<EOF
+<!--
+. .                  ...                                                                       ..                                             .......
+                      .
+                      ....                                                                                                                     ......
+                         .                                                                                                                       ....
+                                                      .    ...............                                                           ..
+                        .....                        ..  .iiii............ii........                                                 ..
+                         .....            .....     .  .rrriiiiiii.........irii..iiii..
+                           ..            ...i.ii.  .. .ttrrttttttttrri......iii..iiiiii..
+                                         ......irrr..itttrriiiirrtttottrii...rr...iiiiiri..
+                                        .... .iiittirtriiiriiiiiiiirrtoottti..tti...i...ri..
+                                       ..irrririrt itrrrrrrirrriiiiiiirttttktittkr..... .tr..
+                                      .rrtok@korrritrrrrrrriiiiiiirr...ittirootitkr..... .iri.
+                                     .irttk@ki..irorirrrrrrr..iii.iti...itrirtt.iokr.iii. ..ri.                                                ..
+                                      iirk@r  .i.ttiirr.irtriirrrrirtirrirrritri.iotiiriii.irri.                                             ....
+                                       .iri  .i.rti.itiirtttrrrrrrrrttrrrrrrittiiiroriiiiiiritt.
+                                           ii. iotiirtrtrkottrrrrrrrrttrrrrrrrktiiitoiiiiiiiirti.
+                                          ikkrirorrrrtrrtkrtkrrrrrrrtrrtrrrrritoriiiktiiiiiirrtr.
+                                         .to.iittirrrtrrok rktrrrrrrrtritttrrrtktiritkiriirirrtr..
+          .....                          ror...orrrrrtrrkt .kktrrrrrrttiitottttotrrrrkrrirriittri.
+         .......                        .ttktttoirrrrttrki  rkktrttttrtt..torrrtiriiitrriirr.ttti.
+         .....                         .rokoooktirtrrtork.  .rt@krrrtttor iktrii.iri..iriirritotii.
+                                      .rotttttktittrrrktt. ..rrikkkttrii......io@@@@@kttririrkorir.
+                                     itkkrrtttktittrtroot..ii.   iri.   ... .k@@@k@k@tokrrrioktriri.         ...                  ...
+                                   ..rttrrrrtoktittttrtkk.          .........r.kik@krk.krritkittrrr.        .....                  .....
+                                 .rri... .itokrtitortttkk. ik@@@@t  .........   ..r.riitiirkr.@rrrri.       .....
+                              .irrrooi..iirtkt itiktrtrttir@@@k@@@t ............rtrti trirtt k@ktrrri.                      .             .
+.                           .iirr..trttrrrtot. .ritktrrttr@ikkk@@k@..................rirririrk@kotrrri.
+.                         .iiiri  trrrrirtrtr  .i.rkorrrttri  .rtio.................r.rrttotrtkkktrrrr..
+.                       .iiiri.  rrrrriro..r.   i .rktiirot  .ttrr...................ii.@@ortrkkkkorrrr..
+                       .iiii.   .r.rrirt. ir    .. .rr.iiikki  ......................  o@kortrkkkkkkrrti..
+                      .iii.     riiiirt.  r.     .   ....irt@t ...............i.....  r@@korttkkkkk@@r.rkkr
+                     ..ii.     .rrrriti  .r.      .    .  .ir@o..........ii..ii....  i@@kkkrttkkk@@ki i@@@k.
+                     ..i       .rrrirr   ii        ..      .tk@r   ..............  .trk@@@krttkkk@i  r@@@@@t..
+                     .i        .rrrir.   r.         .     .roo@@kr   .........   .rttit@@@ktttk@k.   @@@kk@@ti..
+                     ..        irriir   .i.          .   .itok@k@@@or..irrrrrrrirtttrrrr. tttt@k...i.ir....iroti.
+                     .         iiiiii   .i               itkkk@k@@@@@rrrrrrrrrtttotrri... rttk@rtiroi .....  .tori.
+                     ..        .iiiir    .              itkortrrttkt.rtrrrrrttrrrrtt...i.itrt@tii.ii.i.......  tktri.
+                     ..        .iiiir.   ..            itok itrttr.ittrrrrrrrrttrtttti...rtrto  ...ii.........  tkttri.
+                     .i.        .i.iri   ..          .rttkt kkk@t.itttrrrrrrrrrtrrttttt..trrokiiri.............  rkotrriii..
+                      .i.        ...ir.   .         .rrtkkr tkkt.iottttrrrrrrrrrrrrttrot.tit@@ki................  itr. .iirri..
+                       .i.         ..ri   ..       irrokokk..rr .ttttttrrrrrrrrrrrrrooriiiio@@r.................   .tr.    ...iii.                  .
+                         ..         .ii.   .     .irtkkokk...i.rtttttttttrrttrrrrrrrtot.. ik@i.i................. . .tr.        .iii.             ...
+                           .          .ii.     .iitkkkokk  ...rtttttttkkkkttttrrrrrrrtkkrrtkti.. ...ii..... ...... . .rr.         .iri..          ...
+                              .        .ii.  ..irtkkokkk  .iirttttrrtokri.irttrrtrrrrrtktr.ro......iii....  .....   i .rr.          .iii..         ..
+                                         .riiirokkkkkot. ..iiottrrrttookottrtootrtrrrrtktr..tri...iiii....  .....   it .tr.           .ii.i..       .
+                                         .irtkkkkokkti. ..rrrrrrrtttttttookktrtottrrttt......irri.iiii.......ii.    tor iti     ..      iiiii..
+                ...                   ..itkkkkkkkkt. .  ..irrrttrrrttttttttoktrtoktrokki........ir..ii......iii.   rkott.rri    ...      .iiiii.
+               ....                ..itkkkkkkkkkoti .i...rtttrrrrrrrtttttttrtktrrtktrto........  roi......ii.iiii.tkottttrrr.   ...        .i.ii..
+               .....         ....irttokookkkkkti   i.ir.ittrrrrrrrrrttttttttttktrrokrtr ..i.....  ikr......... ...rtottttotri               .i.....
+                 .... .....iiirttokooookkkkot.    .i ..itttrrrrrrrrttttttttttttkrrrkorr........... .ti..   ..      .rottttorr.               .......
+                ....iiiirrrtttokottttokkotr.     ..i.i.rtttttrrrrrrttttttttttttkorrt@ttk........... .kkoiirr..r.  .. rotttotri                ..i....
+             .iiiii...irrrttootttttokkotr.      ..iri..ttttrrrtttrttttttttttttttktrt@ktkk.    ...... ittotririrrrtti  rottttrr.                .i....
+.         .iiri.. ..irrtttttttttttoootr.       ..itkt..tttrrrrrtrrttttttttttttttktrrkkttki.k@  ...... ..iii.....ootr.  rttttrri                 .i...
+.       .iii.   .irrtttttttttritttttr.        ...roki.ittrrrrrttttttttttttttttttootrkkotktk@@r   ......  .ii....totr.  .rtttrri                 .ii..
+      .iii.   .rttttttttrri.  itttr.         ...roko..itttrrtrtttttttttttttttttttottkototr@@k@@ki....ii.  .i....tktr.   .ttrrri.                 .i..
+     .ii.  .irtttttttrr..    irtti          ...tkkokt.itttrrrrrttttttttttttottttttttotokrk@@k@@@t ii..... .ii...tktr.    itriri..                .ii.
+   .ii.  .irtttrrtrr..      irtr.         ...ikkoookk..rtttrtrttttttttttttttttttoorrkootr@k@k@@@. .......ii..i..totr..   .rririii.                .i.
+  .ii.  .rrrrrrri.        .riri          ...tkkoootoki.ittttttttttttttttttttttotkrirtkktr@o@k@@k ........iii....ttrr..    iriiirii..              .i.
+  ..   irrrrrri.         .irr.          ..rkkotottoktii.ittttttttttttttttttttotttrttrt@rtkt@k@@kr. .....iii.ii..ttrr..    .iiiiti....             .i.
+  i. .irrrrr.            iri.          .rtkkttootook. i..rtttttttttttttoootttktktttttrttootkkk@kkktr...ii.....i.rtrr..     iiirtt.....            .i.
+. . .rrrri.             .ri          .itoootottoootkor.i..rrtootttttttokttooottktktrrrrtkttkkk@ttk@@o  ...... . iorr..    .iiittri.....           .i.
+. ..rrri.              .ii.         irtoottottootttkkktii.iirttttooookki rkkktk@kkrrrtktoott@kkto@k@@r  ......  .krri.    .iirttrr......          ...
+. iiri.                .r.        .rttrtttottttottkkt  .i.ii..irttttookr..rktokrrotkktttottt@okkkkrk@@i ......   ttr..    ...rttrr... ...        ....
+..rii.                 ii       .irtr.rototttttttkt.  i.ii.rri.iiiirrrtttrrrrtttrk@ktotoottk@kokri.r@kk. ...... .ttr.    .....rtrri.i  ..        ..
+..ii.                  i.      .rrti .ottttootttor   ir .r..tttrrrrrrrrrrtttttotkkkkttotootk@@kt....tokt.  ...  .oti.    ...  irrtr... ...      ..
+..i.                   .      irrri  ttttttttttt.   .rt..ir.rttttttootok@krttottoktotrtkottkkotot...rk@iok      ttri.   ....  .rrrr...  ..     ...
+...                    .     irrr.  ittttttttti    .irkr .i.itttrtrrtttkr rttrrtttttttikottkt.iokt.i.tk.k@@i   ikri.    ...   .irrr..   ..    ...
+...                    ..   irrr.   rtttttttt.    .iitko  ...rtrrttrrttoriktrrtottotttrotkktttr.okt.iooi.k@otrrktri    ...    .irri..    ..  ....
+i..                    ..  .rri.   irttttttr      iirttki ....rrrrtttttookkkttotttkttrrkrktirtt  tkrokttr rrototi..   ...      iri...    .. ....
+i..                    .. .rri.   .ittrrtti      .iirttok  ....irrttttttttttkttttttttokoktrirttriitk@orkoiirttttr    ...      .irr..     ......
+i ..                    ..iri     .itt..ri       ii.rtttkr   ...iirrrrtttttttrrttttorkkkkokkkktrtorrtr.rttkttttot .....       .iri..    .....
+i ..                     iri.     .itr..i.      .i.irttttki   ....iiirttttttttrttti.t@@kookkotrttttktirttk@kttrtt. i.   ..    .ii..     ...
+.  ..                   .iri      .irrri ..     .. irtttttor.i. .i.irrrtttttttttttrr@ktttkkkkortkkk@krkkktkktrrrtr ..    .    .ii.
+. .  .                  ii.....   .irrr.       .i. irtttttrtt.  ikr..iiirtoottttttk@@ktokkkkor.rokkkkkkkktkktrrrrri.ri.      .ii.
+  .    .                ii.  .... .irri        .i .irttttr.r.   rr. rirrirttttootkkk@kokkktrritokkokkkkkkkkkkkkokkor..ii.    .i..
+  ...                   i.     .. ..ii.        ..  irrrtr i.    i  rkkttttttoktrtooktrrrrriii.rkkkkkkkkkkkotkkkooori.. ...   ...         .
+..i..                   ..         .ii.        ..  .rrrr. i    .  itttrtttttti..irii...iiiiri.iokkkkkkkkkkkrokktrririii.......             .
+. . ..                  ..          .i         ..  .irri ..   .  .iiiirtrtrtriirtttriittttttrittkkkkkkkkkkkrtkkortrrriri...rri...           .
+     ..                             ...         .   .ir.     .  .ri...rrttrtriittottirttttttiitkkkkttkkokkkttkktrtr.ri...  .itri ........  .......
+                                     ..             .ii        .rii...iirrrri.irrtri.irirrrrrrokkkr.rrtkkktttkkrrtr..r.i.    .rri..i........iii......
+         .                            ..             .i.     ..rrii..irttrri..iirrr..irrtririiokti.irrkkkktttkkrrtt. irirr.   .kkr...   .....iiiiiii.
+                                       .     ..  .    ..    ..iiii..irrtottriitttttrirttrtttrirriirttkkkkttotkkrrti irrirrri.  .toi.....       ......
+           ........ .                                    ...irr.....rirtotorirttottiitto..iotriiiirtkkkkkttktkktritkkt.rrrrri.  .rr......  .
+  .     ..ii.iiii..iiiiii.........                    ...i.irriii. .iirotorritttttrirtttttttrrrii.itokkkototrkktr@kti...rtrtr..  .tr.....i..... ..  .
+.      ..iiiiiiiiiirrrrrrrrri...i........  ..  .....iiiirirtrrii..ii..irtr..irrrii .rtokkorirrrrirtokkkottkrikktt@r  .  .irrri... .rriiiii.......  ..
+.   ..  .i..i.i. ..iiirrrrrriiirririiii...........irrrrrtrrrrrriiiirirrri..irrrrr.itkorrriiirrrrroookkokkoottkkkttkrii...iiiiiii.. iri.ii........  ..
+   .i...rririir...ii...i.iiiiirrrrrrrri...iiiiiiirttttttrri..ii.rrrrrrrriirtttrrrtkktiiri .rrrrrootokoo@@ttrtkkkkktrii..irttri......ri..i............
+  .r...rrrrrirr..iriiii..... .iiiiri..i..irrrrttrrrrrttttrii....iirtkkottkkkkktkkktiittor..tkkttototokkkottrtkkkotiiri.irrrr..iii...ir...............
+  ri..irrrrirrr..iriiiriiii.  ....i..iii..irttttrrrriirrrriii.iiiiirrrrttkkkottrrrrrtokotooktttoookkkttrir. i@o.....i..irri...rrri  .rti  ...........
+ .r...rrrtrrrri..iiiirririri.iiiiiriiiiriiirrrrrtrrrri.iirrrrtttttri. .iirrrrrrrrrrrtttriii....rroooriirri..rk.......  .ii..i.iirr. ..tti............
+...  .iiiriiiriiirrrrrrirrri.iirrrrrrrrri..iiiiirriii. .irtttttttriiiiri..irrrrrrrii......irtr..rkoiirttri..iiiiiiii...i......iirri.. .ori...........
+r....irrrrii.i. .iriirrirrrriirtttrttrrrriiirrrrrrrrrtrrriirriii...irirrriirttrrriii. .iirttkttt@kiirrtri.iriirriiii..irrrii...irri.i. rri...........
+r.i..rrrrtrrrri...i.iirrrrrrriiii...iiirrrrrrrii..iiiii.....ii.irookttttttiirriiri....irtokktrtkkiirrrr...rriirirrri.irirrrrr. .ii..i...r............
+i....rrrrtrrrrrrirrrii.......iiiii.irrtrrrrrrrii.........irrtkkttoottttrrrri.iriii..rttrrtttirttiirrrri.irriiriirri..rrrrririirri...... rr.... ......
+r....rrrrrrrrri.... ...irrrtttrrrttriirttrrrrrrrri  .iiiiiriiirr. .rrrrrrrri..i..itoottttrr..rriirrri...i...........irrrtrrriirtri..... .ti..........
+r....i..rri..  ....iiirrtrrrrrrrrrrrriiiiriiirii.ii..iririiirii....riirriiiri..irokotttttrirtriiii.   .iiiiiiiii.  ....iirrriirttr.i.....tr..........
+tii.i..    ..iiiirrtriiiirtrrrrrrirrrriiiirriii.iirr..iriiiiii.irr.irrrirrrii..ikkotttttrirr..iiii...rrrrrrrrrri..iriii...iiiitttr.i.... rti.........
+r.....i...    .rkkttttri.irrrrrrrriirrr..iii..irriiri..iii...irrrriirrrrrri.irrirttttttiittiirrrriiirtrrrririri..irrrrrri....itttti..... .ti.........
+. ..   .irrri   .rkorrrri..irrriirrrrrri....iiirriirr...i...irrirrr.irrri.irrttriirtotiittirrrriiiirrrrrtrirri..irrrrrrrrti  .irrrti..... ri.........
+. iii.  ..rrtoti  .rotrrri..irrrrrrriiii....rriirrriii....irrirrrrri.rri..irtrtttrii...ttirrrri.irrrrrrtrrrri..irrrrrrrrrri..i..irti......ii .......
+.....i.      .rot.  .torrri..iiii.ii.. .ii..iriiiriiii.  .riiirrrirri .iirrrrrrttoti.itrirrrr...iiiiiiiiiiri...rrrrrrrrrtr..irii.itr.......r.........
+......i.    ....ror   .trii....iii.iiiiirr..irriiiri......iiirrirrii. .irrrrrrtttrirtoriiii.  .......i.....   .iiirrrrrrtiiirrttriir.......i.........
+. ..iiii.........itt.   rtiriiiirriiriirrri..iiii.i...ii...iriirii..iri..iiirttriirri...... .irrrrrrrrrrrr....i......irrri.itrrttti........ii........
+. .iriiri..........rt.   rorri.irriirriiiii...i....iiiiii...iii...iiiiiii..ittiiiri...iiriiirtrrrrrrrrrrri.iirrrrrii...i...rrrrttttri. .....r....i...
+r.iii...............rt.   rtii..iriiirriiii.  ...iiiriiiri...i...iiriiirii.i...ii..irrrtii.rrrrrrrrrrrrrr...irrrrrrrrii.  .irrirttttr. .....i.....i..
+r.iiii ..............rt.   rtii..iriiiri.... ..iiii.iriiiii.  ...iiirriiiiii..ir..rtrrri..irrrrrrrrrrrrri...irrrrrrrrrtr.....iiirtttr.......ii.......
+i.iiii................tt    tri...iii..i..iii...iiiiiii.i... ..i.ii..iiii..irtr.irrrrriiirtttrrrtrrttttr...irrrirrirrrriiiri....itkt.........i.....ii
+i.iiiii. ..i...........tr   .kri...i...iiiiii...iiiii.ii...ii...iri.......irtr..rrtrtiii...         ..ii..irrriirrrrrrr..irri....itr................i
+i.iiiiii. ....ii.  ....iti . tti...iiiiiii..ii...ii.....iiiiii....iii....irrr..rttri.         ...          .irrrrii..ii..irirri..ii............  ....
+i.iiiiiii.iiiiiir.......it. ..rii...ii...iiiiii.........iiiiiii.........irrti.rri     .iirrttrrrttttrrrri..    ...i..i...iiiiiiiri. ............ .ii.
+i.i..iiiiiiiiiiiir.......ir . iii....iiiiii.iii..  ..ii...iiii.ii.   ..irirt.i.   .irrriii......i.....iirrrrr.  ....rri...iiii..ri. ..............rri
+i.i...........iiiii.......r.  ...i....ii..ii...........iiii..ii.........iio.  ..rrrr....    ................irri..   .i...iiiiiiri................irr.
+. i..........i..i.........ii  ..iii..............ii....ii.............iiiri .iii.... ..  .......i...............irr.   ....iii..ri.... ............ir.
+. ...........i.............r. ..i.............ii....i.............i..iirir....   .......i........ii...........  ..irri.  ..iii..ii.... .............i.
+. ............. ...........ii ......... .......ii..i.................iiii.  .........i.............i.................irri  .ii..ii....................
+. ............. ............i. .......  .........ii..................iii. .......................................ii.  ..i..  ....ii.................
+. ..........................ii   .i............i....ii...............ii. ........................i...............iii.......i. ...ii.................
+. ...........................i. ...i.iiii.....i.........iii...i......i. .........................................iiii......ii.  .....................
+                   .          ..    .                                                                            .           ..
+-->
+
+EOF;
         echo $content;
     }
 
@@ -1108,6 +1239,7 @@ class Kotori_Request
 
     /**
      * get singleton
+     *
      * @return object
      */
     public static function getInstance()
