@@ -1,2 +1,2 @@
 <?php
-//公用函数
+//application common functions
