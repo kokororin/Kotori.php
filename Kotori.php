@@ -188,6 +188,101 @@ class Kotori_Common
         return 'data:image/png;base64,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';
     }
 
+    /**
+     * Show Kotori Comment
+     *
+     * @return string
+     */
+    public static function comment()
+    {
+        return '<!--
+❀❀❀❀ Powered by Kotori.php ❀❀❀❀
+(https://github.com/kokororin/Kotori.php)
+                                         iiiiiii
+                                  iiiiii        i
+                               iiiiii       i    i   iiiii
+                              ii    ii       i iii  i     i     i
+                              iiii           i iiii       iiii       iii
+                             iirirri          iini      i               iiii
+                             irniirnri        iii     i                    iiii
+                             iiiiiiiiriiii    ir    i  iiiiii i         i     iii
+                            i              i       i iriiiiiiiiiii     iiii   iiiii
+                            i               i   iiiiri          i i i i   iiii iriiii
+                            i               ii iii iiiiiii         iii      iii  rriiiii
+                            rr            iiiii       iiiirii iii    iiii     iri irrii iii
+                          r ii          ii    i i i ii   iiiiiirriiii iiii     ii iiiii iiii
+                          riiini      iiiii iiiiii ii iii iiiiiiiiiirrriiiiri    iiii ri    ii
+                         riirrrr    iriiiiiiiiiiiiiiii iii i   iiii iirnrriiiri   iiiiir iii iii
+                         rirrrrn   iiiiiiii iii i iiiiiiiii i i irii  iiririiirii  iri ii ii  iii
+                        iirrrrrni riiiiiiiiiii  iriiiiiiiiiiiiii iriii iii rriinri  ii iii i i iii
+                        irrrrrrnoiiiiiiii i   irri i  i i i iii i iriii  ii irirrri ii  ii  i i iii
+                       iirrrrrnni            iniii i             i iiii   ii irrirni ii  iii i i iii
+                       irrrrrnn             rni i i  i             ii ii  i   iriirriii iiiiiii   iii
+                      iirrrrrn             nni  i i ii              i ii   ii  ii inr ii iii i i i ii
+                      iirrrrn           i nni    ii i                  i    i   i irriiii  ii       ii
+                      irrrrni i        rinni   i ii i       i          i           iriii   ii      i ii
+                       rrrni ii       inrni    iiriii       ii         ii    i      iii     i  iiii  ii
+                       rrrr ini iiiiiirnni     iiriri ii i  riii     i ii     i      i      iiiiii  iii
+                       rrniinriiiiiiiinnr  iii  rirriir iiiiriri iii i ii i   i             iii    iiii
+                       nrnirniiiiiiiirnr        r riirriiiiniirr iii iiiiii   ii            ii    iiiii
+                       rrrinniiiiiiiinn         i i irniiiinr nriiiiiiririr   rr            ii  iiriiir
+                       rrrrnriiiiiiiio           i   ririiiii rriiiiiinirir i in            ii iiiri ir
+                       rrinnriniiiiirr                           iiiiinrirnii iri i i        iiiiri  rr
+                       rirnniiniiiiir    nkkmri                        i rri irnii iii i  i  iirri  ini
+                       rrrnrrrniiiiir  kkoiikkkn                          iriirni iiiii  ii iirri   rri
+                       rrnrrrrniiiiii kk      kk               nkkkkmoi    iinnniiiiiiii riirii    rrr
+                       irnrrnrniiiiiink     iioo              kmni  imkkr    irri riiii iriii    irrir
+                       iinrrnrnriiiiiin mkinkkrk             ii        nmki    r iri i  rr i    inrrii
+                       iinrrnnnniiiir i kmi i  m                i     irnmkr   i iriii iniii  iinrirrr
+                       rinrrrnnniiiir   ikr   rr                nki rkmriomkn iiiriii irriii irrriirin
+                      iiirnrrrnnniiir    rmrinn                 imi  ii  onnkii rri   rriinirrriiirirni
+                      iiirnrrnnnnniii                            koi    ioiniiiirri  rrriirirriiiirirrr
+                      riirnrrnnnnonii                             rriinmm    iirri  rrrrr  rriiiiirirrri
+                     iriirrrrnrnoiinii                                      riirri rnrni i iriiiirriiriri
+                    iiiinirnnrrnr inri                                   rr  nriiirnni  i  riiiirriirrir
+                    iiiiirirnnrrnr  iiri                                 i   nrriinnii     irriiiriiirriir
+                    riiiriirnrnrnr  i   i                                  ionri rn   i    riiriiiiiirri ir
+                   iiiiiiiinnrnnnn  ir                                   inori  ir   i    rririiiriiirrii ii
+                  iriiiiiiinrrrrnr  im          nkktnriii               iii     ii      iiririi iriiiiriri ii
+                  irriiiiiirnrninnr  rmr         nknrirrrrnnr                         iri iirrriirriiiirrri  ii
+                 rriiiiiiinrniinor  nrmr        in        ir                 ini  iinni  irrri rrrrrrirrrni  ir
+                rrriiiiiirnnn itni innrin        ii       ii                ioonnnnnni  iinri ii iiirrirrriri ir
+               inii iiiiinrni rnoi rrni rni       iiiiiiiii               iri rnrrrnr i irri ii      irirr iri ir
+              itiiiiiiiiinnn  rto  nro  inir                            irii   rnrrn ii iniii          nrri iri iri
+             ioiii  iiiinroi  rnn irrr i riirr                      iiiii i i   irri i iriii            irn   iriiri
+            imi ii   iiinnr   non rini i riiinmr                iiiiiiiiii i   i  ri i rri               rnr   iri ii
+           imriir     irnn ii nmi nin ii iriiimiirii      i iiiiiii iiiiiii i ii ii i ini                rini    iiiiri
+           or  ii     inoiiiiinmiiririiiiiniiitri  iiiiiiinr iiiiiiiiiiiii   iii rii ini                 iirr  ii  iiiiiii
+          ni   ii  i  rki     mo iriiiiiiiniiitri    ii  iooi iiiiiiiii i   iii ii  in                    riri ii i iiiiii
+         rr    r  ii ion      mr iri      riiitr     i  ionnoi iiiiiii i   ii   ii ini                   iiriri iiii  iiiii
+        io    ir ir  rk       ki rn       ri ikr       ronnntr  iii i i   ii   ii ir      i          i iriiii ri iiiiiiiiirri
+        m     iiini  ki      ik  nn       ii  ti      imnntiir i i   i   i     i ii      i              rriiii ii iiiiiii  irri
+       mr     rirr  nn       oo  nr        i  ni     ionnni ii iiiii    i     i  i     ii                rriiii iiiiiiiiiii iirr
+      nm      rini ik        ki  ni        ri ii    ionnoi   iii   ii  ii    ii ii   ii                   iririi iiiiiiiiiiii  irn
+     ik       rini ni       it   ni         iiii   ionttiii ii      ii ii   ii ii   i                      rrirr  iiiiiiiiiiiii  rrr
+     kn       rnriin        ni   ni        i iirirntnoni  iri       iiiii   i  i   i                        rrirr  irrrrriiiiiiiiiiirni
+    nmi       nnr n        in    rr        i  iinnntnni    ii   ii    i    i  r i                           iriiri  iiiiriiiiiiiirriirni
+   ioo        nniir        k     in  i     i  i   rnnni     i    i   iii  ii ri                              irrini               iiirinr
+   ron        onir        or      ki  i    i     nnnnii     i    iriii    i ir                                riiini  i              irirni
+   mtn        nnir       no       ro        i   nonr ii     iiiiii iii   i  r                                 iririni  i              iiiini
+  iotr        nnii      rm         nn       iinnnnr   iriii          i  ii ii                                 irrirrnr  i              iiiinr
+  itnr   i i  nnii     nm           inri   irnnnni     i              iii ii                                   riiirinri ii            iiiiini
+   nnr        iti     mm          i   inkmkmknnii                      i  r                                    iriririnni ii            iiiiini
+   nnn         nr   rkt                      rii                      ii ni                                    iirriirirni iii           iiiirr
+   rnn         rriimkr                       riiii                   ii nr          i                          iriirrirrrnniiii           iiiini
+    nki        irnmo                        r ii iiiiiii          iiii rn           i                          irriirririrrniiiii          iiirn
+     oo         rin           i            ii   i               iii iirnr           iii                         rrriiirrrrrrnniiiri        irirri
+      on        rii                        i     iii      iiiiii    irnr            iiii                        rrrriiirrrrrrrriiiiri       iirnr
+       rn        rir                      r        iiiiiiii        iirri        ii  iii                         rrrirriiirrrrrrri irrii       rnni
+         i       iiiii          ii       ii           i           iiinri         iii iii                        rnirrrrriiinrrrrni  irrr      inrri
+                  ii iii                 i                       ir irr           iiiii                         rnrrrrrrrriiirrrrnn   iinri   inrn
+                   iniiiri       i       i                      iri nrr            iiiii                         rnrrrrrrrriiiinrrrni    irnr inrrii
+                     iiiiiiiiiirni       i                      ni inri              iiii                        inrnrrrrrrrriiiirrrnni     irnnni  i
+                        iiiiiiii   i     i                     nr  rrri               iiiii                       rrrrrnrrrrrrri iirrnnn       inn
+-->
+';
+    }
+
 }
 
 /**
@@ -1082,131 +1177,7 @@ class Kotori_View
         extract($this->_data, EXTR_OVERWRITE);
         include $this->_viewPath;
         $content = ob_get_clean();
-        echo <<<EOF
-<!--
-. .                  ...                                                                       ..                                             .......
-                      .
-                      ....                                                                                                                     ......
-                         .                                                                                                                       ....
-                                                      .    ...............                                                           ..
-                        .....                        ..  .iiii............ii........                                                 ..
-                         .....            .....     .  .rrriiiiiii.........irii..iiii..
-                           ..            ...i.ii.  .. .ttrrttttttttrri......iii..iiiiii..
-                                         ......irrr..itttrriiiirrtttottrii...rr...iiiiiri..
-                                        .... .iiittirtriiiriiiiiiiirrtoottti..tti...i...ri..
-                                       ..irrririrt itrrrrrrirrriiiiiiirttttktittkr..... .tr..
-                                      .rrtok@korrritrrrrrrriiiiiiirr...ittirootitkr..... .iri.
-                                     .irttk@ki..irorirrrrrrr..iii.iti...itrirtt.iokr.iii. ..ri.                                                ..
-                                      iirk@r  .i.ttiirr.irtriirrrrirtirrirrritri.iotiiriii.irri.                                             ....
-                                       .iri  .i.rti.itiirtttrrrrrrrrttrrrrrrittiiiroriiiiiiritt.
-                                           ii. iotiirtrtrkottrrrrrrrrttrrrrrrrktiiitoiiiiiiiirti.
-                                          ikkrirorrrrtrrtkrtkrrrrrrrtrrtrrrrritoriiiktiiiiiirrtr.
-                                         .to.iittirrrtrrok rktrrrrrrrtritttrrrtktiritkiriirirrtr..
-          .....                          ror...orrrrrtrrkt .kktrrrrrrttiitottttotrrrrkrrirriittri.
-         .......                        .ttktttoirrrrttrki  rkktrttttrtt..torrrtiriiitrriirr.ttti.
-         .....                         .rokoooktirtrrtork.  .rt@krrrtttor iktrii.iri..iriirritotii.
-                                      .rotttttktittrrrktt. ..rrikkkttrii......io@@@@@kttririrkorir.
-                                     itkkrrtttktittrtroot..ii.   iri.   ... .k@@@k@k@tokrrrioktriri.         ...                  ...
-                                   ..rttrrrrtoktittttrtkk.          .........r.kik@krk.krritkittrrr.        .....                  .....
-                                 .rri... .itokrtitortttkk. ik@@@@t  .........   ..r.riitiirkr.@rrrri.       .....
-                              .irrrooi..iirtkt itiktrtrttir@@@k@@@t ............rtrti trirtt k@ktrrri.                      .             .
-.                           .iirr..trttrrrtot. .ritktrrttr@ikkk@@k@..................rirririrk@kotrrri.
-.                         .iiiri  trrrrirtrtr  .i.rkorrrttri  .rtio.................r.rrttotrtkkktrrrr..
-.                       .iiiri.  rrrrriro..r.   i .rktiirot  .ttrr...................ii.@@ortrkkkkorrrr..
-                       .iiii.   .r.rrirt. ir    .. .rr.iiikki  ......................  o@kortrkkkkkkrrti..
-                      .iii.     riiiirt.  r.     .   ....irt@t ...............i.....  r@@korttkkkkk@@r.rkkr
-                     ..ii.     .rrrriti  .r.      .    .  .ir@o..........ii..ii....  i@@kkkrttkkk@@ki i@@@k.
-                     ..i       .rrrirr   ii        ..      .tk@r   ..............  .trk@@@krttkkk@i  r@@@@@t..
-                     .i        .rrrir.   r.         .     .roo@@kr   .........   .rttit@@@ktttk@k.   @@@kk@@ti..
-                     ..        irriir   .i.          .   .itok@k@@@or..irrrrrrrirtttrrrr. tttt@k...i.ir....iroti.
-                     .         iiiiii   .i               itkkk@k@@@@@rrrrrrrrrtttotrri... rttk@rtiroi .....  .tori.
-                     ..        .iiiir    .              itkortrrttkt.rtrrrrrttrrrrtt...i.itrt@tii.ii.i.......  tktri.
-                     ..        .iiiir.   ..            itok itrttr.ittrrrrrrrrttrtttti...rtrto  ...ii.........  tkttri.
-                     .i.        .i.iri   ..          .rttkt kkk@t.itttrrrrrrrrrtrrttttt..trrokiiri.............  rkotrriii..
-                      .i.        ...ir.   .         .rrtkkr tkkt.iottttrrrrrrrrrrrrttrot.tit@@ki................  itr. .iirri..
-                       .i.         ..ri   ..       irrokokk..rr .ttttttrrrrrrrrrrrrrooriiiio@@r.................   .tr.    ...iii.                  .
-                         ..         .ii.   .     .irtkkokk...i.rtttttttttrrttrrrrrrrtot.. ik@i.i................. . .tr.        .iii.             ...
-                           .          .ii.     .iitkkkokk  ...rtttttttkkkkttttrrrrrrrtkkrrtkti.. ...ii..... ...... . .rr.         .iri..          ...
-                              .        .ii.  ..irtkkokkk  .iirttttrrtokri.irttrrtrrrrrtktr.ro......iii....  .....   i .rr.          .iii..         ..
-                                         .riiirokkkkkot. ..iiottrrrttookottrtootrtrrrrtktr..tri...iiii....  .....   it .tr.           .ii.i..       .
-                                         .irtkkkkokkti. ..rrrrrrrtttttttookktrtottrrttt......irri.iiii.......ii.    tor iti     ..      iiiii..
-                ...                   ..itkkkkkkkkt. .  ..irrrttrrrttttttttoktrtoktrokki........ir..ii......iii.   rkott.rri    ...      .iiiii.
-               ....                ..itkkkkkkkkkoti .i...rtttrrrrrrrtttttttrtktrrtktrto........  roi......ii.iiii.tkottttrrr.   ...        .i.ii..
-               .....         ....irttokookkkkkti   i.ir.ittrrrrrrrrrttttttttttktrrokrtr ..i.....  ikr......... ...rtottttotri               .i.....
-                 .... .....iiirttokooookkkkot.    .i ..itttrrrrrrrrttttttttttttkrrrkorr........... .ti..   ..      .rottttorr.               .......
-                ....iiiirrrtttokottttokkotr.     ..i.i.rtttttrrrrrrttttttttttttkorrt@ttk........... .kkoiirr..r.  .. rotttotri                ..i....
-             .iiiii...irrrttootttttokkotr.      ..iri..ttttrrrtttrttttttttttttttktrt@ktkk.    ...... ittotririrrrtti  rottttrr.                .i....
-.         .iiri.. ..irrtttttttttttoootr.       ..itkt..tttrrrrrtrrttttttttttttttktrrkkttki.k@  ...... ..iii.....ootr.  rttttrri                 .i...
-.       .iii.   .irrtttttttttritttttr.        ...roki.ittrrrrrttttttttttttttttttootrkkotktk@@r   ......  .ii....totr.  .rtttrri                 .ii..
-      .iii.   .rttttttttrri.  itttr.         ...roko..itttrrtrtttttttttttttttttttottkototr@@k@@ki....ii.  .i....tktr.   .ttrrri.                 .i..
-     .ii.  .irtttttttrr..    irtti          ...tkkokt.itttrrrrrttttttttttttottttttttotokrk@@k@@@t ii..... .ii...tktr.    itriri..                .ii.
-   .ii.  .irtttrrtrr..      irtr.         ...ikkoookk..rtttrtrttttttttttttttttttoorrkootr@k@k@@@. .......ii..i..totr..   .rririii.                .i.
-  .ii.  .rrrrrrri.        .riri          ...tkkoootoki.ittttttttttttttttttttttotkrirtkktr@o@k@@k ........iii....ttrr..    iriiirii..              .i.
-  ..   irrrrrri.         .irr.          ..rkkotottoktii.ittttttttttttttttttttotttrttrt@rtkt@k@@kr. .....iii.ii..ttrr..    .iiiiti....             .i.
-  i. .irrrrr.            iri.          .rtkkttootook. i..rtttttttttttttoootttktktttttrttootkkk@kkktr...ii.....i.rtrr..     iiirtt.....            .i.
-. . .rrrri.             .ri          .itoootottoootkor.i..rrtootttttttokttooottktktrrrrtkttkkk@ttk@@o  ...... . iorr..    .iiittri.....           .i.
-. ..rrri.              .ii.         irtoottottootttkkktii.iirttttooookki rkkktk@kkrrrtktoott@kkto@k@@r  ......  .krri.    .iirttrr......          ...
-. iiri.                .r.        .rttrtttottttottkkt  .i.ii..irttttookr..rktokrrotkktttottt@okkkkrk@@i ......   ttr..    ...rttrr... ...        ....
-..rii.                 ii       .irtr.rototttttttkt.  i.ii.rri.iiiirrrtttrrrrtttrk@ktotoottk@kokri.r@kk. ...... .ttr.    .....rtrri.i  ..        ..
-..ii.                  i.      .rrti .ottttootttor   ir .r..tttrrrrrrrrrrtttttotkkkkttotootk@@kt....tokt.  ...  .oti.    ...  irrtr... ...      ..
-..i.                   .      irrri  ttttttttttt.   .rt..ir.rttttttootok@krttottoktotrtkottkkotot...rk@iok      ttri.   ....  .rrrr...  ..     ...
-...                    .     irrr.  ittttttttti    .irkr .i.itttrtrrtttkr rttrrtttttttikottkt.iokt.i.tk.k@@i   ikri.    ...   .irrr..   ..    ...
-...                    ..   irrr.   rtttttttt.    .iitko  ...rtrrttrrttoriktrrtottotttrotkktttr.okt.iooi.k@otrrktri    ...    .irri..    ..  ....
-i..                    ..  .rri.   irttttttr      iirttki ....rrrrtttttookkkttotttkttrrkrktirtt  tkrokttr rrototi..   ...      iri...    .. ....
-i..                    .. .rri.   .ittrrtti      .iirttok  ....irrttttttttttkttttttttokoktrirttriitk@orkoiirttttr    ...      .irr..     ......
-i ..                    ..iri     .itt..ri       ii.rtttkr   ...iirrrrtttttttrrttttorkkkkokkkktrtorrtr.rttkttttot .....       .iri..    .....
-i ..                     iri.     .itr..i.      .i.irttttki   ....iiirttttttttrttti.t@@kookkotrttttktirttk@kttrtt. i.   ..    .ii..     ...
-.  ..                   .iri      .irrri ..     .. irtttttor.i. .i.irrrtttttttttttrr@ktttkkkkortkkk@krkkktkktrrrtr ..    .    .ii.
-. .  .                  ii.....   .irrr.       .i. irtttttrtt.  ikr..iiirtoottttttk@@ktokkkkor.rokkkkkkkktkktrrrrri.ri.      .ii.
-  .    .                ii.  .... .irri        .i .irttttr.r.   rr. rirrirttttootkkk@kokkktrritokkokkkkkkkkkkkkokkor..ii.    .i..
-  ...                   i.     .. ..ii.        ..  irrrtr i.    i  rkkttttttoktrtooktrrrrriii.rkkkkkkkkkkkotkkkooori.. ...   ...         .
-..i..                   ..         .ii.        ..  .rrrr. i    .  itttrtttttti..irii...iiiiri.iokkkkkkkkkkkrokktrririii.......             .
-. . ..                  ..          .i         ..  .irri ..   .  .iiiirtrtrtriirtttriittttttrittkkkkkkkkkkkrtkkortrrriri...rri...           .
-     ..                             ...         .   .ir.     .  .ri...rrttrtriittottirttttttiitkkkkttkkokkkttkktrtr.ri...  .itri ........  .......
-                                     ..             .ii        .rii...iirrrri.irrtri.irirrrrrrokkkr.rrtkkktttkkrrtr..r.i.    .rri..i........iii......
-         .                            ..             .i.     ..rrii..irttrri..iirrr..irrtririiokti.irrkkkktttkkrrtt. irirr.   .kkr...   .....iiiiiii.
-                                       .     ..  .    ..    ..iiii..irrtottriitttttrirttrtttrirriirttkkkkttotkkrrti irrirrri.  .toi.....       ......
-           ........ .                                    ...irr.....rirtotorirttottiitto..iotriiiirtkkkkkttktkktritkkt.rrrrri.  .rr......  .
-  .     ..ii.iiii..iiiiii.........                    ...i.irriii. .iirotorritttttrirtttttttrrrii.itokkkototrkktr@kti...rtrtr..  .tr.....i..... ..  .
-.      ..iiiiiiiiiirrrrrrrrri...i........  ..  .....iiiirirtrrii..ii..irtr..irrrii .rtokkorirrrrirtokkkottkrikktt@r  .  .irrri... .rriiiii.......  ..
-.   ..  .i..i.i. ..iiirrrrrriiirririiii...........irrrrrtrrrrrriiiirirrri..irrrrr.itkorrriiirrrrroookkokkoottkkkttkrii...iiiiiii.. iri.ii........  ..
-   .i...rririir...ii...i.iiiiirrrrrrrri...iiiiiiirttttttrri..ii.rrrrrrrriirtttrrrtkktiiri .rrrrrootokoo@@ttrtkkkkktrii..irttri......ri..i............
-  .r...rrrrrirr..iriiii..... .iiiiri..i..irrrrttrrrrrttttrii....iirtkkottkkkkktkkktiittor..tkkttototokkkottrtkkkotiiri.irrrr..iii...ir...............
-  ri..irrrrirrr..iriiiriiii.  ....i..iii..irttttrrrriirrrriii.iiiiirrrrttkkkottrrrrrtokotooktttoookkkttrir. i@o.....i..irri...rrri  .rti  ...........
- .r...rrrtrrrri..iiiirririri.iiiiiriiiiriiirrrrrtrrrri.iirrrrtttttri. .iirrrrrrrrrrrtttriii....rroooriirri..rk.......  .ii..i.iirr. ..tti............
-...  .iiiriiiriiirrrrrrirrri.iirrrrrrrrri..iiiiirriii. .irtttttttriiiiri..irrrrrrrii......irtr..rkoiirttri..iiiiiiii...i......iirri.. .ori...........
-r....irrrrii.i. .iriirrirrrriirtttrttrrrriiirrrrrrrrrtrrriirriii...irirrriirttrrriii. .iirttkttt@kiirrtri.iriirriiii..irrrii...irri.i. rri...........
-r.i..rrrrtrrrri...i.iirrrrrrriiii...iiirrrrrrrii..iiiii.....ii.irookttttttiirriiri....irtokktrtkkiirrrr...rriirirrri.irirrrrr. .ii..i...r............
-i....rrrrtrrrrrrirrrii.......iiiii.irrtrrrrrrrii.........irrtkkttoottttrrrri.iriii..rttrrtttirttiirrrri.irriiriirri..rrrrririirri...... rr.... ......
-r....rrrrrrrrri.... ...irrrtttrrrttriirttrrrrrrrri  .iiiiiriiirr. .rrrrrrrri..i..itoottttrr..rriirrri...i...........irrrtrrriirtri..... .ti..........
-r....i..rri..  ....iiirrtrrrrrrrrrrrriiiiriiirii.ii..iririiirii....riirriiiri..irokotttttrirtriiii.   .iiiiiiiii.  ....iirrriirttr.i.....tr..........
-tii.i..    ..iiiirrtriiiirtrrrrrrirrrriiiirriii.iirr..iriiiiii.irr.irrrirrrii..ikkotttttrirr..iiii...rrrrrrrrrri..iriii...iiiitttr.i.... rti.........
-r.....i...    .rkkttttri.irrrrrrrriirrr..iii..irriiri..iii...irrrriirrrrrri.irrirttttttiittiirrrriiirtrrrririri..irrrrrri....itttti..... .ti.........
-. ..   .irrri   .rkorrrri..irrriirrrrrri....iiirriirr...i...irrirrr.irrri.irrttriirtotiittirrrriiiirrrrrtrirri..irrrrrrrrti  .irrrti..... ri.........
-. iii.  ..rrtoti  .rotrrri..irrrrrrriiii....rriirrriii....irrirrrrri.rri..irtrtttrii...ttirrrri.irrrrrrtrrrri..irrrrrrrrrri..i..irti......ii .......
-.....i.      .rot.  .torrri..iiii.ii.. .ii..iriiiriiii.  .riiirrrirri .iirrrrrrttoti.itrirrrr...iiiiiiiiiiri...rrrrrrrrrtr..irii.itr.......r.........
-......i.    ....ror   .trii....iii.iiiiirr..irriiiri......iiirrirrii. .irrrrrrtttrirtoriiii.  .......i.....   .iiirrrrrrtiiirrttriir.......i.........
-. ..iiii.........itt.   rtiriiiirriiriirrri..iiii.i...ii...iriirii..iri..iiirttriirri...... .irrrrrrrrrrrr....i......irrri.itrrttti........ii........
-. .iriiri..........rt.   rorri.irriirriiiii...i....iiiiii...iii...iiiiiii..ittiiiri...iiriiirtrrrrrrrrrrri.iirrrrrii...i...rrrrttttri. .....r....i...
-r.iii...............rt.   rtii..iriiirriiii.  ...iiiriiiri...i...iiriiirii.i...ii..irrrtii.rrrrrrrrrrrrrr...irrrrrrrrii.  .irrirttttr. .....i.....i..
-r.iiii ..............rt.   rtii..iriiiri.... ..iiii.iriiiii.  ...iiirriiiiii..ir..rtrrri..irrrrrrrrrrrrri...irrrrrrrrrtr.....iiirtttr.......ii.......
-i.iiii................tt    tri...iii..i..iii...iiiiiii.i... ..i.ii..iiii..irtr.irrrrriiirtttrrrtrrttttr...irrrirrirrrriiiri....itkt.........i.....ii
-i.iiiii. ..i...........tr   .kri...i...iiiiii...iiiii.ii...ii...iri.......irtr..rrtrtiii...         ..ii..irrriirrrrrrr..irri....itr................i
-i.iiiiii. ....ii.  ....iti . tti...iiiiiii..ii...ii.....iiiiii....iii....irrr..rttri.         ...          .irrrrii..ii..irirri..ii............  ....
-i.iiiiiii.iiiiiir.......it. ..rii...ii...iiiiii.........iiiiiii.........irrti.rri     .iirrttrrrttttrrrri..    ...i..i...iiiiiiiri. ............ .ii.
-i.i..iiiiiiiiiiiir.......ir . iii....iiiiii.iii..  ..ii...iiii.ii.   ..irirt.i.   .irrriii......i.....iirrrrr.  ....rri...iiii..ri. ..............rri
-i.i...........iiiii.......r.  ...i....ii..ii...........iiii..ii.........iio.  ..rrrr....    ................irri..   .i...iiiiiiri................irr.
-. i..........i..i.........ii  ..iii..............ii....ii.............iiiri .iii.... ..  .......i...............irr.   ....iii..ri.... ............ir.
-. ...........i.............r. ..i.............ii....i.............i..iirir....   .......i........ii...........  ..irri.  ..iii..ii.... .............i.
-. ............. ...........ii ......... .......ii..i.................iiii.  .........i.............i.................irri  .ii..ii....................
-. ............. ............i. .......  .........ii..................iii. .......................................ii.  ..i..  ....ii.................
-. ..........................ii   .i............i....ii...............ii. ........................i...............iii.......i. ...ii.................
-. ...........................i. ...i.iiii.....i.........iii...i......i. .........................................iiii......ii.  .....................
-                   .          ..    .                                                                            .           ..
--->
-
-EOF;
-        echo $content;
+        echo Kotori_Common::comment() . $content;
     }
 
     /**
@@ -1764,7 +1735,7 @@ class Kotori_Trace
 
     /**
      * get singleton
-     * 
+     *
      * @return object
      */
     public static function getInstance()
@@ -1805,7 +1776,7 @@ class Kotori_Trace
         $support = array(
             '<a target="_blank" href="https://github.com/kokororin/Kotori.php">GitHub</a>',
             '<a target="_blank" href="https://kotori.love/archives/kotori-php-framework.html">Blog</a>',
-            '<a target="_blank" href="' . Kotori_Route::getInstance()->url(array('System', 'checkUpdate')) . '">Check for Updates</a>',
+            '<a id="kotori_page_trace_check_update" target="_blank" href="' . Kotori_Route::getInstance()->url(array('System', 'checkUpdate')) . '" download="' . Kotori_Route::getInstance()->url(array('System', 'downloadUpdate')) . '">Check for Updates</a>',
         );
 
         $trace = array();
@@ -1841,7 +1812,8 @@ class Kotori_Trace
     public function showTrace()
     {
         $trace = $this->getTrace();
-        $tpl   = '<!-- Kotori Page Trace -->
+        $tpl   = '
+<!-- Kotori Page Trace (If you want to hide this feature,please set APP_DEBUG to false.)-->
 <div id="kotori_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
 <div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
 <div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
@@ -1873,44 +1845,103 @@ class Kotori_Trace
 </div>
 <div id="kotori_page_trace_open" style="height:30px;float:right;text-align: right;overflow:hidden;position:fixed;bottom:0;right:0;color:#000;line-height:30px;cursor:pointer;"><div style="background:#232323;color:#FFF;padding:0 6px;float:right;line-height:30px;font-size:14px">' . round(RUN_TIME * 1000) . 'ms</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="' . Kotori_Common::logo() . '"></div>
 <script type="text/javascript">
-(function(){
+(function() {
 var tab_tit  = document.getElementById(\'kotori_page_trace_tab_tit\').getElementsByTagName(\'span\');
 var tab_cont = document.getElementById(\'kotori_page_trace_tab_cont\').getElementsByTagName(\'div\');
 var open     = document.getElementById(\'kotori_page_trace_open\');
 var close    = document.getElementById(\'kotori_page_trace_close\').childNodes[0];
 var trace    = document.getElementById(\'kotori_page_trace_tab\');
+var update   = document.getElementById(\'kotori_page_trace_check_update\');
 var cookie   = document.cookie.match(/kotori_show_page_trace=(\d\|\d)/);
 var history  = (cookie && typeof cookie[1] != \'undefined\' && cookie[1].split(\'|\')) || [0,0];
-open.onclick = function(){
+open.onclick = function() {
     trace.style.display = \'block\';
     this.style.display = \'none\';
     close.parentNode.style.display = \'block\';
     history[0] = 1;
-    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
+    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\');
 }
-close.onclick = function(){
+close.onclick = function() {
     trace.style.display = \'none\';
-this.parentNode.style.display = \'none\';
+    this.parentNode.style.display = \'none\';
     open.style.display = \'block\';
     history[0] = 0;
-    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
+    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\');
 }
-for(var i = 0; i < tab_tit.length; i++){
-    tab_tit[i].onclick = (function(i){
-        return function(){
-            for(var j = 0; j < tab_cont.length; j++){
+for(var i = 0; i < tab_tit.length; i++) {
+    tab_tit[i].onclick = (function(i) {
+        return function() {
+            for(var j = 0; j < tab_cont.length; j++) {
                 tab_cont[j].style.display = \'none\';
                 tab_tit[j].style.color = \'#999\';
             }
             tab_cont[i].style.display = \'block\';
             tab_tit[i].style.color = \'#000\';
             history[1] = i;
-            document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\')
+            document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\');
         }
-    })(i)
+    })(i);
 }
 parseInt(history[0]) && open.click();
 (tab_tit[history[1]] || tab_tit[0]).click();
+update.onclick = function() {
+    this.innerHTML = \'Checking...\';
+    get({
+        url: this.href,
+        success: function(data) {
+            var json = eval("(" + data + ")");
+            if (json.status == \'is_latest\') {
+                alert(json.text);
+            }
+            else if (json.status == \'not_latest\'){
+                if (confirm(json.text)) {
+                    get({
+                        url: update.attributes[\'download\'].nodeValue,
+                        success: function(data) {
+                            if (data == \'success\') {
+                                update.innerHTML = \'Update complete\';
+                                alert(\'Update success !\');
+                            }
+                            else {
+                                update.innerHTML = \'Please try again\';
+                                alert(\'Network error !\');
+                            }
+                        },
+                        error: function(data) {
+                            update.innerHTML = \'Please try again\';
+                            alert(\'Network error !\');
+                        }
+                    });
+                }
+                else {
+                    update.innerHTML = \'User aborted\';
+                }
+            }
+            else {
+                alert(\'Network error,please try again.\');
+            }
+        },
+        error: function() {
+            alert(\'Network error,please try again.\');
+        }
+    });
+    return false;
+}
+var get = function(o) {
+    if (!o.url)
+        return;
+    var xmlhttp = new XMLHttpRequest() || new ActiveXObject(\'Microsoft.XMLHTTP\');
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200 && !!o.success)
+            o.success(xmlhttp.responseText);
+        if (xmlhttp.readyState == 4 && xmlhttp.status != 200 && !!o.error)
+            o.error();
+    };
+        xmlhttp.open(\'GET\', o.url, o.async || true);
+        xmlhttp.setRequestHeader(\'X-Requested-With\', \'XMLHttpRequest\');
+        xmlhttp.setRequestHeader(\'If-Modified-Since\', \'0\');
+        xmlhttp.send(null);
+}
 })();
 </script>';
         return $tpl;
@@ -1933,7 +1964,7 @@ class Kotori_System extends Kotori_Controller
      *
      * @var string
      */
-    protected $url = 'https://raw.githubusercontent.com/kokororin/Kotori.php/master/Kotori.php';
+    protected $url = 'https://kotori.sinaapp.com/framework/latest';
 
     /**
      * For Check Update
@@ -1942,25 +1973,25 @@ class Kotori_System extends Kotori_Controller
      */
     public function checkUpdate()
     {
-        header('Content-type: text/html; charset=utf-8');
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-        $new = curl_exec($ch);
-        curl_close($ch);
+        $new = file_get_contents($this->url);
         $old = file_get_contents(__FILE__);
-        if ($new == $old)
+        if (md5($new) == md5($old))
         {
-            echo '已经是GitHub上游的最新版本啦_ (:з」∠) _';
+            Kotori_Response::getInstance()->throwJson(array(
+                'status' => 'is_latest',
+                'text'   => 'Local version is the latest.(:з」∠) _',
+            ));
         }
         else
         {
-            echo '新版本已发布，请<a href="' . Kotori_Route::getInstance()->url(array('System', 'downloadUpdate')) . '">点击更新</a>└(T_T;)┘';
+            Kotori_Response::getInstance()->throwJson(array(
+                'status' => 'not_latest',
+                'text'   => 'Local version is not the latest, are you sure to update ?',
+            ));
         }
     }
 
-     /**
+    /**
      * For Download Update
      *
      * @return void
@@ -1968,17 +1999,24 @@ class Kotori_System extends Kotori_Controller
     public function downloadUpdate()
     {
         $fileName = dirname(__FILE__) . '/Kotori.php';
-        $ch       = curl_init();
-        $fp       = fopen($fileName, 'wb');
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
-        curl_exec($ch);
-        curl_close($ch);
-        fclose($fp);
-        echo '框架已更新至GitHub上游最新版本啦_ (:з」∠) _如果发现Kotori.php不见了，说明你的网络卡了，你只能重新下载一个了(;>_<;)';
+        try {
+            $ch = curl_init();
+            $fp = fopen($fileName, 'wb');
+            curl_setopt($ch, CURLOPT_URL, $this->url);
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+            curl_exec($ch);
+            curl_close($ch);
+            fclose($fp);
+            echo 'success';
+        }
+        catch (Exception $e)
+        {
+            echo 'fail';
+        }
+
     }
 }
 
