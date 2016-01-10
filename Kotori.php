@@ -1891,6 +1891,7 @@ update.onclick = function() {
         success: function(data) {
             var json = eval("(" + data + ")");
             if (json.status == \'is_latest\') {
+                update.innerHTML = \'Latest\';
                 alert(json.text);
             }
             else if (json.status == \'not_latest\'){
