@@ -422,16 +422,18 @@ class Kotori_Handle
      *
      * @return void
      */
-    public static function halt($message, $code = 500)
+    public static function halt($message, $code = 404)
     {
         Kotori_Response::getInstance()->setStatus($code);
         if (Kotori_Config::getInstance()->get('APP_DEBUG') == false)
         {
             $message = '404 Not Found.';
         }
-        echo
-            <<<EOF
-<!DOCTYPE html>
+        $tpl_path = Kotori_Config::getInstance()->get('ERROR_TPL');
+
+        if ($tpl_path == null)
+        {
+            $tpl = '<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -529,10 +531,10 @@ a:hover {
 </style>
 <script>
 function open_link(url){
- var el = document.createElement('a');
+ var el = document.createElement("a");
  document.body.appendChild(el);
  el.href = url;
- el.target = '_blank';
+ el.target = "_blank";
  el.click();
  document.body.removeChild(el);
 }
@@ -542,12 +544,18 @@ function open_link(url){
 <body id="error-page">
     <h1>Error Occured.</h1>
     <p>{$message}</p>
-    <button class="button" onclick="open_link('https://github.com/kokororin/Kotori.php')">Go to GitHub Page</button>
-    <button class="button" onclick="open_link('https://github.com/kokororin/Kotori.php/issues')">Report a Bug</button>
+    <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php\')">Go to GitHub Page</button>
+    <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php/issues\')">Report a Bug</button>
 </body>
-</html>
-EOF;
-        exit;
+</html>';
+        }
+        else
+        {
+            $tpl = file_get_contents(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/View/' . $tpl_path . '.html');
+        }
+
+        $tpl = str_replace('{$message}', $message, $tpl);
+        exit($tpl);
     }
 
     /**
