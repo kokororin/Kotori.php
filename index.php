@@ -10,5 +10,4 @@ Kotori::run(array(
     'URL_ROUTE' => array(
         'news/([0-9])' => 'Index/showNews/$1',
     ),
-    'ERROR_TPL' => 'Public/error',
 ));

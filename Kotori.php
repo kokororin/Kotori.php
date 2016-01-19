@@ -683,7 +683,18 @@ function open_link(url){
  */
 class Kotori_Exception extends Exception
 {
-
+    /**
+     * Class constructor
+     *
+     * Initialize Exception.
+     *
+     * @return void
+     */
+    public function __construct($message, $code = 0)
+    {
+        $this->message = $message;
+        $this->code    = $code;
+    }
 }
 
 /**
@@ -784,7 +795,8 @@ class Kotori_Route
         //Endtime
         define('END_TIME', microTime(true));
         define('RUN_TIME', END_TIME - START_TIME);
-        header('X-Powered-By:Kotori');
+        header('X-Powered-By: Kotori');
+        header('Cache-control: private');
         //Bind
         call_user_func_array(array($controller, $_action), $params);
 
@@ -1179,13 +1191,12 @@ class Kotori_View
             Kotori_Handle::halt('Template is not existed.');
         }
         unset($tpl);
-        //Cache Control
         ob_start();
-        ob_implicit_flush(0);
         extract($this->_data, EXTR_OVERWRITE);
         include $this->_viewPath;
-        $content = ob_get_clean();
-        echo Kotori_Common::comment() . $content;
+        $buffer = ob_get_contents();
+        ob_get_clean();
+        echo Kotori_Common::comment() . $buffer;
     }
 
     /**
