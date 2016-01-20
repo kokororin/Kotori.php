@@ -1169,6 +1169,7 @@ class Kotori_View
     public function assign($key, $value)
     {
         $this->_data[$key] = $value;
+        return $this;
     }
 
     /**
