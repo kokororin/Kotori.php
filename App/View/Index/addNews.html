@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>add News</title>
+
+<style type="text/css">
+*{margin:0;padding:0;}
+.clears{ clear:both;}
+/*messages*/
+.messages{padding:15px 0;}
+.messages input,.messages select,.messages textarea{margin:0;padding:0; background:none; border:0; font-family:"Microsoft Yahei";}
+.messlist {height:30px;margin-bottom:10px;}
+.messlist label{float:left;width:100px; height:30px; font-size:14px; line-height:30px; text-align:right;padding-right:10px;}
+.messlist input{float:left;width:300px;height:28px;padding-left:5px;border:#ccc 1px solid;}
+.messlist.textareas{ height:auto;}
+.messlist textarea{float:left;width:400px; height:110px;padding:5px;border:#ccc 1px solid;}
+.messlist.yzms input{width:100px;}
+.messlist.yzms .yzmimg{ float:left;margin-left:10px;}
+.messsub{padding:0px 0 0 110px;}
+.messsub input{width:100px; height:35px; background:#ddd; font-size:14px; font-weight:bold; cursor:pointer;margin-right:5px}
+.messsub input:hover{ background:#f60;color:#fff;}
+
+</style>
+</head>
+
+<body>
+
+<form action="<?php echo $this->route->url('add');?>" method="post" class="messages">
+     <div class="messlist">
+      <label>title</label>
+      <input type="text" name="title" placeholder="title" />
+      <div class="clears"></div>
+     </div>
+     <div class="messlist textareas">
+      <label>content</label>
+      <textarea name="content" placeholder="content"></textarea>
+      <div class="clears"></div>
+     </div>
+     <div class="messsub">
+      <input type="submit" value="Submit" style="background:#00a3eb;color:#fff;" />
+      <input type="reset" value="Reset" />
+     </div>
+</form>	 
+</body>
+</html>

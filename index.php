@@ -9,5 +9,9 @@ Kotori::run(array(
     'DB_NAME'   => 'test',
     'URL_ROUTE' => array(
         'news/([0-9])' => 'Index/showNews/$1',
+        'add'          => array(
+            'get'  => 'Index/addNews',
+            'post' => 'Index/insertNews',
+        ),
     ),
 ));
