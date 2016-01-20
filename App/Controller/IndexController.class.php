@@ -9,7 +9,8 @@ class IndexController extends Kotori_Controller
     public function index()
     {
         $news_list = $this->NewsModel->getNewsList();
-        $this->view->display();
+        $this->view->assign('title', 'Welcome to Kotori.php')
+            ->display();
     }
 
     public function showNews($id)
