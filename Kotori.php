@@ -1793,8 +1793,9 @@ class Kotori_Trace
         {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
-        $error = Kotori_Handle::$errors;
-        $sql   = Kotori_Database::getInstance()->queries;
+        $error    = Kotori_Handle::$errors;
+        $database = Kotori_Database::getInstance();
+        $sql      = $database == null ? array() : $database->queries;
 
         $base = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
