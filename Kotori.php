@@ -766,6 +766,7 @@ class Kotori_Route
         }
 
         $parsedRoute = $this->parseRoutes($uri);
+
         if ($parsedRoute)
         {
             $uri = $parsedRoute;
@@ -867,18 +868,30 @@ class Kotori_Route
     {
         $routes = Kotori_Config::getInstance()->get('URL_ROUTE');
 
+        // Get HTTP verb
+        $http_verb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
+
         if (null != $routes)
         {
             foreach ($routes as $key => $val)
             {
+                // Check if route format is using HTTP verbs
                 if (is_array($val))
                 {
-                    Kotori_Handle::halt('Route Rules Error.');
+                    $val = array_change_key_case($val, CASE_LOWER);
+                    if (isset($val[$http_verb]))
+                    {
+                        $val = $val[$http_verb];
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
+
                 // Does the RegEx match?
                 if (preg_match('#^' . $key . '$#', $uri, $matches))
                 {
-
                     // Are we using callbacks to process back-references?
                     if (!is_string($val) && is_callable($val))
                     {
@@ -1164,7 +1177,7 @@ class Kotori_View
      *
      * @param string $name key
      * @param mixed $value value
-     * @return void
+     * @return Kotori_View
      */
     public function assign($key, $value)
     {

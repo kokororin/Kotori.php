@@ -18,4 +18,14 @@ class IndexController extends Kotori_Controller
         echo 'This is news No.' . $id;
     }
 
+    public function addNews()
+    {
+        $this->view->display();
+    }
+
+    public function insertNews()
+    {
+        print_r($this->request->input('post.'));
+    }
+
 }
