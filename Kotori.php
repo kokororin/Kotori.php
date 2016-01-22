@@ -60,10 +60,7 @@ class Kotori
         set_exception_handler(array('Kotori_Handle', 'exception'));
         register_shutdown_function(array('Kotori_Handle', 'end'));
 
-        if (Kotori_Config::getInstance()->get('USE_SESSION') == true)
-        {
-            session_start();
-        }
+        session_start();
 
         //Load application's common functions
         Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/common.php');
@@ -318,12 +315,11 @@ class Kotori_Config
      * @var array
      */
     private $_defaults = array(
-        'APP_DEBUG'   => 'false',
-        'APP_PATH'    => './App',
-        'DB_PORT'     => 3306,
-        'DB_CHARSET'  => 'utf8',
-        'USE_SESSION' => true,
-        'URL_MODE'    => 'QUERY_STRING',
+        'APP_DEBUG'  => 'false',
+        'APP_PATH'   => './App',
+        'DB_PORT'    => 3306,
+        'DB_CHARSET' => 'utf8',
+        'URL_MODE'   => 'QUERY_STRING',
     );
 
     /**
@@ -353,7 +349,7 @@ class Kotori_Config
             {
                 $this->_config = array_merge($this->_config, $conf);
                 $this->_config = array_merge($this->_defaults, $this->_config);
-                $this->_config = array_merge(array('APP_FULL_PATH' => dirname(__FILE__) . '/' . $this->get('APP_PATH')), $this->_config);
+                $this->_config = array_merge(array('APP_FULL_PATH' => dirname(__FILE__) . '/' . rtrim($this->get('APP_PATH'), '/')), $this->_config);
             }
         }
         return false;
@@ -622,8 +618,6 @@ function open_link(url){
         $txt  = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
         array_push(self::$errors, $txt);
         Kotori_Log::normal($txt);
-        //self::halt($text, 500);
-
     }
 
     /**
@@ -640,7 +634,6 @@ function open_link(url){
     {
         $text = '<b>Exception:</b>' . $exception->getMessage();
         $txt  = 'Type:Exception' . ' Info:' . $exception->getMessage();
-        //array_push(self::$errors, $txt);
         Kotori_Log::normal($txt);
         self::halt($text, 500);
     }
@@ -758,12 +751,19 @@ class Kotori_Route
         {
             $uri = '';
         }
-        elseif (strncmp($uri, '/', 1) == 0)
+        else
+        //if (strncmp($uri, '/', 1) == 0)
         {
             $uri                     = explode('?', $uri, 2);
             $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
             $uri                     = $uri[0];
         }
+        if (Kotori_Config::getInstance()->get('URL_MODE') == 'QUERY_STRING')
+        {
+            parse_str($_SERVER['QUERY_STRING'], $_GET);
+        }
+
+        define('URI', $uri);
 
         $parsedRoute = $this->parseRoutes($uri);
 
@@ -798,7 +798,7 @@ class Kotori_Route
         define('RUN_TIME', END_TIME - START_TIME);
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
-        //Bind
+        //Call the requested method
         call_user_func_array(array($controller, $_action), $params);
 
     }
@@ -1923,13 +1923,12 @@ update.onclick = function() {
     get({
         url: this.href,
         success: function(data) {
-            var json = eval("(" + data + ")");
-            if (json.status == \'is_latest\') {
+            if (data.status == \'is_latest\') {
                 update.innerHTML = \'Latest\';
-                alert(json.text);
+                alert(data.text);
             }
-            else if (json.status == \'not_latest\'){
-                if (confirm(json.text)) {
+            else if (data.status == \'not_latest\'){
+                if (confirm(data.text)) {
                     get({
                         url: update.attributes[\'download\'].nodeValue,
                         success: function(data) {
@@ -1967,15 +1966,20 @@ var get = function(o) {
         return;
     var xmlhttp = new XMLHttpRequest() || new ActiveXObject(\'Microsoft.XMLHTTP\');
     xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200 && !!o.success)
-            o.success(xmlhttp.responseText);
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200 && !!o.success) {
+            if (xmlhttp.responseText.match("^\{(.+:.+,*){1,}\}$")) {
+                o.success(eval("(" + xmlhttp.responseText + ")"));
+            } else {
+                o.success(xmlhttp.responseText);
+            }
+        }
         if (xmlhttp.readyState == 4 && xmlhttp.status != 200 && !!o.error)
             o.error();
     };
-        xmlhttp.open(\'GET\', o.url, o.async || true);
-        xmlhttp.setRequestHeader(\'X-Requested-With\', \'XMLHttpRequest\');
-        xmlhttp.setRequestHeader(\'If-Modified-Since\', \'0\');
-        xmlhttp.send(null);
+    xmlhttp.open(\'GET\', o.url, o.async || true);
+    xmlhttp.setRequestHeader(\'X-Requested-With\', \'XMLHttpRequest\');
+    xmlhttp.setRequestHeader(\'If-Modified-Since\', \'0\');
+    xmlhttp.send(null);
 }
 })();
 </script>';
@@ -1999,7 +2003,7 @@ class Kotori_System extends Kotori_Controller
      *
      * @var string
      */
-    protected $url = 'https://kotori.sinaapp.com/framework/latest';
+    protected $url = 'http://kotori.sinaapp.com/framework/latest';
 
     /**
      * For Check Update
@@ -3097,8 +3101,12 @@ class Kotori_Log
         else
         {
             $msg     = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
-            $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log/' . date('Ymd') . '.log';
-            file_put_contents($logPath, $msg, FILE_APPEND);
+            $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log';
+            if (!file_exists($logPath))
+            {
+                mkdir($logPath, 0755, true);
+            }
+            file_put_contents($logPath . '/' . date('Ymd') . '.log', FILE_APPEND);
         }
     }
 
