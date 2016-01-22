@@ -751,15 +751,12 @@ class Kotori_Route
         {
             $uri = '';
         }
-        else
-        //if (strncmp($uri, '/', 1) == 0)
+
+        if (Kotori_Config::getInstance()->get('URL_MODE') == 'QUERY_STRING')
         {
             $uri                     = explode('?', $uri, 2);
             $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
             $uri                     = $uri[0];
-        }
-        if (Kotori_Config::getInstance()->get('URL_MODE') == 'QUERY_STRING')
-        {
             parse_str($_SERVER['QUERY_STRING'], $_GET);
         }
 
