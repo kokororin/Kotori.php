@@ -1059,22 +1059,6 @@ class Kotori_Controller
         }
         return null;
     }
-
-    /**
-     * Class destructor
-     *
-     * In order to show Trace.
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        if (Kotori_Config::getInstance()->get('APP_DEBUG') == true && !Kotori_Request::getInstance()->isAjax())
-        {
-            echo Kotori_Trace::getInstance()->showTrace();
-        }
-    }
-
 }
 
 /**
@@ -1207,7 +1191,7 @@ class Kotori_View
         include $this->_viewPath;
         $buffer = ob_get_contents();
         ob_get_clean();
-        echo Kotori_Common::comment() . $buffer;
+        echo Kotori_Common::comment() . $buffer . Kotori_Trace::getInstance()->showTrace();
     }
 
     /**
