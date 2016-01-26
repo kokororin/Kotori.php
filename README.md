@@ -6,13 +6,22 @@ Kotori.php -- a Tiny Model-View-Controller (MVC) PHP Framework
 
 Licensed under the Apache License, Version 2.0 (the "License").
 
+## Usage
+
+```php
+<?php
+require './Kotori.php';
+
+$app = new Kotori();
+
+$app->set('APP_PATH', './App/');
+
+$app->run();
+```
+
 ## Thanks
 
 ThinkPHP && CodeIgniter && Typecho
-
-## ScreenShots
-
-![image](https://raw.githubusercontent.com/kokororin/Kotori.php/master/Public/img/screenshot.jpg)
 
 ## Document(Chinese)
 
