@@ -1,17 +1,19 @@
 <?php
 require './Kotori.php';
 
-Kotori::run(array(
-    'APP_PATH'  => './App/',
-    'DB_HOST'   => '127.0.0.1',
-    'DB_USER'   => 'root',
-    'DB_PWD'    => 'root',
-    'DB_NAME'   => 'test',
-    'URL_ROUTE' => array(
-        'news/([0-9])' => 'Index/showNews/$1',
-        'add'          => array(
-            'get'  => 'Index/addNews',
-            'post' => 'Index/insertNews',
-        ),
+$app = new Kotori();
+
+$app->set('APP_PATH', './App/');
+$app->set('DB_HOST', '127.0.0.1');
+$app->set('DB_USER', 'root');
+$app->set('DB_PWD', 'root');
+$app->set('DB_NAME', 'test');
+$app->set('URL_ROUTE', array(
+    'news/([0-9])' => 'Index/showNews/$1',
+    'add' => array(
+        'get' => 'Index/addNews',
+        'post' => 'Index/insertNews',
     ),
 ));
+
+$app->run();

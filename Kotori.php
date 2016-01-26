@@ -34,27 +34,27 @@
 class Kotori
 {
     /**
-     * biu~ biu~ biu~ Run!!
+     * Class constructor
      *
-     * @param mixed $conf Config array
+     * Initialize Framework.
+     *
      * @return void
      */
-    public static function run($conf)
+    public function __construct()
     {
         ini_set('display_errors', 'off');
         ini_set('date.timezone', 'Asia/Shanghai');
-        Kotori_Config::getInstance()->initialize($conf);
-        Kotori::initialize();
+        define('START_TIME', microtime(true));
     }
 
     /**
-     * Instantiate the Framework
+     * Start the App.
      *
      * @return void
      */
-    private static function initialize()
+    public function run()
     {
-        define('START_TIME', microtime(true));
+        Kotori_Config::getInstance()->initialize();
         //Define a custom error handler so we can log PHP errors
         set_error_handler(array('Kotori_Handle', 'error'));
         set_exception_handler(array('Kotori_Handle', 'exception'));
@@ -67,13 +67,13 @@ class Kotori
 
         if (function_exists('spl_autoload_register'))
         {
-            spl_autoload_register(array(__CLASS__, 'autoload'));
+            spl_autoload_register(array('Kotori_Common', 'autoload'));
         }
         else
         {
             function __autoload($className)
             {
-                Kotori::autoload($className);
+                Kotori_Common::autoload($className);
             }
         }
 
@@ -84,31 +84,21 @@ class Kotori
         array_walk_recursive($_GET, array('Kotori_Request', 'filter'));
         array_walk_recursive($_POST, array('Kotori_Request', 'filter'));
         array_walk_recursive($_REQUEST, array('Kotori_Request', 'filter'));
-
     }
 
     /**
-     * Global autoload function
+     * Set config item
      *
-     * @param string $class Class name
-     * @return void
+     * @param string $key Config item name
+     * @param mixed $value Config item value
+     * @return Kotori
      */
-    public static function autoload($class)
+    public function set($key, $value)
     {
-        $baseRoot = Kotori_Config::getInstance()->get('APP_FULL_PATH');
-        if (substr($class, -10) == 'Controller')
-        {
-            Kotori_Common::import($baseRoot . '/Controller/' . $class . '.class.php');
-        }
-        elseif (substr($class, -5) == 'Model')
-        {
-            Kotori_Common::import($baseRoot . '/Model/' . $class . '.class.php');
-        }
-        else
-        {
-            Kotori_Common::import($baseRoot . '/Lib/' . $class . '.class.php');
-        }
+        Kotori_Config::getInstance()->set($key, $value);
+        return $this;
     }
+
 }
 
 /**
@@ -173,6 +163,29 @@ class Kotori_Common
             return true;
         }
         return false;
+    }
+
+    /**
+     * Global autoload function
+     *
+     * @param string $class Class name
+     * @return void
+     */
+    public static function autoload($class)
+    {
+        $baseRoot = Kotori_Config::getInstance()->get('APP_FULL_PATH');
+        if (substr($class, -10) == 'Controller')
+        {
+            Kotori_Common::import($baseRoot . '/Controller/' . $class . '.class.php');
+        }
+        elseif (substr($class, -5) == 'Model')
+        {
+            Kotori_Common::import($baseRoot . '/Model/' . $class . '.class.php');
+        }
+        else
+        {
+            Kotori_Common::import($baseRoot . '/Lib/' . $class . '.class.php');
+        }
     }
 
 /**
@@ -315,11 +328,11 @@ class Kotori_Config
      * @var array
      */
     private $_defaults = array(
-        'APP_DEBUG'  => 'false',
-        'APP_PATH'   => './App',
-        'DB_PORT'    => 3306,
+        'APP_DEBUG' => 'false',
+        'APP_PATH' => './App',
+        'DB_PORT' => 3306,
         'DB_CHARSET' => 'utf8',
-        'URL_MODE'   => 'QUERY_STRING',
+        'URL_MODE' => 'QUERY_STRING',
     );
 
     /**
@@ -335,19 +348,19 @@ class Kotori_Config
         }
         return self::$_instance;
     }
+
     /**
      * Initialize Config
      *
      * @param mixed $conf Config
      * @return void
      */
-    public function initialize($conf)
+    public function initialize()
     {
-        if (is_array($conf))
+        if (is_array($this->_config))
         {
-            if (array_keys($conf) !== range(0, count($conf) - 1))
+            if (array_keys($this->_config) !== range(0, count($this->_config) - 1))
             {
-                $this->_config = array_merge($this->_config, $conf);
                 $this->_config = array_merge($this->_defaults, $this->_config);
                 $this->_config = array_merge(array('APP_FULL_PATH' => dirname(__FILE__) . '/' . rtrim($this->get('APP_PATH'), '/')), $this->_config);
             }
@@ -615,7 +628,7 @@ function open_link(url){
         }
 
         $text = '<b>Error Type:</b>' . $errtype . '<br>' . '<b>Info:</b>' . $errstr . '<br>' . '<b>Line:</b>' . $errline . '<br>' . '<b>File:</b>' . $errfile;
-        $txt  = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
+        $txt = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
         array_push(self::$errors, $txt);
         Kotori_Log::normal($txt);
     }
@@ -633,7 +646,7 @@ function open_link(url){
     public static function exception($exception)
     {
         $text = '<b>Exception:</b>' . $exception->getMessage();
-        $txt  = 'Type:Exception' . ' Info:' . $exception->getMessage();
+        $txt = 'Type:Exception' . ' Info:' . $exception->getMessage();
         Kotori_Log::normal($txt);
         self::halt($text, 500);
     }
@@ -657,7 +670,7 @@ function open_link(url){
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING)))
         {
             $text = '<b>Error Type:</b>' . $last_error['type'] . '<br>' . '<b>Info:</b>' . $last_error['message'] . '<br>' . '<b>Line:</b>' . $last_error['line'] . '<br>' . '<b>File:</b>' . $last_error['file'];
-            $txt  = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
+            $txt = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
             Kotori_Log::normal($txt);
             self::halt($text, 500);
         }
@@ -686,7 +699,7 @@ class Kotori_Exception extends Exception
     public function __construct($message, $code = 0)
     {
         $this->message = $message;
-        $this->code    = $code;
+        $this->code = $code;
     }
 }
 
@@ -754,9 +767,9 @@ class Kotori_Route
 
         if (Kotori_Config::getInstance()->get('URL_MODE') == 'QUERY_STRING')
         {
-            $uri                     = explode('?', $uri, 2);
+            $uri = explode('?', $uri, 2);
             $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
-            $uri                     = $uri[0];
+            $uri = $uri[0];
             parse_str($_SERVER['QUERY_STRING'], $_GET);
         }
 
@@ -772,7 +785,7 @@ class Kotori_Route
         $uriArray = ('' != $uri) ? explode('/', trim($uri, '/')) : array();
 
         $_controller = $this->getController($uriArray);
-        $_action     = $this->getAction($uriArray);
+        $_action = $this->getAction($uriArray);
         //Define some variables
         define('CONTROLLER_NAME', $_controller);
         define('ACTION_NAME', $_action);
@@ -788,7 +801,7 @@ class Kotori_Route
         //Parse params from uri
         $params = $this->getParams($uriArray);
         //Do some final cleaning of the params
-        $_GET     = array_merge($params, $_GET);
+        $_GET = array_merge($params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
         //Endtime
         define('END_TIME', microTime(true));
@@ -922,8 +935,8 @@ class Kotori_Route
     public function url($uri = '')
     {
         $base_url = Kotori_Request::getInstance()->getBaseUrl();
-        $uri      = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
-        $prefix   = $base_url . 'index.php?route=';
+        $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
+        $prefix = $base_url . 'index.php?route=';
 
         switch (Kotori_Config::getInstance()->get('URL_MODE'))
         {
@@ -968,7 +981,7 @@ class Kotori_Route
         }
         else
         {
-            $controller                          = new $controllerClass();
+            $controller = new $controllerClass();
             $this->_controller[$controllerClass] = $controller;
             return $controller;
         }
@@ -1023,11 +1036,11 @@ class Kotori_Controller
     public function __construct()
     {
         self::$_instance = &$this;
-        $this->view      = new Kotori_View();
-        $this->response  = Kotori_Response::getInstance();
-        $this->request   = Kotori_Request::getInstance();
-        $this->route     = Kotori_Route::getInstance();
-        $this->db        = Kotori_Database::getInstance();
+        $this->view = new Kotori_View();
+        $this->response = Kotori_Response::getInstance();
+        $this->request = Kotori_Request::getInstance();
+        $this->route = Kotori_Route::getInstance();
+        $this->db = Kotori_Database::getInstance();
     }
 
     /**
@@ -1052,7 +1065,7 @@ class Kotori_Controller
             }
             else
             {
-                $model              = new $key();
+                $model = new $key();
                 $this->_model[$key] = $model;
                 return $model;
             }
@@ -1316,7 +1329,7 @@ class Kotori_Request
                 $input = array();
                 if (!empty($_SERVER['PATH_INFO']))
                 {
-                    $depr  = '/';
+                    $depr = '/';
                     $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
                 }
                 break;
@@ -1343,7 +1356,7 @@ class Kotori_Request
         }
         if ('' == $name)
         {
-            $data    = $input;
+            $data = $input;
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
             if ($filters)
             {
@@ -1359,7 +1372,7 @@ class Kotori_Request
         }
         elseif (isset($input[$name]))
         {
-            $data    = $input[$name];
+            $data = $input[$name];
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
             if ($filters)
             {
@@ -1733,10 +1746,10 @@ class Kotori_Trace
      * @var array
      */
     private $traceTabs = array(
-        'BASE'    => 'Basic',
-        'FILE'    => 'File',
-        'ERROR'   => 'Error',
-        'SQL'     => 'SQL',
+        'BASE' => 'Basic',
+        'FILE' => 'File',
+        'ERROR' => 'Error',
+        'SQL' => 'SQL',
         'SUPPORT' => 'Support',
     );
 
@@ -1769,22 +1782,22 @@ class Kotori_Trace
     private function getTrace()
     {
         $files = get_included_files();
-        $info  = array();
+        $info = array();
         foreach ($files as $key => $file)
         {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
-        $error    = Kotori_Handle::$errors;
+        $error = Kotori_Handle::$errors;
         $database = Kotori_Database::getInstance();
-        $sql      = $database == null ? array() : $database->queries;
+        $sql = $database == null ? array() : $database->queries;
 
         $base = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
-            'Run Time'     => RUN_TIME . 's',
-            'TPR'          => number_format(1 / RUN_TIME, 2) . 'req/s',
-            'Memory Uses'  => number_format(memory_get_usage() / 1024, 2) . ' kb',
-            'SQL Queries'  => count($sql) . ' queries ',
-            'File Loaded'  => count(get_included_files()),
+            'Run Time' => RUN_TIME . 's',
+            'TPR' => number_format(1 / RUN_TIME, 2) . 'req/s',
+            'Memory Uses' => number_format(memory_get_usage() / 1024, 2) . ' kb',
+            'SQL Queries' => count($sql) . ' queries ',
+            'File Loaded' => count(get_included_files()),
             'Session Info' => 'SESSION_ID=' . session_id(),
         );
 
@@ -1827,7 +1840,7 @@ class Kotori_Trace
     public function showTrace()
     {
         $trace = $this->getTrace();
-        $tpl   = '
+        $tpl = '
 <!-- Kotori Page Trace (If you want to hide this feature,please set APP_DEBUG to false.)-->
 <div id="kotori_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
 <div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
@@ -1999,14 +2012,14 @@ class Kotori_System extends Kotori_Controller
         {
             Kotori_Response::getInstance()->throwJson(array(
                 'status' => 'is_latest',
-                'text'   => 'Local version is the latest.(:з」∠) _',
+                'text' => 'Local version is the latest.(:з」∠) _',
             ));
         }
         else
         {
             Kotori_Response::getInstance()->throwJson(array(
                 'status' => 'not_latest',
-                'text'   => 'Local version is not the latest, are you sure to update ?',
+                'text' => 'Local version is not the latest, are you sure to update ?',
             ));
         }
     }
@@ -2067,11 +2080,11 @@ class Kotori_Database
     protected $prefix;
     protected $option = array();
     // Variable
-    protected $logs       = array();
+    protected $logs = array();
     protected $debug_mode = false;
     // Kotori
     public static $_instance = array();
-    public $queries          = array();
+    public $queries = array();
 
     public static function getInstance()
     {
@@ -2085,11 +2098,11 @@ class Kotori_Database
             $config = array(
                 'database_type' => Kotori_Config::getInstance()->get('DB_TYPE'),
                 'database_name' => Kotori_Config::getInstance()->get('DB_NAME'),
-                'server'        => Kotori_Config::getInstance()->get('DB_HOST'),
-                'username'      => Kotori_Config::getInstance()->get('DB_USER'),
-                'password'      => Kotori_Config::getInstance()->get('DB_PWD'),
-                'charset'       => Kotori_Config::getInstance()->get('DB_CHARSET'),
-                'port'          => Kotori_Config::getInstance()->get('DB_PORT'),
+                'server' => Kotori_Config::getInstance()->get('DB_HOST'),
+                'username' => Kotori_Config::getInstance()->get('DB_USER'),
+                'password' => Kotori_Config::getInstance()->get('DB_PWD'),
+                'charset' => Kotori_Config::getInstance()->get('DB_CHARSET'),
+                'port' => Kotori_Config::getInstance()->get('DB_PORT'),
             );
         }
         $key = $config['server'] . ':' . $config['port'];
@@ -2104,7 +2117,7 @@ class Kotori_Database
     {
         try {
             $commands = array();
-            $dsn      = '';
+            $dsn = '';
 
             if (is_array($options))
             {
@@ -2126,7 +2139,7 @@ class Kotori_Database
                 $port = $this->port;
             }
 
-            $type    = strtolower($this->database_type);
+            $type = strtolower($this->database_type);
             $is_port = isset($port);
 
             if (isset($options['prefix']))
@@ -2179,7 +2192,7 @@ class Kotori_Database
                     break;
 
                 case 'sqlite':
-                    $dsn            = $type . ':' . $this->database_file;
+                    $dsn = $type . ':' . $this->database_file;
                     $this->username = null;
                     $this->password = null;
                     break;
@@ -2405,7 +2418,7 @@ class Kotori_Database
 
                         foreach ($value as $item)
                         {
-                            $item   = strval($item);
+                            $item = strval($item);
                             $suffix = mb_substr($item, -1, 1);
 
                             if ($suffix === '_')
@@ -2482,8 +2495,8 @@ class Kotori_Database
         if (is_array($where))
         {
             $where_keys = array_keys($where);
-            $where_AND  = preg_grep("/^AND\s*#?$/i", $where_keys);
-            $where_OR   = preg_grep("/^OR\s*#?$/i", $where_keys);
+            $where_AND = preg_grep("/^AND\s*#?$/i", $where_keys);
+            $where_OR = preg_grep("/^OR\s*#?$/i", $where_keys);
 
             $single_condition = array_diff_key($where, array_flip(
                 explode(' ', 'AND OR GROUP ORDER HAVING LIMIT LIKE MATCH')
@@ -2501,13 +2514,13 @@ class Kotori_Database
 
             if (!empty($where_AND))
             {
-                $value        = array_values($where_AND);
+                $value = array_values($where_AND);
                 $where_clause = ' WHERE ' . $this->data_implode($where[$value[0]], ' AND');
             }
 
             if (!empty($where_OR))
             {
-                $value        = array_values($where_OR);
+                $value = array_values($where_OR);
                 $where_clause = ' WHERE ' . $this->data_implode($where[$value[0]], ' OR');
             }
 
@@ -2606,7 +2619,7 @@ class Kotori_Database
 
     protected function select_context($table, $join, &$columns = null, $where = null, $column_fn = null)
     {
-        $table    = '"' . $this->prefix . $table . '"';
+        $table = '"' . $this->prefix . $table . '"';
         $join_key = is_array($join) ? array_keys($join) : null;
 
         if (
@@ -2617,8 +2630,8 @@ class Kotori_Database
             $table_join = array();
 
             $join_array = array(
-                '>'  => 'LEFT',
-                '<'  => 'RIGHT',
+                '>' => 'LEFT',
+                '<' => 'RIGHT',
                 '<>' => 'FULL',
                 '><' => 'INNER',
             );
@@ -2680,24 +2693,24 @@ class Kotori_Database
                         isset($column_fn)
                     )
                     {
-                        $where   = $join;
+                        $where = $join;
                         $columns = null;
                     }
                     else
                     {
-                        $where   = null;
+                        $where = null;
                         $columns = $join;
                     }
                 }
                 else
                 {
-                    $where   = $join;
+                    $where = $join;
                     $columns = null;
                 }
             }
             else
             {
-                $where   = $columns;
+                $where = $columns;
                 $columns = $join;
             }
         }
@@ -2718,7 +2731,7 @@ class Kotori_Database
                 if (empty($columns))
                 {
                     $columns = '*';
-                    $where   = $join;
+                    $where = $join;
                 }
 
                 $column = $column_fn . '(' . $this->column_push($columns) . ')';
@@ -2753,7 +2766,7 @@ class Kotori_Database
 
         foreach ($datas as $data)
         {
-            $values  = array();
+            $values = array();
             $columns = array();
 
             foreach ($data as $key => $value)
@@ -2863,7 +2876,7 @@ class Kotori_Database
             }
 
             $replace_query = implode(', ', $replace_query);
-            $where         = $search;
+            $where = $search;
         }
         else
         {
@@ -2877,7 +2890,7 @@ class Kotori_Database
                 }
 
                 $replace_query = implode(', ', $replace_query);
-                $where         = $replace;
+                $where = $replace;
             }
             else
             {
@@ -3035,10 +3048,10 @@ class Kotori_Database
     public function info()
     {
         $output = array(
-            'server'     => 'SERVER_INFO',
-            'driver'     => 'DRIVER_NAME',
-            'client'     => 'CLIENT_VERSION',
-            'version'    => 'SERVER_VERSION',
+            'server' => 'SERVER_INFO',
+            'driver' => 'DRIVER_NAME',
+            'client' => 'CLIENT_VERSION',
+            'version' => 'SERVER_VERSION',
             'connection' => 'CONNECTION_STATUS',
         );
 
@@ -3081,7 +3094,7 @@ class Kotori_Log
         }
         else
         {
-            $msg     = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
+            $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
             $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log';
             if (!file_exists($logPath))
             {
