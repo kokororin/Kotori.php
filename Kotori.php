@@ -1202,7 +1202,12 @@ class Kotori_View
         include $this->_viewPath;
         $buffer = ob_get_contents();
         ob_get_clean();
-        echo Kotori_Common::comment() . $buffer . Kotori_Trace::getInstance()->showTrace();
+        $output = Kotori_Common::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Kotori_Trace::getInstance()->showTrace();
+        if ($count > 0)
+        {
+            $output .= '</body></html>';
+        }
+        echo $output;
     }
 
     /**
@@ -1840,8 +1845,8 @@ class Kotori_Trace
         $trace = $this->getTrace();
         $tpl = '
 <!-- Kotori Page Trace (If you want to hide this feature,please set APP_DEBUG to false.)-->
-<div id="kotori_page_trace" style="position: fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
-<div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height: 250px;">
+<div id="kotori_page_trace" style="position:absolute;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
+<div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height:250px;">
 <div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
         foreach ($trace as $key => $value)
         {
