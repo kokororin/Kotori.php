@@ -78,7 +78,8 @@ class Kotori
         }
 
         //Load route class
-        Kotori_Route::getInstance()->dispatch();
+        $route = new Kotori_Route();
+        $route->dispatch();
 
         //Global security filter
         array_walk_recursive($_GET, array('Kotori_Request', 'filter'));
@@ -206,7 +207,7 @@ class Kotori_Common
     public static function comment()
     {
         return '<!--
-❀❀❀❀ Powered by Kotori.php ❀❀❀❀
+>>> Powered by Kotori.php <<<
 (https://github.com/kokororin/Kotori.php)
                                          iiiiiii
                                   iiiiii        i
@@ -725,7 +726,28 @@ class Kotori_Route
      *
      * @var array
      */
-    private $_controller = array();
+    private $_controllers = array();
+
+    /**
+     * Current controller
+     *
+     * @var string
+     */
+    private $_controller;
+
+    /**
+     * Current action
+     *
+     * @var string
+     */
+    private $_action;
+
+    /**
+     * Current URI string
+     *
+     * @var string
+     */
+    private $_uri = '';
 
     /**
      * get singleton
@@ -742,59 +764,91 @@ class Kotori_Route
     }
 
     /**
+     * Class constructor
+     *
+     * Initialize route class.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        if (isset($_GET['_i']))
+        {
+            $_SERVER['PATH_INFO'] = $_GET['_i'];
+        }
+        $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
+        : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
+            : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
+
+        $this->_uri = $_SERVER['PATH_INFO'];
+
+        if (trim($this->_uri, '/') == '')
+        {
+            $this->_uri = '';
+        }
+    }
+
+    /**
      * Map URL to controller and action
      *
      * @return void
      */
     public function dispatch()
     {
-        if (isset($_GET['route']))
-        {
-            $_SERVER['PATH_INFO'] = $_GET['route'];
-        }
-        $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
-        : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
-            : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
-
-        $uri = $_SERVER['PATH_INFO'];
-
-        if (trim($uri, '/') == '')
-        {
-            $uri = '';
-        }
-
         if (Kotori_Config::getInstance()->get('URL_MODE') == 'QUERY_STRING')
         {
-            $uri = explode('?', $uri, 2);
-            $_SERVER['QUERY_STRING'] = isset($uri[1]) ? $uri[1] : '';
-            $uri = $uri[0];
+            $this->_uri = explode('?', $this->_uri, 2);
+            $_SERVER['QUERY_STRING'] = isset($this->_uri[1]) ? $this->_uri[1] : '';
+            $this->_uri = $this->_uri[0];
             parse_str($_SERVER['QUERY_STRING'], $_GET);
         }
 
-        define('URI', $uri);
+        define('URI', $this->_uri);
 
-        $parsedRoute = $this->parseRoutes($uri);
+        $parsedRoute = $this->parseRoutes($this->_uri);
 
         if ($parsedRoute)
         {
-            $uri = $parsedRoute;
+            $this->_uri = $parsedRoute;
         }
 
-        $uriArray = ('' != $uri) ? explode('/', trim($uri, '/')) : array();
+        $uriArray = ('' != $this->_uri) ? explode('/', trim($this->_uri, '/')) : array();
 
-        $_controller = $this->getController($uriArray);
-        $_action = $this->getAction($uriArray);
+        $this->_controller = $this->getController($uriArray);
+        $this->_action = $this->getAction($uriArray);
         //Define some variables
-        define('CONTROLLER_NAME', $_controller);
-        define('ACTION_NAME', $_action);
+        define('CONTROLLER_NAME', $this->_controller);
+        define('ACTION_NAME', $this->_action);
         define('PUBLIC_DIR', Kotori_Request::getInstance()->getBaseUrl() . 'Public');
         unset($uriArray[0], $uriArray[1]);
 
-        $controller = Kotori_Route::getInstance()->controller($_controller);
-
-        if (!method_exists($controller, $_action))
+        //If is already initialized
+        if ($this->_controller != 'System')
         {
-            throw new Kotori_Exception('Request Action ' . $_action . ' is not Found.');
+            $controllerClassName = $this->_controller . 'Controller';
+        }
+        else
+        {
+            $controllerClassName = 'Kotori_System';
+        }
+        if (isset($this->_controllers[$controllerClassName]))
+        {
+            $controllerObject = $this->_controllers[$controllerClassName];
+        }
+        else
+        {
+            $controllerObject = new $controllerClassName();
+            $this->_controllers[$controllerClassName] = $controllerObject;
+        }
+
+        if (!class_exists($controllerClassName))
+        {
+            throw new Kotori_Exception('Request Controller ' . $controllerClassName . ' is not Found');
+        }
+
+        if (!method_exists($controllerObject, $this->_action))
+        {
+            throw new Kotori_Exception('Request Action ' . $this->_action . ' is not Found.');
         }
         //Parse params from uri
         $params = $this->getParams($uriArray);
@@ -807,7 +861,7 @@ class Kotori_Route
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
         //Call the requested method
-        call_user_func_array(array($controller, $_action), $params);
+        call_user_func_array(array($controllerObject, $this->_action), $params);
 
     }
 
@@ -934,7 +988,7 @@ class Kotori_Route
     {
         $base_url = Kotori_Request::getInstance()->getBaseUrl();
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
-        $prefix = $base_url . 'index.php?route=';
+        $prefix = $base_url . 'index.php?_i=';
 
         switch (Kotori_Config::getInstance()->get('URL_MODE'))
         {
@@ -947,41 +1001,6 @@ class Kotori_Route
             default:
                 return;
                 break;
-        }
-
-    }
-
-    /**
-     * Call Controller
-     *
-     * @param string $controller Controller Name
-     * @return class
-     */
-    public function controller($controllerName)
-    {
-        //If is already initialized
-        if ($controllerName != 'System')
-        {
-            $controllerClass = $controllerName . 'Controller';
-        }
-        else
-        {
-            $controllerClass = 'Kotori_System';
-        }
-        if (isset($this->_controller[$controllerClass]))
-        {
-            return $this->_controller[$controllerClass];
-        }
-
-        if (!class_exists($controllerClass))
-        {
-            throw new Kotori_Exception('Request Controller ' . $controllerClass . ' is not Found');
-        }
-        else
-        {
-            $controller = new $controllerClass();
-            $this->_controller[$controllerClass] = $controller;
-            return $controller;
         }
 
     }
@@ -1005,7 +1024,7 @@ class Kotori_Controller
      *
      * @var object
      */
-    private static $_instance;
+    private static $_instance = null;
 
     /**
      * Initialized Models
@@ -2097,7 +2116,7 @@ class Kotori_Database
     protected $logs = array();
     protected $debug_mode = false;
     // Kotori
-    public static $_instance = array();
+    private static $_instance = array();
     public $queries = array();
 
     public static function getInstance()
