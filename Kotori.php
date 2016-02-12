@@ -328,8 +328,8 @@ class Kotori_Config
      * @var array
      */
     private $_defaults = array(
-        'APP_DEBUG' => 'false',
-        'APP_PATH' => './App',
+        'APP_DEBUG' => true,
+        'APP_PATH' => './App/',
         'DB_PORT' => 3306,
         'DB_CHARSET' => 'utf8',
         'URL_MODE' => 'QUERY_STRING',
@@ -1861,6 +1861,10 @@ class Kotori_Trace
      */
     public function showTrace()
     {
+        if (Kotori_Config::getInstance()->get('APP_DEBUG') == false)
+        {
+            return;
+        }
         $trace = $this->getTrace();
         $tpl = '
 <!-- Kotori Page Trace (If you want to hide this feature,please set APP_DEBUG to false.)-->
@@ -3129,10 +3133,14 @@ class Kotori_Log
         {
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
             $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log';
-            if (!file_exists($logPath))
+            if (Kotori_Config::getInstance)
             {
-                mkdir($logPath, 0755, true);
+                if (!file_exists($logPath))
+                {
+                    mkdir($logPath, 0755, true);
+                }
             }
+
             file_put_contents($logPath . '/' . date('Ymd') . '.log', FILE_APPEND);
         }
     }
