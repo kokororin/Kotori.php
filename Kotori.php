@@ -3133,14 +3133,10 @@ class Kotori_Log
         {
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
             $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log';
-            if (Kotori_Config::getInstance)
+            if (!file_exists($logPath))
             {
-                if (!file_exists($logPath))
-                {
-                    mkdir($logPath, 0755, true);
-                }
+                mkdir($logPath, 0755, true);
             }
-
             file_put_contents($logPath . '/' . date('Ymd') . '.log', FILE_APPEND);
         }
     }
