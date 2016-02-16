@@ -6,11 +6,13 @@
     "homepage": "https://kotori.love/",
     "license": "Apache",
     "authors": [{
-        "name": "空樱酱",
+        "name": "Sora",
         "email": "ritsuka.sunny@gmail.com"
     }],
-    "minimum-stability": "stable",
     "require": {
         "php": ">=5.2.0"
+    },
+    "autoload": {
+        "files": ["Kotori.php"]
     }
 }
