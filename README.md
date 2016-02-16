@@ -6,6 +6,12 @@ Kotori.php -- a Tiny Model-View-Controller (MVC) PHP Framework
 
 Licensed under the Apache License, Version 2.0 (the "License").
 
+## Installation
+
+~~~bash
+$ composer require kokororin/kotori-php
+~~~
+
 ## Usage
 
 ```php
