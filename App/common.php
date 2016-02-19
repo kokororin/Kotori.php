@@ -1,2 +1,0 @@
-<?php
-//application common functions
