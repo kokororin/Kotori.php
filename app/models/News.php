@@ -1,5 +1,5 @@
 <?php
-class NewsModel extends Kotori_Model
+class News extends Kotori_Model
 {
     public function getNewsList()
     {

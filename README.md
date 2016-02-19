@@ -10,6 +10,8 @@ Licensed under the Apache License, Version 2.0 (the "License").
 
 ~~~bash
 $ composer require kokororin/kotori-php
+# or via git
+$ git clone https://github.com/kokororin/Kotori.php
 ~~~
 
 ## Usage
@@ -20,7 +22,7 @@ require './Kotori.php';
 
 $app = new Kotori();
 
-$app->set('APP_PATH', './App/');
+$config['APP_PATH'] = './app/';
 
 $app->run();
 ```

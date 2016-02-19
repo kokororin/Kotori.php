@@ -54,7 +54,8 @@ class Kotori
      */
     public function run()
     {
-        Kotori_Config::getInstance()->initialize();
+        global $config;
+        Kotori_Config::getInstance()->initialize($config);
         //Define a custom error handler so we can log PHP errors
         set_error_handler(array('Kotori_Handle', 'error'));
         set_exception_handler(array('Kotori_Handle', 'exception'));
@@ -85,19 +86,6 @@ class Kotori
         array_walk_recursive($_GET, array('Kotori_Request', 'filter'));
         array_walk_recursive($_POST, array('Kotori_Request', 'filter'));
         array_walk_recursive($_REQUEST, array('Kotori_Request', 'filter'));
-    }
-
-    /**
-     * Set config item
-     *
-     * @param string $key Config item name
-     * @param mixed $value Config item value
-     * @return Kotori
-     */
-    public function set($key, $value)
-    {
-        Kotori_Config::getInstance()->set($key, $value);
-        return $this;
     }
 
 }
@@ -174,19 +162,7 @@ class Kotori_Common
      */
     public static function autoload($class)
     {
-        $baseRoot = Kotori_Config::getInstance()->get('APP_FULL_PATH');
-        if (substr($class, -10) == 'Controller')
-        {
-            Kotori_Common::import($baseRoot . '/Controller/' . $class . '.class.php');
-        }
-        elseif (substr($class, -5) == 'Model')
-        {
-            Kotori_Common::import($baseRoot . '/Model/' . $class . '.class.php');
-        }
-        else
-        {
-            Kotori_Common::import($baseRoot . '/Lib/' . $class . '.class.php');
-        }
+        Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/libraries/' . $class . '.class.php');
     }
 
 /**
@@ -329,7 +305,7 @@ class Kotori_Config
      */
     private $_defaults = array(
         'APP_DEBUG' => true,
-        'APP_PATH' => './App/',
+        'APP_PATH' => './app/',
         'DB_PORT' => 3306,
         'DB_CHARSET' => 'utf8',
         'URL_MODE' => 'QUERY_STRING',
@@ -352,10 +328,12 @@ class Kotori_Config
     /**
      * Initialize Config
      *
+     * @param $config Config Array
      * @return void
      */
-    public function initialize()
+    public function initialize($config = array())
     {
+        $this->_config = $config;
         if (is_array($this->_config))
         {
             if (array_keys($this->_config) !== range(0, count($this->_config) - 1))
@@ -559,7 +537,7 @@ function open_link(url){
         }
         else
         {
-            $tpl = file_get_contents(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/View/' . $tpl_path . '.html');
+            $tpl = file_get_contents(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/views/' . $tpl_path . '.html');
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
@@ -571,7 +549,7 @@ function open_link(url){
      *
      * This function lets us invoke the exception class and
      * display errors using the standard error template located
-     * in App/View/Public/error.html
+     * in app/views/Public/error.html
      * This function will send the error page directly to the
      * browser and exit.
      *
@@ -819,34 +797,32 @@ class Kotori_Route
         //Define some variables
         define('CONTROLLER_NAME', $this->_controller);
         define('ACTION_NAME', $this->_action);
-        define('PUBLIC_DIR', Kotori_Request::getInstance()->getBaseUrl() . 'Public');
+        define('PUBLIC_DIR', Kotori_Request::getInstance()->getBaseUrl() . 'public');
         unset($uriArray[0], $uriArray[1]);
 
         //If is already initialized
-        if ($this->_controller != 'System')
+        if ($this->_controller == 'System')
         {
-            $controllerClassName = $this->_controller . 'Controller';
+            $this->_controller = 'Kotori_System';
+        }
+        if (isset($this->_controllers[$this->_controller]))
+        {
+            $class = $this->_controllers[$this->_controller];
         }
         else
         {
-            $controllerClassName = 'Kotori_System';
-        }
-        if (isset($this->_controllers[$controllerClassName]))
-        {
-            $controllerObject = $this->_controllers[$controllerClassName];
-        }
-        else
-        {
-            $controllerObject = new $controllerClassName();
-            $this->_controllers[$controllerClassName] = $controllerObject;
+            Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') .
+                '/controllers/' . $this->_controller . '.php');
+            $class = new $this->_controller();
+            $this->_controllers[$this->_controller] = $class;
         }
 
-        if (!class_exists($controllerClassName))
+        if (!class_exists($this->_controller))
         {
-            throw new Kotori_Exception('Request Controller ' . $controllerClassName . ' is not Found');
+            throw new Kotori_Exception('Request Controller ' . $this->_controller . ' is not Found');
         }
 
-        if (!method_exists($controllerObject, $this->_action))
+        if (!method_exists($class, $this->_action))
         {
             throw new Kotori_Exception('Request Action ' . $this->_action . ' is not Found.');
         }
@@ -861,7 +837,7 @@ class Kotori_Route
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
         //Call the requested method
-        call_user_func_array(array($controllerObject, $this->_action), $params);
+        call_user_func_array(array($class, $this->_action), $params);
 
     }
 
@@ -1027,13 +1003,6 @@ class Kotori_Controller
     private static $_instance = null;
 
     /**
-     * Initialized Models
-     *
-     * @var array
-     */
-    private $_model = array();
-
-    /**
      * get singleton
      *
      * @return object
@@ -1058,37 +1027,9 @@ class Kotori_Controller
         $this->request = Kotori_Request::getInstance();
         $this->route = Kotori_Route::getInstance();
         $this->db = Kotori_Database::getInstance();
+        $this->model = Kotori_Model_Provider::getInstance();
     }
 
-    /**
-     * __get magic
-     *
-     * Allows controllers to access model
-     *
-     * @param string $key
-     */
-    public function __get($key)
-    {
-        if (substr($key, -5) == 'Model')
-        {
-            if (isset($this->_model[$key]))
-            {
-                return $this->_model[$key];
-            }
-
-            if (!class_exists($key))
-            {
-                throw new Kotori_Exception('Request Model ' . $key . ' is not Found');
-            }
-            else
-            {
-                $model = new $key();
-                $this->_model[$key] = $model;
-                return $model;
-            }
-        }
-        return null;
-    }
 }
 
 /**
@@ -1112,6 +1053,73 @@ class Kotori_Model
     public function __get($key)
     {
         return Kotori_Controller::getInstance()->$key;
+    }
+}
+
+/**
+ * Model Provider CLass
+ *
+ * @package     Kotori
+ * @subpackage  Model_Provider
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
+class Kotori_Model_Provider
+{
+    /**
+     * Initialized Models
+     *
+     * @var array
+     */
+    private $_models = array();
+
+    /**
+     * Instance Handle
+     *
+     * @var object
+     */
+    private static $_instance;
+
+    /**
+     * get singleton
+     *
+     * @return object
+     */
+    public static function getInstance()
+    {
+        if (!(self::$_instance instanceof self))
+        {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
+    /**
+     * __get magic
+     *
+     * Allows controllers to access model
+     *
+     * @param string $key
+     */
+    public function __get($key)
+    {
+        if (isset($this->_models[$key]))
+        {
+            return $this->_models[$key];
+        }
+
+        Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/models/' . $key . '.php');
+
+        if (!class_exists($key))
+        {
+            throw new Kotori_Exception('Request Model ' . $key . ' is not Found');
+        }
+        else
+        {
+            $model = new $key();
+            $this->_models[$key] = $model;
+            return $model;
+        }
     }
 }
 
@@ -1174,7 +1182,7 @@ class Kotori_View
     {
         if ('' == $tplDir)
         {
-            $this->_tplDir = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/View/';
+            $this->_tplDir = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/views/';
         }
         else
         {
@@ -1239,7 +1247,7 @@ class Kotori_View
     public function need($path, $data = array())
     {
         $this->_needData = array(
-            'path' => Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/View/' . $path . '.html',
+            'path' => Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/views/' . $path . '.html',
             'data' => $data,
         );
         unset($path);
@@ -3132,7 +3140,7 @@ class Kotori_Log
         else
         {
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
-            $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/Log';
+            $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/logs';
             if (!file_exists($logPath))
             {
                 mkdir($logPath, 0755, true);
