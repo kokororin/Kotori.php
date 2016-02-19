@@ -1,5 +1,5 @@
 <?php
-class IndexController extends Kotori_Controller
+class Index extends Kotori_Controller
 {
     public function __construct()
     {
@@ -8,7 +8,7 @@ class IndexController extends Kotori_Controller
 
     public function index()
     {
-        $news_list = $this->NewsModel->getNewsList();
+        $news_list = $this->model->News->getNewsList();
         $this->view->assign('title', 'Welcome to Kotori.php')
             ->display();
     }
