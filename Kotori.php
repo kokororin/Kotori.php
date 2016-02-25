@@ -2022,7 +2022,7 @@ class Kotori_Trace
 var tab_tit  = document.getElementById(\'kotori_page_trace_tab_tit\').getElementsByTagName(\'span\');
 var tab_cont = document.getElementById(\'kotori_page_trace_tab_cont\').getElementsByTagName(\'div\');
 var open     = document.getElementById(\'kotori_page_trace_open\');
-var close    = document.getElementById(\'kotori_page_trace_close\').childNodes[0];
+var close    = document.getElementById(\'kotori_page_trace_close\').children[0];
 var trace    = document.getElementById(\'kotori_page_trace_tab\');
 var update   = document.getElementById(\'kotori_page_trace_check_update\');
 var cookie   = document.cookie.match(/kotori_show_page_trace=(\d\|\d)/);
@@ -2056,7 +2056,7 @@ for(var i = 0; i < tab_tit.length; i++) {
     })(i);
 }
 parseInt(history[0]) && open.click();
-(tab_tit[history[1]] || tab_tit[0]).click();
+tab_tit[history[1]].click();
 update.onclick = function() {
     this.innerHTML = \'Checking...\';
     get({
