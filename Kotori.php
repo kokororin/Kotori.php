@@ -624,8 +624,8 @@ function open_link(url){
                 break;
         }
 
-        $text = '<b>Error Type:</b>' . $errtype . '<br>' . '<b>Info:</b>' . $errstr . '<br>' . '<b>Line:</b>' . $errline . '<br>' . '<b>File:</b>' . $errfile;
-        $txt = 'Type:' . $errtype . ' Info:' . $errstr . ' Line:' . $errline . ' File:' . $errfile;
+        $text = '<b>Error Type: </b>' . $errtype . '<br>' . '<b>Info: </b>' . $errstr . '<br>' . '<b>Line: </b>' . $errline . '<br>' . '<b>File: </b>' . $errfile;
+        $txt = 'Type: ' . $errtype . ' Info: ' . $errstr . ' Line: ' . $errline . ' File: ' . $errfile;
         array_push(self::$errors, $txt);
         Kotori_Log::normal($txt);
     }
@@ -643,7 +643,7 @@ function open_link(url){
     public static function exception($exception)
     {
         $text = '<b>Exception:</b>' . $exception->getMessage();
-        $txt = 'Type:Exception' . ' Info:' . $exception->getMessage();
+        $txt = 'Type: Exception' . ' Info: ' . $exception->getMessage();
         Kotori_Log::normal($txt);
         self::halt($text, 500);
     }
@@ -666,8 +666,8 @@ function open_link(url){
         if (isset($last_error) &&
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING)))
         {
-            $text = '<b>Error Type:</b>' . $last_error['type'] . '<br>' . '<b>Info:</b>' . $last_error['message'] . '<br>' . '<b>Line:</b>' . $last_error['line'] . '<br>' . '<b>File:</b>' . $last_error['file'];
-            $txt = 'Type:' . $last_error['type'] . ' Info:' . $last_error['message'] . ' Line:' . $last_error['line'] . ' File:' . $last_error['file'];
+            $text = '<b>Error Type: </b>' . $last_error['type'] . '<br>' . '<b>Info: </b>' . $last_error['message'] . '<br>' . '<b>Line: </b>' . $last_error['line'] . '<br>' . '<b>File: </b>' . $last_error['file'];
+            $txt = 'Type: ' . $last_error['type'] . ' Info: ' . $last_error['message'] . ' Line: ' . $last_error['line'] . ' File: ' . $last_error['file'];
             Kotori_Log::normal($txt);
             self::halt($text, 500);
         }
@@ -1932,7 +1932,7 @@ class Kotori_Trace
         $support = array(
             '<a target="_blank" href="https://github.com/kokororin/Kotori.php">GitHub</a>',
             '<a target="_blank" href="https://kotori.love/archives/kotori-php-framework.html">Blog</a>',
-            '<a id="kotori_page_trace_check_update" target="_blank" href="' . Kotori_Route::getInstance()->url(array('System', 'checkUpdate')) . '" download="' . Kotori_Route::getInstance()->url(array('System', 'downloadUpdate')) . '">Check for Updates</a>',
+            '<a id="kotori_page_trace_check_update" target="_blank" href="' . Kotori_Route::getInstance()->url(array('System', 'checkUpdate')) . '" data-download="' . Kotori_Route::getInstance()->url(array('System', 'downloadUpdate')) . '">Check for Updates</a>',
         );
 
         $trace = array();
@@ -1958,6 +1958,13 @@ class Kotori_Trace
                 case 'SUPPORT':
                     $trace[$title] = $support;
                     break;
+            }
+        }
+        foreach ($trace as $key => $value)
+        {
+            if (empty(array_filter($value)))
+            {
+                unset($trace[$key]);
             }
         }
         return $trace;
@@ -1994,7 +2001,7 @@ class Kotori_Trace
             {
                 foreach ($info as $k => $val)
                 {
-                    $tag = ($key == 'Support') ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
+                    $tag = (in_array($key, array('Support'))) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
                     $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $tag . '</li>';
                 }
             }
@@ -2069,7 +2076,7 @@ update.onclick = function() {
             else if (data.status == \'not_latest\'){
                 if (confirm(data.text)) {
                     get({
-                        url: update.attributes[\'download\'].nodeValue,
+                        url: update.attributes[\'data-download\'].nodeValue,
                         success: function(data) {
                             if (data == \'success\') {
                                 update.innerHTML = \'Update complete\';
