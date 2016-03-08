@@ -835,7 +835,7 @@ class Kotori_Route
             $this->_uri = $parsedRoute;
         }
 
-        $this->_uris = ('' != $this->_uri) ? explode('/', trim($this->_uri, '/')) : array();
+        $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : array();
 
         $this->_controller = $this->getController();
         $this->_action = $this->getAction();
@@ -872,6 +872,7 @@ class Kotori_Route
         }
         //Parse params from uri
         $this->_params = $this->getParams();
+
         //Do some final cleaning of the params
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
@@ -881,6 +882,7 @@ class Kotori_Route
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
         //Call the requested method
+
         call_user_func_array(array($class, $this->_action), $this->_params);
 
     }
@@ -928,7 +930,9 @@ class Kotori_Route
      */
     private function getParams()
     {
-        return $this->_uris;
+        $params = $this->_uris;
+        unset($params[0], $params[1]);
+        return $params;
     }
 
     /**
