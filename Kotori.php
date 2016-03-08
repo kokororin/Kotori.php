@@ -398,6 +398,16 @@ class Kotori_Config
         }
         return null;
     }
+
+    /**
+     * Return the config array
+     *
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->_config;
+    }
 }
 
 /**
@@ -1856,6 +1866,7 @@ class Kotori_Trace
      */
     private $traceTabs = array(
         'BASE' => 'Basic',
+        'CONFIG' => 'Config',
         'FILE' => 'File',
         'CLASS' => 'Class',
         'ERROR' => 'Error',
@@ -1904,7 +1915,7 @@ class Kotori_Trace
     private function getTrace()
     {
         $files = get_included_files();
-
+        $config = Kotori_Config::getInstance()->getArray();
         $info = array();
         foreach ($files as $key => $file)
         {
@@ -1942,6 +1953,9 @@ class Kotori_Trace
             {
                 case 'BASE':
                     $trace[$title] = $base;
+                    break;
+                case 'CONFIG':
+                    $trace[$title] = $config;
                     break;
                 case 'FILE':
                     $trace[$title] = $info;
@@ -1983,26 +1997,27 @@ class Kotori_Trace
         }
         $trace = $this->getTrace();
         $tpl = '
-<!-- Kotori Page Trace (If you want to hide this feature,please set APP_DEBUG to false.)-->
+<!-- Kotori Page Trace (If you want to hide this feature, please set APP_DEBUG to false.)-->
 <div id="kotori_page_trace" style="position:fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
 <div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height:250px;">
 <div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
         foreach ($trace as $key => $value)
         {
-            $tpl .= '<span style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
+            $tpl .= '<span id="kotori_page_trace_tab_tit_' . strtolower($key) . '" style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
         }
         $tpl .= '</div>
-<div id="kotori_page_trace_tab_cont" style="overflow:auto;height:212px;padding: 0; line-height: 24px">';
+<div id="kotori_page_trace_tab_cont" style="overflow:auto;height:212px;padding:0;line-height:24px">';
         foreach ($trace as $key => $info)
         {
-            $tpl .= '<div style="display:none;">
+            $tpl .= '<div id="kotori_page_trace_tab_cont_' . strtolower($key) . '" style="display:none;">
     <ol style="padding: 0; margin:0">';
             if (is_array($info))
             {
                 foreach ($info as $k => $val)
                 {
-                    $tag = (in_array($key, array('Support'))) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
-                    $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $tag . '</li>';
+                    $val = is_array($val) ? json_encode($val, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : is_bool($val) ? json_encode($val) : $val;
+                    $val = (in_array($key, array('Support'))) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
+                    $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $val . '</li>';
                 }
             }
             $tpl .= '</ol>
@@ -2039,14 +2054,14 @@ open.onclick = function() {
     this.style.display = \'none\';
     close.parentNode.style.display = \'block\';
     history[0] = 1;
-    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\');
+    document.cookie = \'kotori_show_page_trace=\' + history.join(\'|\');
 }
 close.onclick = function() {
     trace.style.display = \'none\';
     this.parentNode.style.display = \'none\';
     open.style.display = \'block\';
     history[0] = 0;
-    document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\');
+    document.cookie = \'kotori_show_page_trace=\' + history.join(\'|\');
 }
 for(var i = 0; i < tab_tit.length; i++) {
     tab_tit[i].onclick = (function(i) {
@@ -2058,7 +2073,7 @@ for(var i = 0; i < tab_tit.length; i++) {
             tab_cont[i].style.display = \'block\';
             tab_tit[i].style.color = \'#000\';
             history[1] = i;
-            document.cookie = \'kotori_show_page_trace=\'+history.join(\'|\');
+            document.cookie = \'kotori_show_page_trace=\' + history.join(\'|\');
         }
     })(i);
 }
