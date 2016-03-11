@@ -877,7 +877,7 @@ class Kotori_Route
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
         //Endtime
-        define('END_TIME', microTime(true));
+        define('END_TIME', microtime(true));
         define('RUN_TIME', END_TIME - START_TIME);
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
@@ -1928,7 +1928,7 @@ class Kotori_Trace
         $class = Kotori_Hook::getTags();
         foreach ($class as $key => $value)
         {
-            $class[$key] = ' ( ' . $value . ' s )';
+            $class[$key] = ' ( ' . $value . ' μs )';
         }
         $error = Kotori_Handle::$errors;
         $database = Kotori_Database::getInstance();
@@ -1936,7 +1936,7 @@ class Kotori_Trace
 
         $base = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
-            'Run Time' => RUN_TIME . 's',
+            'Run Time' => round(RUN_TIME * pow(10, 6)) . 'μs',
             'TPR' => number_format(1 / RUN_TIME, 2) . 'req/s',
             'Memory Uses' => number_format(memory_get_usage() / 1024, 2) . ' kb',
             'SQL Queries' => count($sql) . ' queries ',
@@ -2035,7 +2035,7 @@ class Kotori_Trace
         $errorCount = count(Kotori_Handle::$errors);
         if ($errorCount == 0)
         {
-            $tpl .= round(RUN_TIME * 1000) . 'ms';
+            $tpl .= round(RUN_TIME * pow(10, 6)) . 'μs';
         }
         else
         {
@@ -2187,7 +2187,7 @@ class Kotori_Hook
      */
     public static function listen($name)
     {
-        self::$tags[$name] = microtime(true) - START_TIME;
+        self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
     }
 }
 
@@ -2207,7 +2207,7 @@ class Kotori_System extends Kotori_Controller
      *
      * @var string
      */
-    protected $url = 'http://kotori.sinaapp.com/framework/latest';
+    protected $url = 'http://api.kotori.love/framework/latest.php';
 
     /**
      * For Check Update
