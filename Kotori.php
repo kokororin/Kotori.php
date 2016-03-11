@@ -653,7 +653,7 @@ function open_link(url){
     public static function exception($exception)
     {
         $text = '<b>Exception:</b>' . $exception->getMessage();
-        $txt = 'Type: Exception' . ' Info: ' . $exception->getMessage();
+        $txt = '[Type] Exception' . ' [Info] ' . $exception->getMessage();
         Kotori_Log::normal($txt);
         self::halt($text, 500);
     }
@@ -677,7 +677,7 @@ function open_link(url){
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING)))
         {
             $text = '<b>Error Type: </b>' . $last_error['type'] . '<br>' . '<b>Info: </b>' . $last_error['message'] . '<br>' . '<b>Line: </b>' . $last_error['line'] . '<br>' . '<b>File: </b>' . $last_error['file'];
-            $txt = 'Type: ' . $last_error['type'] . ' Info: ' . $last_error['message'] . ' Line: ' . $last_error['line'] . ' File: ' . $last_error['file'];
+            $txt = '[Type] ' . $last_error['type'] . ' [Info] ' . $last_error['message'] . ' [Line] ' . $last_error['line'] . ' [File] ' . $last_error['file'];
             Kotori_Log::normal($txt);
             self::halt($text, 500);
         }
@@ -1871,6 +1871,8 @@ class Kotori_Trace
     private $traceTabs = array(
         'BASE' => 'Basic',
         'CONFIG' => 'Config',
+        'SERVER' => 'Server',
+        'COOKIE' => 'Cookie',
         'FILE' => 'File',
         'CLASS' => 'Class',
         'ERROR' => 'Error',
@@ -1920,6 +1922,8 @@ class Kotori_Trace
     {
         $files = get_included_files();
         $config = Kotori_Config::getInstance()->getArray();
+        $server = $_SERVER;
+        $cookie = $_COOKIE;
         $info = array();
         foreach ($files as $key => $file)
         {
@@ -1960,6 +1964,12 @@ class Kotori_Trace
                     break;
                 case 'CONFIG':
                     $trace[$title] = $config;
+                    break;
+                case 'SERVER':
+                    $trace[$title] = $server;
+                    break;
+                case 'COOKIE':
+                    $trace[$title] = $cookie;
                     break;
                 case 'FILE':
                     $trace[$title] = $info;
