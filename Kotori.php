@@ -635,7 +635,7 @@ function open_link(url){
         }
 
         $text = '<b>Error Type: </b>' . $errtype . '<br>' . '<b>Info: </b>' . $errstr . '<br>' . '<b>Line: </b>' . $errline . '<br>' . '<b>File: </b>' . $errfile;
-        $txt = 'Type: ' . $errtype . ' Info: ' . $errstr . ' Line: ' . $errline . ' File: ' . $errfile;
+        $txt = '[Type] ' . $errtype . ' [Info] ' . $errstr . ' [Line] ' . $errline . ' [File] ' . $errfile;
         array_push(self::$errors, $txt);
         Kotori_Log::normal($txt);
     }
@@ -3311,7 +3311,7 @@ class Kotori_Log
             {
                 mkdir($logPath, 0755, true);
             }
-            file_put_contents($logPath . '/' . date('Ymd') . '.log', FILE_APPEND);
+            file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
         }
     }
 
