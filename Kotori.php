@@ -45,6 +45,7 @@ class Kotori
         ini_set('display_errors', 'off');
         ini_set('date.timezone', 'Asia/Shanghai');
         define('START_TIME', microtime(true));
+        define('START_MEMORY', memory_get_usage());
     }
 
     /**
@@ -876,9 +877,7 @@ class Kotori_Route
         //Do some final cleaning of the params
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
-        //Endtime
-        define('END_TIME', microtime(true));
-        define('RUN_TIME', END_TIME - START_TIME);
+
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
         //Call the requested method
@@ -1940,9 +1939,9 @@ class Kotori_Trace
 
         $base = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
-            'Run Time' => round(RUN_TIME * pow(10, 6)) . 'μs',
-            'TPR' => number_format(1 / RUN_TIME, 2) . 'req/s',
-            'Memory Uses' => number_format(memory_get_usage() / 1024, 2) . ' kb',
+            'Run Time' => Kotori_Hook::listen('Kotori') . 'μs',
+            'TPR' => pow(10, 6) / Kotori_Hook::listen('Kotori') . ' req/s',
+            'Memory Uses' => number_format((memory_get_usage() - START_MEMORY) / 1024, 2) . ' kb',
             'SQL Queries' => count($sql) . ' queries ',
             'File Loaded' => count(get_included_files()),
             'Session Info' => 'SESSION_ID=' . session_id(),
@@ -2045,7 +2044,7 @@ class Kotori_Trace
         $errorCount = count(Kotori_Handle::$errors);
         if ($errorCount == 0)
         {
-            $tpl .= round(RUN_TIME * pow(10, 6)) . 'μs';
+            $tpl .= Kotori_Hook::listen('Kotori') . 'μs';
         }
         else
         {
@@ -2193,12 +2192,17 @@ class Kotori_Hook
      * Start Hook listen
      *
      * @param  string $name Hook name
-     * @return void
+     * @return int
      */
     public static function listen($name)
     {
-        self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
+        if (!isset(self::$tags[$name]))
+        {
+            self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
+        }
+        return self::$tags[$name];
     }
+
 }
 
 /**
