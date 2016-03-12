@@ -1011,7 +1011,7 @@ class Kotori_Route
         switch (Kotori_Config::getInstance()->get('URL_MODE'))
         {
             case 'PATH_INFO':
-                return $base_url . $uri;
+                return $uri == '' ? rtrim($base_url, '/') : $base_url . $uri;
                 break;
             case 'QUERY_STRING':
                 return $uri == '' ? rtrim($base_url, '/') : $prefix . $uri;
