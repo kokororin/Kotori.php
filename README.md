@@ -10,7 +10,7 @@ Licensed under the Apache License, Version 2.0 (the "License").
 
 ~~~bash
 $ composer require kokororin/kotori-php
-# or via git
+# via git
 $ git clone https://github.com/kokororin/Kotori.php
 ~~~
 
