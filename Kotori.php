@@ -1014,7 +1014,7 @@ class Kotori_Route
                 return $base_url . $uri;
                 break;
             case 'QUERY_STRING':
-                return $uri == '' ? $base_url : $prefix . $uri;
+                return $uri == '' ? rtrim($base_url, '/') : $prefix . $uri;
                 break;
             default:
                 return;
