@@ -360,7 +360,7 @@ class Kotori_Config
             if (array_keys($this->_config) !== range(0, count($this->_config) - 1))
             {
                 $this->_config = array_merge($this->_defaults, $this->_config);
-                $this->_config = array_merge(array('APP_FULL_PATH' => dirname(__FILE__) . '/' . rtrim($this->get('APP_PATH'), '/')), $this->_config);
+                $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($this->get('APP_PATH'), '/'))), $this->_config);
             }
         }
         return false;
