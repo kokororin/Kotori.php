@@ -2230,9 +2230,9 @@ class Kotori_System extends Kotori_Controller
      */
     public function checkUpdate()
     {
-        $new = file_get_contents($this->url);
-        $old = file_get_contents(__FILE__);
-        if (md5($new) == md5($old))
+        $hash['latest'] = md5_file($this->url);
+        $hash['current'] = md5_file(__FILE__);
+        if ($hash['latest'] == $hash['current'])
         {
             Kotori_Response::getInstance()->throwJson(array(
                 'status' => 'is_latest',
@@ -2267,11 +2267,11 @@ class Kotori_System extends Kotori_Controller
             curl_exec($ch);
             curl_close($ch);
             fclose($fp);
-            echo 'success';
+            Kotori_Response::getInstance()->throwJson('success');
         }
         catch (Exception $e)
         {
-            echo 'fail';
+            Kotori_Response::getInstance()->throwJson('fail');
         }
 
     }
