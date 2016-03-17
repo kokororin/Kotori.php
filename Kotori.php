@@ -838,6 +838,16 @@ class Kotori_Route
 
         $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : array();
 
+        //Clean uris
+        foreach ($this->_uris as $key => $value)
+        {
+            if ($value == '')
+            {
+                unset($this->_uris[$key]);
+            }
+        }
+        $this->_uris = array_merge($this->_uris);
+
         $this->_controller = $this->getController();
         $this->_action = $this->getAction();
         //Define some variables
@@ -881,9 +891,7 @@ class Kotori_Route
         header('X-Powered-By: Kotori');
         header('Cache-control: private');
         //Call the requested method
-
         call_user_func_array(array($class, $this->_action), $this->_params);
-
     }
 
     /**
@@ -931,7 +939,7 @@ class Kotori_Route
     {
         $params = $this->_uris;
         unset($params[0], $params[1]);
-        return $params;
+        return array_merge($params);
     }
 
     /**
