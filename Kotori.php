@@ -42,6 +42,10 @@ class Kotori
      */
     public function __construct()
     {
+        if (version_compare(PHP_VERSION, '5.2.0', '<'))
+        {
+            exit('Kotori.php requires PHP > 5.2.0 !');
+        }
         ini_set('display_errors', 'off');
         ini_set('date.timezone', 'Asia/Shanghai');
         define('START_TIME', microtime(true));
@@ -56,7 +60,7 @@ class Kotori
     public function run()
     {
         global $config;
-        Kotori_Config::getInstance()->initialize($config);
+        Kotori_Config::getSoul()->initialize($config);
         //Define a custom error handler so we can log PHP errors
         set_error_handler(array('Kotori_Handle', 'error'));
         set_exception_handler(array('Kotori_Handle', 'exception'));
@@ -65,7 +69,7 @@ class Kotori
         session_start();
 
         //Load application's common functions
-        Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/common.php');
+        Kotori_Common::import(Kotori_Config::getSoul()->APP_FULL_PATH . '/common.php');
 
         if (function_exists('spl_autoload_register'))
         {
@@ -117,6 +121,8 @@ class Kotori_Common
      */
     public static function import($path)
     {
+        $path = realpath($path);
+        Kotori_Hook::listen(str_replace(Kotori_Config::getSoul()->APP_FULL_PATH, '', $path));
         if (!isset(self::$_require[$path]))
         {
             if (self::isFile($path))
@@ -163,7 +169,7 @@ class Kotori_Common
      */
     public static function autoload($class)
     {
-        $baseRoot = Kotori_Config::getInstance()->get('APP_FULL_PATH');
+        $baseRoot = Kotori_Config::getSoul()->APP_FULL_PATH;
 
         if (!Kotori_Common::import($baseRoot . '/libraries/' . $class . '.php'))
         {
@@ -298,7 +304,7 @@ class Kotori_Config
      *
      * @var object
      */
-    private static $_instance = null;
+    private static $_soul = null;
 
     /**
      * Config Array
@@ -321,17 +327,27 @@ class Kotori_Config
     );
 
     /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
+    {
+        return false;
+    }
+
+    /**
      * get singleton
      *
      * @return object
      */
-    public static function getInstance()
+    public static function getSoul()
     {
-        if (!(self::$_instance instanceof self))
+        if (!(self::$_soul instanceof self))
         {
-            self::$_instance = new self();
+            self::$_soul = new self();
         }
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -350,7 +366,7 @@ class Kotori_Config
      * Initialize Config
      *
      * @param $config Config Array
-     * @return void
+     * @return boolean
      */
     public function initialize($config = array())
     {
@@ -360,20 +376,22 @@ class Kotori_Config
             if (array_keys($this->_config) !== range(0, count($this->_config) - 1))
             {
                 $this->_config = array_merge($this->_defaults, $this->_config);
-                $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($this->get('APP_PATH'), '/'))), $this->_config);
+                $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($this->APP_PATH, '/'))), $this->_config);
             }
         }
         return false;
     }
 
     /**
+     * __set magic
+     *
      * Set the specified config item
      *
      * @param string $key Config item name
      * @param mixed $value Config item value
      * @return void
      */
-    public function set($key, $value)
+    public function __set($key, $value)
     {
         if (is_string($key))
         {
@@ -386,12 +404,14 @@ class Kotori_Config
     }
 
     /**
+     * __get magic
+     *
      * Returns the specified config item
      *
      * @param string $key Config item name
      * @return mixed
      */
-    public function get($key)
+    public function __get($key)
     {
         if (is_string($key))
         {
@@ -441,12 +461,12 @@ class Kotori_Handle
      */
     public static function halt($message, $code = 404)
     {
-        Kotori_Response::getInstance()->setStatus($code);
-        if (Kotori_Config::getInstance()->get('APP_DEBUG') == false)
+        Kotori_Response::getSoul()->setStatus($code);
+        if (Kotori_Config::getSoul()->APP_DEBUG == false)
         {
             $message = '404 Not Found.';
         }
-        $tpl_path = Kotori_Config::getInstance()->get('ERROR_TPL');
+        $tpl_path = Kotori_Config::getSoul()->ERROR_TPL;
 
         if ($tpl_path == null)
         {
@@ -484,8 +504,8 @@ h1 {
 }
 #error-page p {
     font-size: 14px;
-    line-height: 1.5;
-    margin: 25px 0 20px;
+    word-wrap: break-word;
+    word-break: normal;
 }
 #error-page code {
     font-family: Consolas, Monaco, monospace;
@@ -560,7 +580,7 @@ function open_link(url){
 
 <body id="error-page">
     <h1>Error Occured.</h1>
-    <p>{$message}</p>
+    {$message}
     <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php\')">Go to GitHub Page</button>
     <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php/issues\')">Report a Bug</button>
 </body>
@@ -568,7 +588,7 @@ function open_link(url){
         }
         else
         {
-            $tpl = file_get_contents(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/views/' . $tpl_path . '.html');
+            $tpl = file_get_contents(Kotori_Config::getSoul()->APP_FULL_PATH . '/views/' . $tpl_path . '.html');
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
@@ -592,51 +612,7 @@ function open_link(url){
      */
     public static function error($errno, $errstr, $errfile, $errline)
     {
-        switch ($errno)
-        {
-            case E_ERROR:
-                $errtype = 'Error';
-                break;
-            case E_WARNING:
-                $errtype = 'Warning';
-                break;
-            case E_PARSE:
-                $errtype = 'Parsing Error';
-                break;
-            case E_NOTICE:
-                $errtype = 'Notice';
-                break;
-            case E_CORE_ERROR:
-                $errtype = 'Core Error';
-                break;
-            case E_CORE_WARNING:
-                $errtype = 'Core Warning';
-                break;
-            case E_COMPILE_ERROR:
-                $errtype = 'Compile Error';
-                break;
-            case E_COMPILE_WARNING:
-                $errtype = 'Compile Warning';
-                break;
-            case E_USER_ERROR:
-                $errtype = 'User Error';
-                break;
-            case E_USER_WARNING:
-                $errtype = 'User Warning';
-                break;
-            case E_USER_NOTICE:
-                $errtype = 'User Notice';
-                break;
-            case E_STRICT:
-                $errtype = 'Runtime Notice';
-                break;
-            default:
-                $errtype = 'Unknown';
-                break;
-        }
-
-        $text = '<b>Error Type: </b>' . $errtype . '<br>' . '<b>Info: </b>' . $errstr . '<br>' . '<b>Line: </b>' . $errline . '<br>' . '<b>File: </b>' . $errfile;
-        $txt = '[Type] ' . $errtype . ' [Info] ' . $errstr . ' [Line] ' . $errline . ' [File] ' . $errfile;
+        $txt = '[Type] ' . self::getErrorType($errno) . ' [Info] ' . $errstr . ' [Line] ' . $errline . ' [File] ' . $errfile;
         array_push(self::$errors, $txt);
         Kotori_Log::normal($txt);
     }
@@ -653,7 +629,7 @@ function open_link(url){
      */
     public static function exception($exception)
     {
-        $text = '<b>Exception:</b>' . $exception->getMessage();
+        $text = '<p><strong>Exception:</strong>' . $exception->getMessage() . '</p>';
         $txt = '[Type] Exception' . ' [Info] ' . $exception->getMessage();
         Kotori_Log::normal($txt);
         self::halt($text, 500);
@@ -677,12 +653,62 @@ function open_link(url){
         if (isset($last_error) &&
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING)))
         {
-            $text = '<b>Error Type: </b>' . $last_error['type'] . '<br>' . '<b>Info: </b>' . $last_error['message'] . '<br>' . '<b>Line: </b>' . $last_error['line'] . '<br>' . '<b>File: </b>' . $last_error['file'];
+            $text = '<p><strong>Error Type: </strong>' . self::getErrorType($last_error['type']) . '</p>' . '<p><strong>Info: </strong>' . $last_error['message'] . '</p>' . '<p><strong>Line: </strong>' . $last_error['line'] . '</p>' . '<p><strong>File: </strong>' . $last_error['file'] . '</p>';
             $txt = '[Type] ' . $last_error['type'] . ' [Info] ' . $last_error['message'] . ' [Line] ' . $last_error['line'] . ' [File] ' . $last_error['file'];
             Kotori_Log::normal($txt);
             self::halt($text, 500);
         }
 
+    }
+
+    public static function getErrorType($errno)
+    {
+        switch ($errno)
+        {
+            case E_ERROR:
+                $errtype = 'A fatal error that causes script termination.';
+                break;
+            case E_WARNING:
+                $errtype = 'Run-time warning that does not cause script termination.';
+                break;
+            case E_PARSE:
+                $errtype = 'Compile time parse error.';
+                break;
+            case E_NOTICE:
+                $errtype = 'Run time notice caused due to error in code.';
+                break;
+            case E_CORE_ERROR:
+                $errtype = 'Fatal errors that occur during PHP\'s initial startup (installation).';
+                break;
+            case E_CORE_WARNING:
+                $errtype = 'Warnings that occur during PHP\'s initial startup.';
+                break;
+            case E_COMPILE_ERROR:
+                $errtype = 'Fatal compile-time errors indication problem with script.';
+                break;
+            case E_COMPILE_WARNING:
+                $errtype = 'Non-Fatal Run Time Warning generated by Zend Engine.';
+                break;
+            case E_USER_ERROR:
+                $errtype = 'User-generated error message.';
+                break;
+            case E_USER_WARNING:
+                $errtype = 'User-generated warning message.';
+                break;
+            case E_USER_NOTICE:
+                $errtype = 'User-generated notice message.';
+                break;
+            case E_STRICT:
+                $errtype = 'Run-time notices.';
+                break;
+            case E_RECOVERABLE_ERROR:
+                $errtype = 'Catchable fatal error indicating a dangerous error.';
+                break;
+            default:
+                $errtype = 'Unknown';
+                break;
+        }
+        return $errtype;
     }
 
 }
@@ -728,7 +754,7 @@ class Kotori_Route
      *
      * @var object
      */
-    private static $_instance = null;
+    private static $_soul = null;
 
     /**
      * Controllers Array
@@ -773,17 +799,27 @@ class Kotori_Route
     private $_params = array();
 
     /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
+    {
+        return false;
+    }
+
+    /**
      * get singleton
      *
      * @return object
      */
-    public static function getInstance()
+    public static function getSoul()
     {
-        if (!(self::$_instance instanceof self))
+        if (!(self::$_soul instanceof self))
         {
-            self::$_instance = new self();
+            self::$_soul = new self();
         }
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -819,7 +855,7 @@ class Kotori_Route
      */
     public function dispatch()
     {
-        if (Kotori_Config::getInstance()->get('URL_MODE') == 'QUERY_STRING')
+        if (Kotori_Config::getSoul()->URL_MODE == 'QUERY_STRING')
         {
             $this->_uri = explode('?', $this->_uri, 2);
             $_SERVER['QUERY_STRING'] = isset($this->_uri[1]) ? $this->_uri[1] : '';
@@ -853,7 +889,7 @@ class Kotori_Route
         //Define some variables
         define('CONTROLLER_NAME', $this->_controller);
         define('ACTION_NAME', $this->_action);
-        define('PUBLIC_DIR', Kotori_Request::getInstance()->getBaseUrl() . 'public');
+        define('PUBLIC_DIR', Kotori_Request::getSoul()->getBaseUrl() . 'public');
 
         //If is already initialized
         if ($this->_controller == 'System')
@@ -866,7 +902,7 @@ class Kotori_Route
         }
         else
         {
-            Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') .
+            Kotori_Common::import(Kotori_Config::getSoul()->APP_FULL_PATH .
                 '/controllers/' . $this->_controller . '.php');
             $class = new $this->_controller();
             $this->_controllers[$this->_controller] = $class;
@@ -954,7 +990,7 @@ class Kotori_Route
      */
     private function parseRoutes($uri)
     {
-        $routes = Kotori_Config::getInstance()->get('URL_ROUTE');
+        $routes = Kotori_Config::getSoul()->URL_ROUTE;
 
         // Get HTTP verb
         $http_verb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
@@ -1012,11 +1048,11 @@ class Kotori_Route
      */
     public function url($uri = '')
     {
-        $base_url = Kotori_Request::getInstance()->getBaseUrl();
+        $base_url = Kotori_Request::getSoul()->getBaseUrl();
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
         $prefix = $base_url . 'index.php?_i=';
 
-        switch (Kotori_Config::getInstance()->get('URL_MODE'))
+        switch (Kotori_Config::getSoul()->URL_MODE)
         {
             case 'PATH_INFO':
                 return $uri == '' ? rtrim($base_url, '/') : $base_url . $uri;
@@ -1050,16 +1086,16 @@ abstract class Kotori_Controller
      *
      * @var object
      */
-    private static $_instance = null;
+    private static $_soul = null;
 
     /**
      * get singleton
      *
      * @return object
      */
-    public static function &getInstance()
+    public static function &getSoul()
     {
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -1071,13 +1107,13 @@ abstract class Kotori_Controller
      */
     public function __construct()
     {
-        self::$_instance = &$this;
+        self::$_soul = &$this;
         $this->view = new Kotori_View();
-        $this->response = Kotori_Response::getInstance();
-        $this->request = Kotori_Request::getInstance();
-        $this->route = Kotori_Route::getInstance();
-        $this->db = Kotori_Database::getInstance();
-        $this->model = Kotori_Model_Provider::getInstance();
+        $this->response = Kotori_Response::getSoul();
+        $this->request = Kotori_Request::getSoul();
+        $this->route = Kotori_Route::getSoul();
+        $this->db = Kotori_Database::getSoul();
+        $this->model = Kotori_Model_Provider::getSoul();
         Kotori_Hook::listen('Kotori_Controller');
     }
 
@@ -1115,7 +1151,7 @@ class Kotori_Model
      */
     public function __get($key)
     {
-        return Kotori_Controller::getInstance()->$key;
+        return Kotori_Controller::getSoul()->$key;
     }
 }
 
@@ -1141,20 +1177,30 @@ class Kotori_Model_Provider
      *
      * @var object
      */
-    private static $_instance;
+    private static $_soul;
+
+    /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
+    {
+        return false;
+    }
 
     /**
      * get singleton
      *
      * @return object
      */
-    public static function getInstance()
+    public static function getSoul()
     {
-        if (!(self::$_instance instanceof self))
+        if (!(self::$_soul instanceof self))
         {
-            self::$_instance = new self();
+            self::$_soul = new self();
         }
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -1184,7 +1230,7 @@ class Kotori_Model_Provider
             return $this->_models[$key];
         }
 
-        Kotori_Common::import(Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/models/' . $key . '.php');
+        Kotori_Common::import(Kotori_Config::getSoul()->APP_FULL_PATH . '/models/' . $key . '.php');
 
         if (!class_exists($key))
         {
@@ -1248,7 +1294,7 @@ class Kotori_View
      */
     public function __get($key)
     {
-        return Kotori_Controller::getInstance()->$key;
+        return Kotori_Controller::getSoul()->$key;
     }
 
     /**
@@ -1258,7 +1304,7 @@ class Kotori_View
     {
         if ('' == $tplDir)
         {
-            $this->_tplDir = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/views/';
+            $this->_tplDir = Kotori_Config::getSoul()->APP_FULL_PATH . '/views/';
         }
         else
         {
@@ -1305,7 +1351,7 @@ class Kotori_View
         include $this->_viewPath;
         $buffer = ob_get_contents();
         ob_get_clean();
-        $output = Kotori_Common::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Kotori_Trace::getInstance()->showTrace();
+        $output = Kotori_Common::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Kotori_Trace::getSoul()->showTrace();
         if ($count > 0)
         {
             $output .= '</body></html>';
@@ -1323,7 +1369,7 @@ class Kotori_View
     public function need($path, $data = array())
     {
         $this->_needData = array(
-            'path' => Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/views/' . $path . '.html',
+            'path' => Kotori_Config::getSoul()->APP_FULL_PATH . '/views/' . $path . '.html',
             'data' => $data,
         );
         unset($path);
@@ -1349,7 +1395,7 @@ class Kotori_Request
      *
      * @var object
      */
-    private static $_instance = null;
+    private static $_soul = null;
 
     /**
      * Params
@@ -1359,17 +1405,27 @@ class Kotori_Request
     private $_put = null;
 
     /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
+    {
+        return false;
+    }
+
+    /**
      * get singleton
      *
      * @return object
      */
-    public static function getInstance()
+    public static function getSoul()
     {
-        if (!(self::$_instance instanceof self))
+        if (!(self::$_soul instanceof self))
         {
-            self::$_instance = new self();
+            self::$_soul = new self();
         }
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -1630,7 +1686,7 @@ class Kotori_Request
     {
         if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST']))
         {
-            $base_url = (Kotori_Request::getInstance()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
+            $base_url = (Kotori_Request::getSoul()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
             . substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
         }
         else
@@ -1695,7 +1751,7 @@ class Kotori_Response
      *
      * @var object
      */
-    private static $_instance = null;
+    private static $_soul = null;
 
     /**
      * Status array
@@ -1747,16 +1803,26 @@ class Kotori_Response
     );
 
     /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
+    {
+        return false;
+    }
+
+    /**
      * get singleton
      * @return object
      */
-    public static function getInstance()
+    public static function getSoul()
     {
-        if (!(self::$_instance instanceof self))
+        if (!(self::$_soul instanceof self))
         {
-            self::$_instance = new self();
+            self::$_soul = new self();
         }
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -1881,7 +1947,7 @@ class Kotori_Trace
         'SERVER' => 'Server',
         'COOKIE' => 'Cookie',
         'FILE' => 'File',
-        'CLASS' => 'Class',
+        'FLOW' => 'Flow',
         'ERROR' => 'Error',
         'SQL' => 'SQL',
         'SUPPORT' => 'Support',
@@ -1892,20 +1958,30 @@ class Kotori_Trace
      *
      * @var object
      */
-    private static $_instance = null;
+    private static $_soul = null;
+
+    /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
+    {
+        return false;
+    }
 
     /**
      * get singleton
      *
      * @return object
      */
-    public static function getInstance()
+    public static function getSoul()
     {
-        if (!(self::$_instance instanceof self))
+        if (!(self::$_soul instanceof self))
         {
-            self::$_instance = new self();
+            self::$_soul = new self();
         }
-        return self::$_instance;
+        return self::$_soul;
     }
 
     /**
@@ -1928,7 +2004,7 @@ class Kotori_Trace
     private function getTrace()
     {
         $files = get_included_files();
-        $config = Kotori_Config::getInstance()->getArray();
+        $config = Kotori_Config::getSoul()->getArray();
         $server = $_SERVER;
         $cookie = $_COOKIE;
         $info = array();
@@ -1936,19 +2012,19 @@ class Kotori_Trace
         {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
-        $class = Kotori_Hook::getTags();
-        foreach ($class as $key => $value)
+        $hook = Kotori_Hook::getTags();
+        foreach ($hook as $key => $value)
         {
-            $class[$key] = ' ( ' . $value . ' μs )';
+            $hook[$key] = ' ( ' . $value . ' μs )';
         }
         $error = Kotori_Handle::$errors;
-        $database = Kotori_Database::getInstance();
+        $database = Kotori_Database::getSoul();
         $sql = $database == null ? array() : $database->queries;
 
         $base = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
             'Run Time' => Kotori_Hook::listen('Kotori') . 'μs',
-            'TPR' => pow(10, 6) / Kotori_Hook::listen('Kotori') . ' req/s',
+            'TPR' => Kotori_Hook::listen('Kotori') != 0 ? pow(10, 6) / Kotori_Hook::listen('Kotori') . ' req/s' : '+inf',
             'Memory Uses' => number_format((memory_get_usage() - START_MEMORY) / 1024, 2) . ' kb',
             'SQL Queries' => count($sql) . ' queries ',
             'File Loaded' => count(get_included_files()),
@@ -1958,7 +2034,7 @@ class Kotori_Trace
         $support = array(
             '<a target="_blank" href="https://github.com/kokororin/Kotori.php">GitHub</a>',
             '<a target="_blank" href="https://kotori.love/archives/kotori-php-framework.html">Blog</a>',
-            '<a id="kotori_page_trace_check_update" target="_blank" href="' . Kotori_Route::getInstance()->url(array('System', 'checkUpdate')) . '" data-download="' . Kotori_Route::getInstance()->url(array('System', 'downloadUpdate')) . '">Check for Updates</a>',
+            '<a id="kotori_page_trace_check_update" target="_blank" href="' . Kotori_Route::getSoul()->url(array('System', 'checkUpdate')) . '" data-download="' . Kotori_Route::getSoul()->url(array('System', 'downloadUpdate')) . '">Check for Updates</a>',
         );
 
         $trace = array();
@@ -1981,8 +2057,8 @@ class Kotori_Trace
                 case 'FILE':
                     $trace[$title] = $info;
                     break;
-                case 'CLASS':
-                    $trace[$title] = $class;
+                case 'FLOW':
+                    $trace[$title] = $hook;
                     break;
                 case 'ERROR':
                     $trace[$title] = $error;
@@ -1997,7 +2073,8 @@ class Kotori_Trace
         }
         foreach ($trace as $key => $value)
         {
-            if (empty(array_filter($value)))
+            $value = array_filter($value);
+            if (empty($value))
             {
                 unset($trace[$key]);
             }
@@ -2012,7 +2089,7 @@ class Kotori_Trace
      */
     public function showTrace()
     {
-        if (Kotori_Config::getInstance()->get('APP_DEBUG') == false)
+        if (Kotori_Config::getSoul()->APP_DEBUG == false)
         {
             return;
         }
@@ -2036,7 +2113,7 @@ class Kotori_Trace
             {
                 foreach ($info as $k => $val)
                 {
-                    $val = is_array($val) ? json_encode($val, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : is_bool($val) ? json_encode($val) : $val;
+                    $val = is_array($val) ? json_encode($val) : is_bool($val) ? json_encode($val) : $val;
                     $val = (in_array($key, array('Support'))) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
                     $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $val . '</li>';
                 }
@@ -2242,14 +2319,14 @@ class Kotori_System extends Kotori_Controller
         $hash['current'] = md5_file(__FILE__);
         if ($hash['latest'] == $hash['current'])
         {
-            Kotori_Response::getInstance()->throwJson(array(
+            Kotori_Response::getSoul()->throwJson(array(
                 'status' => 'is_latest',
                 'text' => 'Local version is the latest.(:з」∠) _',
             ));
         }
         else
         {
-            Kotori_Response::getInstance()->throwJson(array(
+            Kotori_Response::getSoul()->throwJson(array(
                 'status' => 'not_latest',
                 'text' => 'Local version is not the latest, are you sure to update ?',
             ));
@@ -2275,11 +2352,11 @@ class Kotori_System extends Kotori_Controller
             curl_exec($ch);
             curl_close($ch);
             fclose($fp);
-            Kotori_Response::getInstance()->throwJson('success');
+            Kotori_Response::getSoul()->throwJson('success');
         }
         catch (Exception $e)
         {
-            Kotori_Response::getInstance()->throwJson('fail');
+            Kotori_Response::getSoul()->throwJson('fail');
         }
 
     }
@@ -2315,12 +2392,22 @@ class Kotori_Database
     protected $logs = array();
     protected $debug_mode = false;
     // Kotori
-    private static $_instance = array();
+    private static $_soul = array();
     public $queries = array();
 
-    public static function getInstance()
+    /**
+     * Disable Clone
+     *
+     * @return boolean
+     */
+    public function __clone()
     {
-        if (Kotori_Config::getInstance()->get('DB_TYPE') == null)
+        return false;
+    }
+
+    public static function getSoul()
+    {
+        if (Kotori_Config::getSoul()->DB_TYPE == null)
         {
             $config = array();
             return null;
@@ -2328,21 +2415,21 @@ class Kotori_Database
         else
         {
             $config = array(
-                'database_type' => Kotori_Config::getInstance()->get('DB_TYPE'),
-                'database_name' => Kotori_Config::getInstance()->get('DB_NAME'),
-                'server' => Kotori_Config::getInstance()->get('DB_HOST'),
-                'username' => Kotori_Config::getInstance()->get('DB_USER'),
-                'password' => Kotori_Config::getInstance()->get('DB_PWD'),
-                'charset' => Kotori_Config::getInstance()->get('DB_CHARSET'),
-                'port' => Kotori_Config::getInstance()->get('DB_PORT'),
+                'database_type' => Kotori_Config::getSoul()->DB_TYPE,
+                'database_name' => Kotori_Config::getSoul()->DB_NAME,
+                'server' => Kotori_Config::getSoul()->DB_HOST,
+                'username' => Kotori_Config::getSoul()->DB_USER,
+                'password' => Kotori_Config::getSoul()->DB_PWD,
+                'charset' => Kotori_Config::getSoul()->DB_CHARSET,
+                'port' => Kotori_Config::getSoul()->DB_PORT,
             );
         }
         $key = $config['server'] . ':' . $config['port'];
-        if (!isset(self::$_instance[$key]) || !(self::$_instance[$key] instanceof self))
+        if (!isset(self::$_soul[$key]) || !(self::$_soul[$key] instanceof self))
         {
-            self::$_instance[$key] = new self($config);
+            self::$_soul[$key] = new self($config);
         }
-        return self::$_instance[$key];
+        return self::$_soul[$key];
     }
 
     public function __construct($options = null)
@@ -3314,7 +3401,7 @@ class Kotori_Log
      */
     private static function write($msg, $level = '')
     {
-        if (Kotori_Config::getInstance()->get('APP_DEBUG') == false)
+        if (Kotori_Config::getSoul()->APP_DEBUG == false)
         {
             return;
         }
@@ -3328,7 +3415,7 @@ class Kotori_Log
         else
         {
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
-            $logPath = Kotori_Config::getInstance()->get('APP_FULL_PATH') . '/logs';
+            $logPath = Kotori_Config::getSoul()->APP_FULL_PATH . '/logs';
             if (!file_exists($logPath))
             {
                 mkdir($logPath, 0755, true);

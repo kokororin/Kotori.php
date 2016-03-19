@@ -32,8 +32,8 @@ h1 {
 }
 #error-page p {
     font-size: 14px;
-    line-height: 1.5;
-    margin: 25px 0 20px;
+    word-wrap: break-word; 
+    word-break: normal; 
 }
 #error-page code {
     font-family: Consolas, Monaco, monospace;
@@ -96,10 +96,10 @@ a:hover {
 </style>
 <script>
 function open_link(url){
- var el = document.createElement('a');
+ var el = document.createElement("a");
  document.body.appendChild(el);
  el.href = url;
- el.target = '_blank';
+ el.target = "_blank";
  el.click();
  document.body.removeChild(el);
 }
@@ -108,7 +108,7 @@ function open_link(url){
 
 <body id="error-page">
     <h1>Error Occured.</h1>
-    <p>{$message}</p>
+    {$message}
     <button class="button" onclick="open_link('https://github.com/kokororin/Kotori.php')">Go to GitHub Page</button>
     <button class="button" onclick="open_link('https://github.com/kokororin/Kotori.php/issues')">Report a Bug</button>
 </body>
