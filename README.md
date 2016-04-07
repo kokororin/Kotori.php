@@ -54,7 +54,7 @@ Learn more at these links:
 
 - [Website](https://kotori.love/archives/kotori-php-framework.html)
 - [Documentation](https://github.com/kokororin/Kotori.php/wiki)
-- [Upload API](https://api.kotori.love/framework/latest.php)
+- [Update API](https://api.kotori.love/framework/latest.php)
 
 ## Thanks
 
