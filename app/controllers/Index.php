@@ -32,13 +32,20 @@ class Index extends Kotori_Controller
     {
         header('Content-Type: text/html;charset=utf-8');
         $count = $this->db->count("test", "title");
-        $Page  = new Page($count, 20);
-        $show  = $Page->show();
-        $data  = $this->db->select("test", "title", array(
+        $Page = new Page($count, 20);
+        $show = $Page->show();
+        $data = $this->db->select("test", "title", array(
             "LIMIT" => array($Page->firstRow, $Page->listRows),
         ));
         print_r($data);
         echo '<br/>' . $show;
+    }
+
+    public function captcha()
+    {
+        $captcha = new Captcha();
+        $captcha->getImg();
+        $_SESSION['verify'] = md5($vc->getCode());
     }
 
 }
