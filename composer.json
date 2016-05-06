@@ -5,6 +5,10 @@
     "keywords": ["framework"],
     "homepage": "https://kotori.love/",
     "license": "Apache",
+    "support": {
+        "wiki": "https://github.com/kokororin/Kotori.php/wiki",
+        "source": "https://github.com/kokororin/Kotori.php"
+    },
     "authors": [{
         "name": "Sora",
         "email": "ritsuka.sunny@gmail.com"

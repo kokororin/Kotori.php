@@ -42,8 +42,7 @@ class Kotori
      */
     public function __construct()
     {
-        if (version_compare(PHP_VERSION, '5.2.0', '<'))
-        {
+        if (version_compare(PHP_VERSION, '5.2.0', '<')) {
             exit('Kotori.php requires PHP > 5.2.0 !');
         }
         ini_set('display_errors', 'off');
@@ -71,12 +70,9 @@ class Kotori
         //Load application's common functions
         Kotori_Common::import(Kotori_Config::getSoul()->APP_FULL_PATH . '/common.php');
 
-        if (function_exists('spl_autoload_register'))
-        {
+        if (function_exists('spl_autoload_register')) {
             spl_autoload_register(array('Kotori_Common', 'autoload'));
-        }
-        else
-        {
+        } else {
             function __autoload($className)
             {
                 Kotori_Common::autoload($className);
@@ -123,15 +119,11 @@ class Kotori_Common
     {
         $path = realpath($path);
         Kotori_Hook::listen(str_replace(Kotori_Config::getSoul()->APP_FULL_PATH, '', $path));
-        if (!isset(self::$_require[$path]))
-        {
-            if (self::isFile($path))
-            {
+        if (!isset(self::$_require[$path])) {
+            if (self::isFile($path)) {
                 require $path;
                 self::$_require[$path] = true;
-            }
-            else
-            {
+            } else {
                 self::$_require[$path] = false;
             }
         }
@@ -147,12 +139,9 @@ class Kotori_Common
      */
     public static function isFile($path)
     {
-        if (is_file($path))
-        {
-            if (strstr(PHP_OS, 'WIN'))
-            {
-                if (basename(realpath($path)) != basename($path))
-                {
+        if (is_file($path)) {
+            if (strstr(PHP_OS, 'WIN')) {
+                if (basename(realpath($path)) != basename($path)) {
                     return false;
                 }
             }
@@ -171,10 +160,8 @@ class Kotori_Common
     {
         $baseRoot = Kotori_Config::getSoul()->APP_FULL_PATH;
 
-        if (!Kotori_Common::import($baseRoot . '/libraries/' . $class . '.php'))
-        {
-            if (!Kotori_Common::import($baseRoot . '/controllers/' . $class . '.php'))
-            {
+        if (!Kotori_Common::import($baseRoot . '/libraries/' . $class . '.php')) {
+            if (!Kotori_Common::import($baseRoot . '/controllers/' . $class . '.php')) {
                 Kotori_Common::import($baseRoot . '/models/' . $class . '.php');
             }
         }
@@ -343,8 +330,7 @@ class Kotori_Config
      */
     public static function getSoul()
     {
-        if (!(self::$_soul instanceof self))
-        {
+        if (!(self::$_soul instanceof self)) {
             self::$_soul = new self();
         }
         return self::$_soul;
@@ -371,10 +357,8 @@ class Kotori_Config
     public function initialize($config = array())
     {
         $this->_config = $config;
-        if (is_array($this->_config))
-        {
-            if (array_keys($this->_config) !== range(0, count($this->_config) - 1))
-            {
+        if (is_array($this->_config)) {
+            if (array_keys($this->_config) !== range(0, count($this->_config) - 1)) {
                 $this->_config = array_merge($this->_defaults, $this->_config);
                 $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($this->APP_PATH, '/'))), $this->_config);
             }
@@ -393,12 +377,9 @@ class Kotori_Config
      */
     public function __set($key, $value)
     {
-        if (is_string($key))
-        {
+        if (is_string($key)) {
             $this->_config[$key] = $value;
-        }
-        else
-        {
+        } else {
             Kotori_Handle::halt('Config Error.');
         }
     }
@@ -413,8 +394,7 @@ class Kotori_Config
      */
     public function __get($key)
     {
-        if (is_string($key))
-        {
+        if (is_string($key)) {
             return isset($this->_config[$key]) ? $this->_config[$key] : null;
         }
         return null;
@@ -462,14 +442,12 @@ class Kotori_Handle
     public static function halt($message, $code = 404)
     {
         Kotori_Response::getSoul()->setStatus($code);
-        if (Kotori_Config::getSoul()->APP_DEBUG == false)
-        {
+        if (Kotori_Config::getSoul()->APP_DEBUG == false) {
             $message = '404 Not Found.';
         }
         $tpl_path = Kotori_Config::getSoul()->ERROR_TPL;
 
-        if ($tpl_path == null)
-        {
+        if ($tpl_path == null) {
             $tpl = '<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#">
 <head>
@@ -585,9 +563,7 @@ function open_link(url){
     <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php/issues\')">Report a Bug</button>
 </body>
 </html>';
-        }
-        else
-        {
+        } else {
             $tpl = file_get_contents(Kotori_Config::getSoul()->APP_FULL_PATH . '/views/' . $tpl_path . '.html');
         }
 
@@ -651,8 +627,7 @@ function open_link(url){
     {
         $last_error = error_get_last();
         if (isset($last_error) &&
-            ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING)))
-        {
+            ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
             $text = '<p><strong>Error Type: </strong>' . self::getErrorType($last_error['type']) . '</p>' . '<p><strong>Info: </strong>' . $last_error['message'] . '</p>' . '<p><strong>Line: </strong>' . $last_error['line'] . '</p>' . '<p><strong>File: </strong>' . $last_error['file'] . '</p>';
             $txt = '[Type] ' . $last_error['type'] . ' [Info] ' . $last_error['message'] . ' [Line] ' . $last_error['line'] . ' [File] ' . $last_error['file'];
             Kotori_Log::normal($txt);
@@ -663,8 +638,7 @@ function open_link(url){
 
     public static function getErrorType($errno)
     {
-        switch ($errno)
-        {
+        switch ($errno) {
             case E_ERROR:
                 $errtype = 'A fatal error that causes script termination.';
                 break;
@@ -815,8 +789,7 @@ class Kotori_Route
      */
     public static function getSoul()
     {
-        if (!(self::$_soul instanceof self))
-        {
+        if (!(self::$_soul instanceof self)) {
             self::$_soul = new self();
         }
         return self::$_soul;
@@ -831,8 +804,7 @@ class Kotori_Route
      */
     public function __construct()
     {
-        if (isset($_GET['_i']))
-        {
+        if (isset($_GET['_i'])) {
             $_SERVER['PATH_INFO'] = $_GET['_i'];
         }
         $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
@@ -841,8 +813,7 @@ class Kotori_Route
 
         $this->_uri = $_SERVER['PATH_INFO'];
 
-        if (trim($this->_uri, '/') == '')
-        {
+        if (trim($this->_uri, '/') == '') {
             $this->_uri = '';
         }
         Kotori_Hook::listen('Kotori_Route');
@@ -855,8 +826,7 @@ class Kotori_Route
      */
     public function dispatch()
     {
-        if (Kotori_Config::getSoul()->URL_MODE == 'QUERY_STRING')
-        {
+        if (Kotori_Config::getSoul()->URL_MODE == 'QUERY_STRING') {
             $this->_uri = explode('?', $this->_uri, 2);
             $_SERVER['QUERY_STRING'] = isset($this->_uri[1]) ? $this->_uri[1] : '';
             $this->_uri = $this->_uri[0];
@@ -867,18 +837,15 @@ class Kotori_Route
 
         $parsedRoute = $this->parseRoutes($this->_uri);
 
-        if ($parsedRoute)
-        {
+        if ($parsedRoute) {
             $this->_uri = $parsedRoute;
         }
 
         $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : array();
 
         //Clean uris
-        foreach ($this->_uris as $key => $value)
-        {
-            if ($value == '')
-            {
+        foreach ($this->_uris as $key => $value) {
+            if ($value == '') {
                 unset($this->_uris[$key]);
             }
         }
@@ -892,29 +859,23 @@ class Kotori_Route
         define('PUBLIC_DIR', Kotori_Request::getSoul()->getBaseUrl() . 'public');
 
         //If is already initialized
-        if ($this->_controller == 'System')
-        {
+        if ($this->_controller == 'System') {
             $this->_controller = 'Kotori_System';
         }
-        if (isset($this->_controllers[$this->_controller]))
-        {
+        if (isset($this->_controllers[$this->_controller])) {
             $class = $this->_controllers[$this->_controller];
-        }
-        else
-        {
+        } else {
             Kotori_Common::import(Kotori_Config::getSoul()->APP_FULL_PATH .
                 '/controllers/' . $this->_controller . '.php');
             $class = new $this->_controller();
             $this->_controllers[$this->_controller] = $class;
         }
 
-        if (!class_exists($this->_controller))
-        {
+        if (!class_exists($this->_controller)) {
             throw new Kotori_Exception('Request Controller ' . $this->_controller . ' is not Found');
         }
 
-        if (!method_exists($class, $this->_action))
-        {
+        if (!method_exists($class, $this->_action)) {
             throw new Kotori_Exception('Request Action ' . $this->_action . ' is not Found.');
         }
         //Parse params from uri
@@ -924,8 +885,9 @@ class Kotori_Route
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
 
-        header('X-Powered-By: Kotori');
-        header('Cache-control: private');
+        Kotori_Response::getSoul()->setHeader('X-Powered-By', 'Kotori');
+        Kotori_Response::getSoul()->setHeader('Cache-control', 'private');
+        
         //Call the requested method
         call_user_func_array(array($class, $this->_action), $this->_params);
     }
@@ -937,12 +899,9 @@ class Kotori_Route
      */
     private function getController()
     {
-        if (isset($this->_uris[0]) && '' !== $this->_uris[0])
-        {
+        if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
             $_controller = $this->_uris[0];
-        }
-        else
-        {
+        } else {
             $_controller = 'Index';
         }
         return strip_tags($_controller);
@@ -955,12 +914,9 @@ class Kotori_Route
      */
     private function getAction()
     {
-        if (isset($this->_uris[1]))
-        {
+        if (isset($this->_uris[1])) {
             $_action = $this->_uris[1];
-        }
-        else
-        {
+        } else {
             $_action = 'index';
         }
         return strip_tags($_action);
@@ -995,30 +951,22 @@ class Kotori_Route
         // Get HTTP verb
         $http_verb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
 
-        if (null != $routes)
-        {
-            foreach ($routes as $key => $val)
-            {
+        if (null != $routes) {
+            foreach ($routes as $key => $val) {
                 // Check if route format is using HTTP verbs
-                if (is_array($val))
-                {
+                if (is_array($val)) {
                     $val = array_change_key_case($val, CASE_LOWER);
-                    if (isset($val[$http_verb]))
-                    {
+                    if (isset($val[$http_verb])) {
                         $val = $val[$http_verb];
-                    }
-                    else
-                    {
+                    } else {
                         continue;
                     }
                 }
 
                 // Does the RegEx match?
-                if (preg_match('#^' . $key . '$#', $uri, $matches))
-                {
+                if (preg_match('#^' . $key . '$#', $uri, $matches)) {
                     // Are we using callbacks to process back-references?
-                    if (!is_string($val) && is_callable($val))
-                    {
+                    if (!is_string($val) && is_callable($val)) {
                         // Remove the original string from the matches array.
                         array_shift($matches);
 
@@ -1026,8 +974,7 @@ class Kotori_Route
                         $val = call_user_func_array($val, $matches);
                     }
                     // Are we using the default routing method for back-references?
-                    elseif (strpos($val, '$') !== false && strpos($key, '(') !== false)
-                    {
+                    elseif (strpos($val, '$') !== false && strpos($key, '(') !== false) {
                         $val = preg_replace('#^' . $key . '$#', $val, $uri);
                     }
 
@@ -1052,8 +999,7 @@ class Kotori_Route
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
         $prefix = $base_url . 'index.php?_i=';
 
-        switch (Kotori_Config::getSoul()->URL_MODE)
-        {
+        switch (Kotori_Config::getSoul()->URL_MODE) {
             case 'PATH_INFO':
                 return $uri == '' ? rtrim($base_url, '/') : $base_url . $uri;
                 break;
@@ -1196,8 +1142,7 @@ class Kotori_Model_Provider
      */
     public static function getSoul()
     {
-        if (!(self::$_soul instanceof self))
-        {
+        if (!(self::$_soul instanceof self)) {
             self::$_soul = new self();
         }
         return self::$_soul;
@@ -1225,19 +1170,15 @@ class Kotori_Model_Provider
     public function __get($key)
     {
         $key .= '_model';
-        if (isset($this->_models[$key]))
-        {
+        if (isset($this->_models[$key])) {
             return $this->_models[$key];
         }
 
         Kotori_Common::import(Kotori_Config::getSoul()->APP_FULL_PATH . '/models/' . $key . '.php');
 
-        if (!class_exists($key))
-        {
+        if (!class_exists($key)) {
             throw new Kotori_Exception('Request Model ' . $key . ' is not Found');
-        }
-        else
-        {
+        } else {
             $model = new $key();
             $this->_models[$key] = $model;
             return $model;
@@ -1302,12 +1243,9 @@ class Kotori_View
      */
     public function __construct($tplDir = '')
     {
-        if ('' == $tplDir)
-        {
+        if ('' == $tplDir) {
             $this->_tplDir = Kotori_Config::getSoul()->APP_FULL_PATH . '/views/';
-        }
-        else
-        {
+        } else {
             $this->_tplDir = $tplDir;
         }
         Kotori_Hook::listen('Kotori_View');
@@ -1336,13 +1274,11 @@ class Kotori_View
      */
     public function display($tpl = '')
     {
-        if ('' === $tpl)
-        {
+        if ('' === $tpl) {
             $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
         }
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
-        if (!Kotori_Common::isFile($this->_viewPath))
-        {
+        if (!Kotori_Common::isFile($this->_viewPath)) {
             Kotori_Handle::halt('Template is not existed.');
         }
         unset($tpl);
@@ -1352,8 +1288,7 @@ class Kotori_View
         $buffer = ob_get_contents();
         ob_get_clean();
         $output = Kotori_Common::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Kotori_Trace::getSoul()->showTrace();
-        if ($count > 0)
-        {
+        if ($count > 0) {
             $output .= '</body></html>';
         }
         echo $output;
@@ -1405,6 +1340,13 @@ class Kotori_Request
     private $_put = null;
 
     /**
+     * Ip address
+     *
+     * @var array
+     */
+    private $_ip = null;
+
+    /**
      * Disable Clone
      *
      * @return boolean
@@ -1421,8 +1363,7 @@ class Kotori_Request
      */
     public static function getSoul()
     {
-        if (!(self::$_soul instanceof self))
-        {
+        if (!(self::$_soul instanceof self)) {
             self::$_soul = new self();
         }
         return self::$_soul;
@@ -1451,24 +1392,17 @@ class Kotori_Request
      */
     public function input($name, $default = '', $filter = null, $datas = null)
     {
-        if (strpos($name, '/'))
-        {
+        if (strpos($name, '/')) {
             list($name, $type) = explode('/', $name, 2);
-        }
-        else
-        {
+        } else {
             $type = 's';
         }
-        if (strpos($name, '.'))
-        {
+        if (strpos($name, '.')) {
             list($method, $name) = explode('.', $name, 2);
-        }
-        else
-        {
+        } else {
             $method = 'param';
         }
-        switch (strtolower($method))
-        {
+        switch (strtolower($method)) {
             case 'get':
                 $input = &$_GET;
                 break;
@@ -1476,21 +1410,18 @@ class Kotori_Request
                 $input = &$_POST;
                 break;
             case 'put':
-                if (is_null($this->_put))
-                {
+                if (is_null($this->_put)) {
                     parse_str(file_get_contents('php://input'), $this->_put);
                 }
                 $input = $this->_put;
                 break;
             case 'param':
-                switch ($_SERVER['REQUEST_METHOD'])
-                {
+                switch ($_SERVER['REQUEST_METHOD']) {
                     case 'POST':
                         $input = $_POST;
                         break;
                     case 'PUT':
-                        if (is_null($this->_put))
-                    {
+                        if (is_null($this->_put)) {
                             parse_str(file_get_contents('php://input'), $this->_put);
                         }
                         $input = $this->_put;
@@ -1501,8 +1432,7 @@ class Kotori_Request
                 break;
             case 'path':
                 $input = array();
-                if (!empty($_SERVER['PATH_INFO']))
-                {
+                if (!empty($_SERVER['PATH_INFO'])) {
                     $depr = '/';
                     $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
                 }
@@ -1528,67 +1458,46 @@ class Kotori_Request
             default:
                 return null;
         }
-        if ('' == $name)
-        {
+        if ('' == $name) {
             $data = $input;
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
-            if ($filters)
-            {
-                if (is_string($filters))
-                {
+            if ($filters) {
+                if (is_string($filters)) {
                     $filters = explode(',', $filters);
                 }
-                foreach ($filters as $filter)
-                {
+                foreach ($filters as $filter) {
                     $data = $this->array_map_recursive($filter, $data); // 参数过滤
                 }
             }
-        }
-        elseif (isset($input[$name]))
-        {
+        } elseif (isset($input[$name])) {
             $data = $input[$name];
             $filters = isset($filter) ? $filter : 'htmlspecialchars';
-            if ($filters)
-            {
-                if (is_string($filters))
-                {
-                    if (0 === strpos($filters, '/') && 1 !== preg_match($filters, (string) $data))
-                    {
+            if ($filters) {
+                if (is_string($filters)) {
+                    if (0 === strpos($filters, '/') && 1 !== preg_match($filters, (string) $data)) {
                         return isset($default) ? $default : null;
-                    }
-                    else
-                    {
+                    } else {
                         $filters = explode(',', $filters);
                     }
-                }
-                elseif (is_int($filters))
-                {
+                } elseif (is_int($filters)) {
                     $filters = array($filters);
                 }
 
-                if (is_array($filters))
-                {
-                    foreach ($filters as $filter)
-                    {
-                        if (function_exists($filter))
-                        {
+                if (is_array($filters)) {
+                    foreach ($filters as $filter) {
+                        if (function_exists($filter)) {
                             $data = is_array($data) ? $this->array_map_recursive($filter, $data) : $filter($data);
-                        }
-                        else
-                        {
+                        } else {
                             $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
-                            if (false === $data)
-                            {
+                            if (false === $data) {
                                 return isset($default) ? $default : null;
                             }
                         }
                     }
                 }
             }
-            if (!empty($type))
-            {
-                switch (strtolower($type))
-                {
+            if (!empty($type)) {
+                switch (strtolower($type)) {
                     case 'a':
                         $data = (array) $data;
                         break;
@@ -1606,15 +1515,12 @@ class Kotori_Request
                         $data = (string) $data;
                 }
             }
-        }
-        else
-        {
+        } else {
             // default
             $data = isset($default) ? $default : null;
         }
         is_array($data) && array_walk_recursive($data, array('Kotori_Request', 'filter'));
         return $data;
-
     }
 
     /**
@@ -1627,8 +1533,7 @@ class Kotori_Request
     private function array_map_recursive($filter, $data)
     {
         $result = array();
-        foreach ($data as $key => $val)
-        {
+        foreach ($data as $key => $val) {
             $result[$key] = is_array($val)
             ? $this->array_map_recursive($filter, $val)
             : call_user_func($filter, $val);
@@ -1644,8 +1549,7 @@ class Kotori_Request
      */
     public static function filter(&$value)
     {
-        if (preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i', $value))
-        {
+        if (preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i', $value)) {
             $value .= ' ';
         }
     }
@@ -1660,16 +1564,11 @@ class Kotori_Request
      */
     public function isSecure()
     {
-        if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
-        {
+        if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
             return true;
-        }
-        elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO'])
-        {
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && 'https' === $_SERVER['HTTP_X_FORWARDED_PROTO']) {
             return true;
-        }
-        elseif (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off')
-        {
+        } elseif (!empty($_SERVER['HTTP_FRONT_END_HTTPS']) && strtolower($_SERVER['HTTP_FRONT_END_HTTPS']) !== 'off') {
             return true;
         }
         return false;
@@ -1684,16 +1583,47 @@ class Kotori_Request
      */
     public function getBaseUrl()
     {
-        if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST']))
-        {
+        if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST'])) {
             $base_url = (Kotori_Request::getSoul()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
             . substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
-        }
-        else
-        {
+        } else {
             $base_url = 'http://localhost/';
         }
         return rtrim($base_url, '/') . '/';
+    }
+
+    /**
+     * Returns Client Ip Address
+     *
+     * @param  integer $type Ip address or ipv4 address
+     * @return [type]
+     */
+    public function getClientIp($type = 0)
+    {
+        $type = $type ? 1 : 0;
+
+        if ($this->_ip !== null) {
+            return $this->_ip[$type];
+        }
+
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $pos = array_search('unknown', $arr);
+            if (false !== $pos) {
+                unset($arr[$pos]);
+            }
+
+            $this->_ip = trim($arr[0]);
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $this->_ip = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $this->_ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        // Check ip
+        $long = sprintf("%u", ip2long($this->_ip));
+        $this->_ip = $long ? array($this->_ip, $long) : array('0.0.0.0', 0);
+        return $this->_ip[$type];
     }
 
     /**
@@ -1735,6 +1665,20 @@ class Kotori_Request
     {
         return ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) ? true : false;
     }
+
+    /**
+     * Detect whether user agent is Mobile
+     *
+     * @return boolean
+     */
+    public function isMobile()
+    {
+        $userAgent = isset($_SERVER['USER_AGENT']) ? $_SERVER['USER_AGENT'] : null;
+        if ($userAgent == null) {
+            return false;
+        }
+        return preg_match('/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i', $userAgent) || preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i', substr($userAgent, 0, 4));
+    }
 }
 /**
  * Response Class
@@ -1759,6 +1703,8 @@ class Kotori_Response
      * @var array
      */
     private $_httpCode = array(
+        100 => 'Continue',
+        101 => 'Switching Protocols',
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -1766,7 +1712,6 @@ class Kotori_Response
         204 => 'No Content',
         205 => 'Reset Content',
         206 => 'Partial Content',
-
         300 => 'Multiple Choices',
         301 => 'Moved Permanently',
         302 => 'Found',
@@ -1774,7 +1719,6 @@ class Kotori_Response
         304 => 'Not Modified',
         305 => 'Use Proxy',
         307 => 'Temporary Redirect',
-
         400 => 'Bad Request',
         401 => 'Unauthorized',
         403 => 'Forbidden',
@@ -1793,7 +1737,6 @@ class Kotori_Response
         416 => 'Requested Range Not Satisfiable',
         417 => 'Expectation Failed',
         422 => 'Unprocessable Entity',
-
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway',
@@ -1801,6 +1744,13 @@ class Kotori_Response
         504 => 'Gateway Timeout',
         505 => 'HTTP Version Not Supported',
     );
+
+    /**
+     * Default Charset
+     *
+     * @var string
+     */
+    private $_charset = null;
 
     /**
      * Disable Clone
@@ -1818,8 +1768,7 @@ class Kotori_Response
      */
     public static function getSoul()
     {
-        if (!(self::$_soul instanceof self))
-        {
+        if (!(self::$_soul instanceof self)) {
             self::$_soul = new self();
         }
         return self::$_soul;
@@ -1835,6 +1784,27 @@ class Kotori_Response
     public function __construct()
     {
         Kotori_Hook::listen('Kotori_Response');
+        $this->setCharset('UTF-8');
+    }
+
+    /**
+     * Get current charset
+     *
+     * @return string
+     */
+    public function getCharset()
+    {
+        return $this->_charset;
+    }
+
+    /**
+     * Set current charset
+     *
+     * @return void
+     */
+    public function setCharset($charset = null)
+    {
+        $this->_charset = empty($charset) ? 'UTF-8' : $charset;
     }
 
     /**
@@ -1846,31 +1816,23 @@ class Kotori_Response
      */
     public function setStatus($code = 200, $text = '')
     {
-        if (empty($code) or !is_numeric($code))
-        {
+        if (empty($code) or !is_numeric($code)) {
             Kotori_Handle::halt('Status codes must be numeric.', 500);
         }
 
-        if (empty($text))
-        {
+        if (empty($text)) {
             is_int($code) or $code = (int) $code;
 
-            if (isset($this->_httpCode[$code]))
-            {
+            if (isset($this->_httpCode[$code])) {
                 $text = $this->_httpCode[$code];
-            }
-            else
-            {
+            } else {
                 Kotori_Handle::halt('No status text available. Please check your status code number or supply your own message text.', 500);
             }
         }
 
-        if (strpos(PHP_SAPI, 'cgi') === 0)
-        {
+        if (strpos(PHP_SAPI, 'cgi') === 0) {
             header('Status: ' . $code . ' ' . $text, true);
-        }
-        else
-        {
+        } else {
             $server_protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
             header($server_protocol . ' ' . $code . ' ' . $text, true, $code);
         }
@@ -1891,6 +1853,19 @@ class Kotori_Response
     }
 
     /**
+     * Set Content-Type
+     *
+     * Let you set a Content-Type header
+     *
+     * @param string $contentType
+     * @return void
+     */
+    public function setContentType($contentType = 'text/html')
+    {
+        header('Content-Type: ' . $contentType . '; charset=' . $this->getCharset(), true);
+    }
+
+    /**
      * Thown JSON to output
      *
      * @access public
@@ -1899,8 +1874,11 @@ class Kotori_Response
      */
     public function throwJson($data)
     {
-        header('Content-Type:application/json; charset=utf-8');
-        exit(json_encode($data));
+        if (function_exists('json_encode')) {
+            $this->setContentType('application/json');
+            exit(json_encode($data));
+        }
+        exit('json_encode function needs PHP > 5.2');
     }
 
     /**
@@ -1912,13 +1890,10 @@ class Kotori_Response
      */
     public function redirect($location, $isPermanently = false)
     {
-        if ($isPermanently)
-        {
+        if ($isPermanently) {
             header('Location: ' . $location, false, 301);
             exit;
-        }
-        else
-        {
+        } else {
             header('Location: ' . $location, false, 302);
             exit;
         }
@@ -1977,8 +1952,7 @@ class Kotori_Trace
      */
     public static function getSoul()
     {
-        if (!(self::$_soul instanceof self))
-        {
+        if (!(self::$_soul instanceof self)) {
             self::$_soul = new self();
         }
         return self::$_soul;
@@ -2008,13 +1982,11 @@ class Kotori_Trace
         $server = $_SERVER;
         $cookie = $_COOKIE;
         $info = array();
-        foreach ($files as $key => $file)
-        {
+        foreach ($files as $key => $file) {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
         $hook = Kotori_Hook::getTags();
-        foreach ($hook as $key => $value)
-        {
+        foreach ($hook as $key => $value) {
             $hook[$key] = ' ( ' . $value . ' μs )';
         }
         $error = Kotori_Handle::$errors;
@@ -2038,10 +2010,8 @@ class Kotori_Trace
         );
 
         $trace = array();
-        foreach ($this->traceTabs as $name => $title)
-        {
-            switch (strtoupper($name))
-            {
+        foreach ($this->traceTabs as $name => $title) {
+            switch (strtoupper($name)) {
                 case 'BASE':
                     $trace[$title] = $base;
                     break;
@@ -2071,11 +2041,9 @@ class Kotori_Trace
                     break;
             }
         }
-        foreach ($trace as $key => $value)
-        {
+        foreach ($trace as $key => $value) {
             $value = array_filter($value);
-            if (empty($value))
-            {
+            if (empty($value)) {
                 unset($trace[$key]);
             }
         }
@@ -2089,8 +2057,7 @@ class Kotori_Trace
      */
     public function showTrace()
     {
-        if (Kotori_Config::getSoul()->APP_DEBUG == false)
-        {
+        if (Kotori_Config::getSoul()->APP_DEBUG == false) {
             return;
         }
         $trace = $this->getTrace();
@@ -2099,20 +2066,16 @@ class Kotori_Trace
 <div id="kotori_page_trace" style="position:fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
 <div id="kotori_page_trace_tab" style="display: none;background:white;margin:0;height:250px;">
 <div id="kotori_page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
-        foreach ($trace as $key => $value)
-        {
+        foreach ($trace as $key => $value) {
             $tpl .= '<span id="kotori_page_trace_tab_tit_' . strtolower($key) . '" style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
         }
         $tpl .= '</div>
 <div id="kotori_page_trace_tab_cont" style="overflow:auto;height:212px;padding:0;line-height:24px">';
-        foreach ($trace as $key => $info)
-        {
+        foreach ($trace as $key => $info) {
             $tpl .= '<div id="kotori_page_trace_tab_cont_' . strtolower($key) . '" style="display:none;">
     <ol style="padding: 0; margin:0">';
-            if (is_array($info))
-            {
-                foreach ($info as $k => $val)
-                {
+            if (is_array($info)) {
+                foreach ($info as $k => $val) {
                     $val = is_array($val) ? json_encode($val) : is_bool($val) ? json_encode($val) : $val;
                     $val = (in_array($key, array('Support'))) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
                     $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $val . '</li>';
@@ -2127,12 +2090,9 @@ class Kotori_Trace
 </div>
 <div id="kotori_page_trace_open" style="height:30px;float:right;text-align: right;overflow:hidden;position:fixed;bottom:0;right:0;color:#000;line-height:30px;cursor:pointer;"><div style="background:#232323;color:#FFF;padding:0 6px;float:right;line-height:30px;font-size:14px">';
         $errorCount = count(Kotori_Handle::$errors);
-        if ($errorCount == 0)
-        {
+        if ($errorCount == 0) {
             $tpl .= Kotori_Hook::listen('Kotori') . 'μs';
-        }
-        else
-        {
+        } else {
             $tpl .= $errorCount . ' errors';
         }
 
@@ -2281,8 +2241,7 @@ class Kotori_Hook
      */
     public static function listen($name)
     {
-        if (!isset(self::$tags[$name]))
-        {
+        if (!isset(self::$tags[$name])) {
             self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
         }
         return self::$tags[$name];
@@ -2317,15 +2276,12 @@ class Kotori_System extends Kotori_Controller
     {
         $hash['latest'] = md5_file($this->url);
         $hash['current'] = md5_file(__FILE__);
-        if ($hash['latest'] == $hash['current'])
-        {
+        if ($hash['latest'] == $hash['current']) {
             Kotori_Response::getSoul()->throwJson(array(
                 'status' => 'is_latest',
                 'text' => 'Local version is the latest.(:з」∠) _',
             ));
-        }
-        else
-        {
+        } else {
             Kotori_Response::getSoul()->throwJson(array(
                 'status' => 'not_latest',
                 'text' => 'Local version is not the latest, are you sure to update ?',
@@ -2353,9 +2309,7 @@ class Kotori_System extends Kotori_Controller
             curl_close($ch);
             fclose($fp);
             Kotori_Response::getSoul()->throwJson('success');
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             Kotori_Response::getSoul()->throwJson('fail');
         }
 
@@ -2407,13 +2361,10 @@ class Kotori_Database
 
     public static function getSoul()
     {
-        if (Kotori_Config::getSoul()->DB_TYPE == null)
-        {
+        if (Kotori_Config::getSoul()->DB_TYPE == null) {
             $config = array();
             return null;
-        }
-        else
-        {
+        } else {
             $config = array(
                 'database_type' => Kotori_Config::getSoul()->DB_TYPE,
                 'database_name' => Kotori_Config::getSoul()->DB_NAME,
@@ -2425,8 +2376,7 @@ class Kotori_Database
             );
         }
         $key = $config['server'] . ':' . $config['port'];
-        if (!isset(self::$_soul[$key]) || !(self::$_soul[$key] instanceof self))
-        {
+        if (!isset(self::$_soul[$key]) || !(self::$_soul[$key] instanceof self)) {
             self::$_soul[$key] = new self($config);
         }
         return self::$_soul[$key];
@@ -2438,46 +2388,36 @@ class Kotori_Database
             $commands = array();
             $dsn = '';
 
-            if (is_array($options))
-            {
-                foreach ($options as $option => $value)
-                {
+            if (is_array($options)) {
+                foreach ($options as $option => $value) {
                     $this->$option = $value;
                 }
-            }
-            else
-            {
+            } else {
                 return false;
             }
 
             if (
                 isset($this->port) &&
                 is_int($this->port * 1)
-            )
-            {
+            ) {
                 $port = $this->port;
             }
 
             $type = strtolower($this->database_type);
             $is_port = isset($port);
 
-            if (isset($options['prefix']))
-            {
+            if (isset($options['prefix'])) {
                 $this->prefix = $options['prefix'];
             }
 
-            switch ($type)
-            {
+            switch ($type) {
                 case 'mariadb':
                     $type = 'mysql';
 
                 case 'mysql':
-                    if ($this->socket)
-                    {
+                    if ($this->socket) {
                         $dsn = $type . ':unix_socket=' . $this->socket . ';dbname=' . $this->database_name;
-                    }
-                    else
-                    {
+                    } else {
                         $dsn = $type . ':host=' . $this->server . ($is_port ? ';port=' . $port : '') . ';dbname=' . $this->database_name;
                     }
 
@@ -2520,8 +2460,7 @@ class Kotori_Database
             if (
                 in_array($type, explode(' ', 'mariadb mysql pgsql sybase mssql')) &&
                 $this->charset
-            )
-            {
+            ) {
                 $commands[] = "SET NAMES '" . $this->charset . "'";
             }
 
@@ -2532,13 +2471,10 @@ class Kotori_Database
                 $this->option
             );
 
-            foreach ($commands as $value)
-            {
+            foreach ($commands as $value) {
                 $this->pdo->exec($value);
             }
-        }
-        catch (PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new Kotori_Exception($e->getMessage());
         }
         Kotori_Hook::listen('Kotori_Database');
@@ -2546,8 +2482,7 @@ class Kotori_Database
 
     public function query($query)
     {
-        if ($this->debug_mode)
-        {
+        if ($this->debug_mode) {
             echo $query;
 
             $this->debug_mode = false;
@@ -2564,8 +2499,7 @@ class Kotori_Database
 
     public function exec($query)
     {
-        if ($this->debug_mode)
-        {
+        if ($this->debug_mode) {
             echo $query;
 
             $this->debug_mode = false;
@@ -2592,28 +2526,22 @@ class Kotori_Database
 
     protected function column_push($columns)
     {
-        if ($columns == '*')
-        {
+        if ($columns == '*') {
             return $columns;
         }
 
-        if (is_string($columns))
-        {
+        if (is_string($columns)) {
             $columns = array($columns);
         }
 
         $stack = array();
 
-        foreach ($columns as $key => $value)
-        {
+        foreach ($columns as $key => $value) {
             preg_match('/([a-zA-Z0-9_\-\.]*)\s*\(([a-zA-Z0-9_\-]*)\)/i', $value, $match);
 
-            if (isset($match[1], $match[2]))
-            {
+            if (isset($match[1], $match[2])) {
                 array_push($stack, $this->column_quote($match[1]) . ' AS ' . $this->column_quote($match[2]));
-            }
-            else
-            {
+            } else {
                 array_push($stack, $this->column_quote($value));
             }
         }
@@ -2625,8 +2553,7 @@ class Kotori_Database
     {
         $temp = array();
 
-        foreach ($array as $value)
-        {
+        foreach ($array as $value) {
             $temp[] = is_int($value) ? $value : $this->pdo->quote($value);
         }
 
@@ -2637,8 +2564,7 @@ class Kotori_Database
     {
         $haystack = array();
 
-        foreach ($data as $value)
-        {
+        foreach ($data as $value) {
             $haystack[] = '(' . $this->data_implode($value, $conjunctor) . ')';
         }
 
@@ -2658,32 +2584,25 @@ class Kotori_Database
     {
         $wheres = array();
 
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             $type = gettype($value);
 
             if (
                 preg_match("/^(AND|OR)(\s+#.*)?$/i", $key, $relation_match) &&
                 $type == 'array'
-            )
-            {
+            ) {
                 $wheres[] = 0 !== count(array_diff_key($value, array_keys(array_keys($value)))) ?
                 '(' . $this->data_implode($value, ' ' . $relation_match[1]) . ')' :
                 '(' . $this->inner_conjunct($value, ' ' . $relation_match[1], $conjunctor) . ')';
-            }
-            else
-            {
+            } else {
                 preg_match('/(#?)([\w\.\-]+)(\[(\>|\>\=|\<|\<\=|\!|\<\>|\>\<|\!?~)\])?/i', $key, $match);
                 $column = $this->column_quote($match[2]);
 
-                if (isset($match[4]))
-                {
+                if (isset($match[4])) {
                     $operator = $match[4];
 
-                    if ($operator == '!')
-                    {
-                        switch ($type)
-                        {
+                    if ($operator == '!') {
+                        switch ($type) {
                             case 'NULL':
                                 $wheres[] = $column . ' IS NOT NULL';
                                 break;
@@ -2707,50 +2626,36 @@ class Kotori_Database
                         }
                     }
 
-                    if ($operator == '<>' || $operator == '><')
-                    {
-                        if ($type == 'array')
-                        {
-                            if ($operator == '><')
-                            {
+                    if ($operator == '<>' || $operator == '><') {
+                        if ($type == 'array') {
+                            if ($operator == '><') {
                                 $column .= ' NOT';
                             }
 
-                            if (is_numeric($value[0]) && is_numeric($value[1]))
-                            {
+                            if (is_numeric($value[0]) && is_numeric($value[1])) {
                                 $wheres[] = '(' . $column . ' BETWEEN ' . $value[0] . ' AND ' . $value[1] . ')';
-                            }
-                            else
-                            {
+                            } else {
                                 $wheres[] = '(' . $column . ' BETWEEN ' . $this->quote($value[0]) . ' AND ' . $this->quote($value[1]) . ')';
                             }
                         }
                     }
 
-                    if ($operator == '~' || $operator == '!~')
-                    {
-                        if ($type != 'array')
-                        {
+                    if ($operator == '~' || $operator == '!~') {
+                        if ($type != 'array') {
                             $value = array($value);
                         }
 
                         $like_clauses = array();
 
-                        foreach ($value as $item)
-                        {
+                        foreach ($value as $item) {
                             $item = strval($item);
                             $suffix = mb_substr($item, -1, 1);
 
-                            if ($suffix === '_')
-                            {
+                            if ($suffix === '_') {
                                 $item = substr_replace($item, '%', -1);
-                            }
-                            elseif ($suffix === '%')
-                            {
+                            } elseif ($suffix === '%') {
                                 $item = '%' . substr_replace($item, '', -1, 1);
-                            }
-                            elseif (preg_match('/^(?!%).+(?<!%)$/', $item))
-                            {
+                            } elseif (preg_match('/^(?!%).+(?<!%)$/', $item)) {
                                 $item = '%' . $item . '%';
                             }
 
@@ -2760,26 +2665,17 @@ class Kotori_Database
                         $wheres[] = implode(' OR ', $like_clauses);
                     }
 
-                    if (in_array($operator, array('>', '>=', '<', '<=')))
-                    {
-                        if (is_numeric($value))
-                        {
+                    if (in_array($operator, array('>', '>=', '<', '<='))) {
+                        if (is_numeric($value)) {
                             $wheres[] = $column . ' ' . $operator . ' ' . $value;
-                        }
-                        elseif (strpos($key, '#') === 0)
-                        {
+                        } elseif (strpos($key, '#') === 0) {
                             $wheres[] = $column . ' ' . $operator . ' ' . $this->fn_quote($key, $value);
-                        }
-                        else
-                        {
+                        } else {
                             $wheres[] = $column . ' ' . $operator . ' ' . $this->quote($value);
                         }
                     }
-                }
-                else
-                {
-                    switch ($type)
-                    {
+                } else {
+                    switch ($type) {
                         case 'NULL':
                             $wheres[] = $column . ' IS NULL';
                             break;
@@ -2812,8 +2708,7 @@ class Kotori_Database
     {
         $where_clause = '';
 
-        if (is_array($where))
-        {
+        if (is_array($where)) {
             $where_keys = array_keys($where);
             $where_AND = preg_grep("/^AND\s*#?$/i", $where_keys);
             $where_OR = preg_grep("/^OR\s*#?$/i", $where_keys);
@@ -2822,68 +2717,54 @@ class Kotori_Database
                 explode(' ', 'AND OR GROUP ORDER HAVING LIMIT LIKE MATCH')
             ));
 
-            if ($single_condition != array())
-            {
+            if ($single_condition != array()) {
                 $condition = $this->data_implode($single_condition, '');
 
-                if ($condition != '')
-                {
+                if ($condition != '') {
                     $where_clause = ' WHERE ' . $condition;
                 }
             }
 
-            if (!empty($where_AND))
-            {
+            if (!empty($where_AND)) {
                 $value = array_values($where_AND);
                 $where_clause = ' WHERE ' . $this->data_implode($where[$value[0]], ' AND');
             }
 
-            if (!empty($where_OR))
-            {
+            if (!empty($where_OR)) {
                 $value = array_values($where_OR);
                 $where_clause = ' WHERE ' . $this->data_implode($where[$value[0]], ' OR');
             }
 
-            if (isset($where['MATCH']))
-            {
+            if (isset($where['MATCH'])) {
                 $MATCH = $where['MATCH'];
 
-                if (is_array($MATCH) && isset($MATCH['columns'], $MATCH['keyword']))
-                {
+                if (is_array($MATCH) && isset($MATCH['columns'], $MATCH['keyword'])) {
                     $where_clause .= ($where_clause != '' ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($MATCH['columns'], '", "')) . '") AGAINST (' . $this->quote($MATCH['keyword']) . ')';
                 }
             }
 
-            if (isset($where['GROUP']))
-            {
+            if (isset($where['GROUP'])) {
                 $where_clause .= ' GROUP BY ' . $this->column_quote($where['GROUP']);
 
-                if (isset($where['HAVING']))
-                {
+                if (isset($where['HAVING'])) {
                     $where_clause .= ' HAVING ' . $this->data_implode($where['HAVING'], ' AND');
                 }
             }
 
-            if (isset($where['ORDER']))
-            {
+            if (isset($where['ORDER'])) {
                 $rsort = '/(^[a-zA-Z0-9_\-\.]*)(\s*(DESC|ASC))?/';
                 $ORDER = $where['ORDER'];
 
-                if (is_array($ORDER))
-                {
+                if (is_array($ORDER)) {
                     if (
                         isset($ORDER[1]) &&
                         is_array($ORDER[1])
-                    )
-                    {
+                    ) {
                         $where_clause .= ' ORDER BY FIELD(' . $this->column_quote($ORDER[0]) . ', ' . $this->array_quote($ORDER[1]) . ')';
-                    }
-                    else
-                    {
+                    } else {
                         $stack = array();
 
-                        foreach ($ORDER as $column)
-                        {
+                        foreach ($ORDER as $column) {
                             preg_match($rsort, $column, $order_match);
 
                             array_push($stack, '"' . str_replace('.', '"."', $order_match[1]) . '"' . (isset($order_match[3]) ? ' ' . $order_match[3] : ''));
@@ -2891,21 +2772,17 @@ class Kotori_Database
 
                         $where_clause .= ' ORDER BY ' . implode($stack, ',');
                     }
-                }
-                else
-                {
+                } else {
                     preg_match($rsort, $ORDER, $order_match);
 
                     $where_clause .= ' ORDER BY "' . str_replace('.', '"."', $order_match[1]) . '"' . (isset($order_match[3]) ? ' ' . $order_match[3] : '');
                 }
             }
 
-            if (isset($where['LIMIT']))
-            {
+            if (isset($where['LIMIT'])) {
                 $LIMIT = $where['LIMIT'];
 
-                if (is_numeric($LIMIT))
-                {
+                if (is_numeric($LIMIT)) {
                     $where_clause .= ' LIMIT ' . $LIMIT;
                 }
 
@@ -2913,23 +2790,16 @@ class Kotori_Database
                     is_array($LIMIT) &&
                     is_numeric($LIMIT[0]) &&
                     is_numeric($LIMIT[1])
-                )
-                {
-                    if ($this->database_type === 'pgsql')
-                    {
+                ) {
+                    if ($this->database_type === 'pgsql') {
                         $where_clause .= ' OFFSET ' . $LIMIT[0] . ' LIMIT ' . $LIMIT[1];
-                    }
-                    else
-                    {
+                    } else {
                         $where_clause .= ' LIMIT ' . $LIMIT[0] . ',' . $LIMIT[1];
                     }
                 }
             }
-        }
-        else
-        {
-            if ($where != null)
-            {
+        } else {
+            if ($where != null) {
                 $where_clause .= ' ' . $where;
             }
         }
@@ -2945,8 +2815,7 @@ class Kotori_Database
         if (
             isset($join_key[0]) &&
             strpos($join_key[0], '[') === 0
-        )
-        {
+        ) {
             $table_join = array();
 
             $join_array = array(
@@ -2956,30 +2825,22 @@ class Kotori_Database
                 '><' => 'INNER',
             );
 
-            foreach ($join as $sub_table => $relation)
-            {
+            foreach ($join as $sub_table => $relation) {
                 preg_match('/(\[(\<|\>|\>\<|\<\>)\])?([a-zA-Z0-9_\-]*)\s?(\(([a-zA-Z0-9_\-]*)\))?/', $sub_table, $match);
 
-                if ($match[2] != '' && $match[3] != '')
-                {
-                    if (is_string($relation))
-                    {
+                if ($match[2] != '' && $match[3] != '') {
+                    if (is_string($relation)) {
                         $relation = 'USING ("' . $relation . '")';
                     }
 
-                    if (is_array($relation))
-                    {
+                    if (is_array($relation)) {
                         // For ['column1', 'column2']
-                        if (isset($relation[0]))
-                        {
+                        if (isset($relation[0])) {
                             $relation = 'USING ("' . implode($relation, '", "') . '")';
-                        }
-                        else
-                        {
+                        } else {
                             $joins = array();
 
-                            foreach ($relation as $key => $value)
-                            {
+                            foreach ($relation as $key => $value) {
                                 $joins[] = $this->prefix . (
                                     strpos($key, '.') > 0 ?
                                     // For ['tableB.column' => 'column']
@@ -3001,64 +2862,45 @@ class Kotori_Database
             }
 
             $table .= ' ' . implode($table_join, ' ');
-        }
-        else
-        {
-            if (is_null($columns))
-            {
-                if (is_null($where))
-                {
+        } else {
+            if (is_null($columns)) {
+                if (is_null($where)) {
                     if (
                         is_array($join) &&
                         isset($column_fn)
-                    )
-                    {
+                    ) {
                         $where = $join;
                         $columns = null;
-                    }
-                    else
-                    {
+                    } else {
                         $where = null;
                         $columns = $join;
                     }
-                }
-                else
-                {
+                } else {
                     $where = $join;
                     $columns = null;
                 }
-            }
-            else
-            {
+            } else {
                 $where = $columns;
                 $columns = $join;
             }
         }
 
-        if (isset($column_fn))
-        {
-            if ($column_fn == 1)
-            {
+        if (isset($column_fn)) {
+            if ($column_fn == 1) {
                 $column = '1';
 
-                if (is_null($where))
-                {
+                if (is_null($where)) {
                     $where = $columns;
                 }
-            }
-            else
-            {
-                if (empty($columns))
-                {
+            } else {
+                if (empty($columns)) {
                     $columns = '*';
                     $where = $join;
                 }
 
                 $column = $column_fn . '(' . $this->column_push($columns) . ')';
             }
-        }
-        else
-        {
+        } else {
             $column = $this->column_push($columns);
         }
 
@@ -3079,22 +2921,18 @@ class Kotori_Database
         $lastId = array();
 
         // Check indexed or associative array
-        if (!isset($datas[0]))
-        {
+        if (!isset($datas[0])) {
             $datas = array($datas);
         }
 
-        foreach ($datas as $data)
-        {
+        foreach ($datas as $data) {
             $values = array();
             $columns = array();
 
-            foreach ($data as $key => $value)
-            {
+            foreach ($data as $key => $value) {
                 array_push($columns, $this->column_quote($key));
 
-                switch (gettype($value))
-                {
+                switch (gettype($value)) {
                     case 'NULL':
                         $values[] = 'NULL';
                         break;
@@ -3131,23 +2969,17 @@ class Kotori_Database
     {
         $fields = array();
 
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             preg_match('/([\w]+)(\[(\+|\-|\*|\/)\])?/i', $key, $match);
 
-            if (isset($match[3]))
-            {
-                if (is_numeric($value))
-                {
+            if (isset($match[3])) {
+                if (is_numeric($value)) {
                     $fields[] = $this->column_quote($match[1]) . ' = ' . $this->column_quote($match[1]) . ' ' . $match[3] . ' ' . $value;
                 }
-            }
-            else
-            {
+            } else {
                 $column = $this->column_quote($key);
 
-                switch (gettype($value))
-                {
+                switch (gettype($value)) {
                     case 'NULL':
                         $fields[] = $column . ' = NULL';
                         break;
@@ -3183,37 +3015,28 @@ class Kotori_Database
 
     public function replace($table, $columns, $search = null, $replace = null, $where = null)
     {
-        if (is_array($columns))
-        {
+        if (is_array($columns)) {
             $replace_query = array();
 
-            foreach ($columns as $column => $replacements)
-            {
-                foreach ($replacements as $replace_search => $replace_replacement)
-                {
+            foreach ($columns as $column => $replacements) {
+                foreach ($replacements as $replace_search => $replace_replacement) {
                     $replace_query[] = $column . ' = REPLACE(' . $this->column_quote($column) . ', ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
                 }
             }
 
             $replace_query = implode(', ', $replace_query);
             $where = $search;
-        }
-        else
-        {
-            if (is_array($search))
-            {
+        } else {
+            if (is_array($search)) {
                 $replace_query = array();
 
-                foreach ($search as $replace_search => $replace_replacement)
-                {
+                foreach ($search as $replace_search => $replace_replacement) {
                     $replace_query[] = $columns . ' = REPLACE(' . $this->column_quote($columns) . ', ' . $this->quote($replace_search) . ', ' . $this->quote($replace_replacement) . ')';
                 }
 
                 $replace_query = implode(', ', $replace_query);
                 $where = $replace;
-            }
-            else
-            {
+            } else {
                 $replace_query = $columns . ' = REPLACE(' . $this->column_quote($columns) . ', ' . $this->quote($search) . ', ' . $this->quote($replace) . ')';
             }
         }
@@ -3225,28 +3048,21 @@ class Kotori_Database
     {
         $query = $this->query($this->select_context($table, $join, $column, $where) . ' LIMIT 1');
 
-        if ($query)
-        {
+        if ($query) {
             $data = $query->fetchAll(PDO::FETCH_ASSOC);
 
-            if (isset($data[0]))
-            {
+            if (isset($data[0])) {
                 $column = $where == null ? $join : $column;
 
-                if (is_string($column) && $column != '*')
-                {
+                if (is_string($column) && $column != '*') {
                     return $data[0][$column];
                 }
 
                 return $data[0];
-            }
-            else
-            {
+            } else {
                 return false;
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -3257,12 +3073,9 @@ class Kotori_Database
 
         $query = $this->query('SELECT EXISTS(' . $this->select_context($table, $join, $column, $where, 1) . ')');
 
-        if ($query)
-        {
+        if ($query) {
             return $query->fetchColumn() === '1';
-        }
-        else
-        {
+        } else {
             require false;
         }
     }
@@ -3278,14 +3091,11 @@ class Kotori_Database
     {
         $query = $this->query($this->select_context($table, $join, $column, $where, 'MAX'));
 
-        if ($query)
-        {
+        if ($query) {
             $max = $query->fetchColumn();
 
             return is_numeric($max) ? $max + 0 : $max;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -3294,14 +3104,11 @@ class Kotori_Database
     {
         $query = $this->query($this->select_context($table, $join, $column, $where, 'MIN'));
 
-        if ($query)
-        {
+        if ($query) {
             $min = $query->fetchColumn();
 
             return is_numeric($min) ? $min + 0 : $min;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -3322,23 +3129,17 @@ class Kotori_Database
 
     public function action($actions)
     {
-        if (is_callable($actions))
-        {
+        if (is_callable($actions)) {
             $this->pdo->beginTransaction();
 
             $result = $actions($this);
 
-            if ($result === false)
-            {
+            if ($result === false) {
                 $this->pdo->rollBack();
-            }
-            else
-            {
+            } else {
                 $this->pdo->commit();
             }
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -3375,8 +3176,7 @@ class Kotori_Database
             'connection' => 'CONNECTION_STATUS',
         );
 
-        foreach ($output as $key => $value)
-        {
+        foreach ($output as $key => $value) {
             $output[$key] = $this->pdo->getAttribute(constant('PDO::ATTR_' . $value));
         }
 
@@ -3401,23 +3201,18 @@ class Kotori_Log
      */
     private static function write($msg, $level = '')
     {
-        if (Kotori_Config::getSoul()->APP_DEBUG == false)
-        {
+        if (Kotori_Config::getSoul()->APP_DEBUG == false) {
             return;
         }
-        if (function_exists('saeAutoLoader'))
-        {
+        if (function_exists('saeAutoLoader')) {
             $msg = "[{$level}]" . $msg;
             sae_set_display_errors(false);
             sae_debug(trim($msg));
             sae_set_display_errors(true);
-        }
-        else
-        {
+        } else {
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
             $logPath = Kotori_Config::getSoul()->APP_FULL_PATH . '/logs';
-            if (!file_exists($logPath))
-            {
+            if (!file_exists($logPath)) {
                 mkdir($logPath, 0755, true);
             }
             file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
