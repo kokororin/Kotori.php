@@ -48,4 +48,9 @@ class Index extends Kotori_Controller
         $_SESSION['verify'] = md5($vc->getCode());
     }
 
+    public function cli($to = 'World')
+    {
+        echo "Hello {$to}!" . PHP_EOL;
+    }
+
 }
