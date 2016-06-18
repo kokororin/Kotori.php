@@ -42,11 +42,8 @@ class Kotori
      */
     public function __construct()
     {
-        if (version_compare(PHP_VERSION, '5.2.0', '<')) {
-            exit('Kotori.php requires PHP > 5.2.0 !');
-        }
+        version_compare(PHP_VERSION, '5.2.0', '<') && exit('Kotori.php requires PHP >= 5.2.0 !');
         ini_set('display_errors', 'off');
-        ini_set('date.timezone', 'Asia/Shanghai');
         define('START_TIME', microtime(true));
         define('START_MEMORY', memory_get_usage());
     }
@@ -65,7 +62,9 @@ class Kotori
         set_exception_handler(array('Kotori_Handle', 'exception'));
         register_shutdown_function(array('Kotori_Handle', 'end'));
 
-        session_start();
+        ini_set('date.timezone', Kotori_Soul::getSoul('Config')->TIME_ZONE);
+
+        !session_id() && session_start();
 
         //Load application's common functions
         Kotori_Common::import(Kotori_Soul::getSoul('Config')->APP_FULL_PATH . '/common.php');
@@ -107,7 +106,7 @@ class Kotori_Common
      * Require Array
      * @var array
      */
-    private static $_require = array();
+    protected static $_require = array();
 
     /**
      * Include One File
@@ -289,7 +288,7 @@ class Kotori_Soul
      *
      * @var array
      */
-    private static $_soul = array();
+    protected static $_soul = array();
 
     /**
      * get singleton
@@ -310,10 +309,10 @@ class Kotori_Soul
 
     /**
      * get database singleton
-     * 
+     *
      * @return object
      */
-    private static function getDatabaseSoul()
+    protected static function getDatabaseSoul()
     {
         if (Kotori_Soul::getSoul('Config')->DB_TYPE == null) {
             $config = array();
@@ -355,19 +354,20 @@ class Kotori_Config
      *
      * @var array
      */
-    private $_config = array();
+    protected $_config = array();
 
     /**
      * Default Config Array
      *
      * @var array
      */
-    private $_defaults = array(
+    protected $_defaults = array(
         'APP_DEBUG' => true,
         'APP_PATH' => './app/',
         'DB_PORT' => 3306,
         'DB_CHARSET' => 'utf8',
         'URL_MODE' => 'QUERY_STRING',
+        'TIME_ZONE' => 'Asia/Shanghai',
     );
 
     /**
@@ -772,42 +772,42 @@ class Kotori_Route
      *
      * @var array
      */
-    private $_controllers = array();
+    protected $_controllers = array();
 
     /**
      * Current controller
      *
      * @var string
      */
-    private $_controller;
+    protected $_controller;
 
     /**
      * Current action
      *
      * @var string
      */
-    private $_action;
+    protected $_action;
 
     /**
      * Current URI string
      *
      * @var string
      */
-    private $_uri = '';
+    protected $_uri = '';
 
     /**
      * Parsed URI Array
      *
      * @var array
      */
-    private $_uris = array();
+    protected $_uris = array();
 
     /**
      * Parsed params
      *
      * @var array
      */
-    private $_params = array();
+    protected $_params = array();
 
     /**
      * Disable Clone
@@ -828,14 +828,18 @@ class Kotori_Route
      */
     public function __construct()
     {
-        if (isset($_GET['_i'])) {
-            $_SERVER['PATH_INFO'] = $_GET['_i'];
-        }
-        $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
-        : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
-            : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
+        if ($this->isCli()) {
+            $this->_uri = $this->parseArgv();
+        } else {
+            if (isset($_GET['_i'])) {
+                $_SERVER['PATH_INFO'] = $_GET['_i'];
+            }
+            $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
+            : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
+                : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
 
-        $this->_uri = $_SERVER['PATH_INFO'];
+            $this->_uri = $_SERVER['PATH_INFO'];
+        }
 
         if (trim($this->_uri, '/') == '') {
             $this->_uri = '';
@@ -921,7 +925,7 @@ class Kotori_Route
      *
      * @return string
      */
-    private function getController()
+    protected function getController()
     {
         if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
             $_controller = $this->_uris[0];
@@ -936,7 +940,7 @@ class Kotori_Route
      *
      * @return string
      */
-    private function getAction()
+    protected function getAction()
     {
         if (isset($this->_uris[1])) {
             $_action = $this->_uris[1];
@@ -951,7 +955,7 @@ class Kotori_Route
      *
      * @return array
      */
-    private function getParams()
+    protected function getParams()
     {
         $params = $this->_uris;
         unset($params[0], $params[1]);
@@ -968,7 +972,7 @@ class Kotori_Route
      *
      * @return string
      */
-    private function parseRoutes($uri)
+    protected function parseRoutes($uri)
     {
         $routes = Kotori_Soul::getSoul('Config')->URL_ROUTE;
 
@@ -1011,6 +1015,19 @@ class Kotori_Route
     }
 
     /**
+     * Parse CLI arguments
+     *
+     * Take each command line argument and assume it is a URI segment.
+     *
+     * @return  string
+     */
+    protected function parseArgv()
+    {
+        $args = array_slice($_SERVER['argv'], 1);
+        return $args ? implode('/', $args) : '';
+    }
+
+    /**
      * Build Full URL
      *
      * @param string $uri URI
@@ -1035,6 +1052,18 @@ class Kotori_Route
                 break;
         }
 
+    }
+
+    /**
+     * Is CLI?
+     *
+     * Test to see if a request was made from the command line.
+     *
+     * @return  boolean
+     */
+    public function isCli()
+    {
+        return PHP_SAPI === 'cli';
     }
 
 }
@@ -1122,7 +1151,7 @@ class Kotori_Model_Provider
      *
      * @var array
      */
-    private $_models = array();
+    protected $_models = array();
 
     /**
      * Disable Clone
@@ -1187,7 +1216,7 @@ class Kotori_View
      *
      * @var string
      */
-    private $_tplDir;
+    protected $_tplDir;
 
     /**
      *
@@ -1195,21 +1224,21 @@ class Kotori_View
      *
      * @var string
      */
-    private $_viewPath;
+    protected $_viewPath;
 
     /**
      * Variable List
      *
      * @var array
      */
-    private $_data = array();
+    protected $_data = array();
 
     /**
      * Variable List for TplInclude
      *
      * @var array
      */
-    private $_needData;
+    protected $_needData;
 
     /**
      * __get magic
@@ -1316,14 +1345,14 @@ class Kotori_Request
      *
      * @var string
      */
-    private $_put = null;
+    protected $_put = null;
 
     /**
      * Ip address
      *
      * @var array
      */
-    private $_ip = null;
+    protected $_ip = null;
 
     /**
      * Disable Clone
@@ -1496,7 +1525,7 @@ class Kotori_Request
      * @param $data mixed Orginal data
      * @return mixed
      */
-    private function array_map_recursive($filter, $data)
+    protected function array_map_recursive($filter, $data)
     {
         $result = array();
         foreach ($data as $key => $val) {
@@ -1661,7 +1690,7 @@ class Kotori_Response
      *
      * @var array
      */
-    private $_httpCode = array(
+    protected $_httpCode = array(
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -1709,7 +1738,7 @@ class Kotori_Response
      *
      * @var string
      */
-    private $_charset = null;
+    protected $_charset = null;
 
     /**
      * Disable Clone
@@ -1863,7 +1892,7 @@ class Kotori_Trace
      *
      * @var array
      */
-    private $traceTabs = array(
+    protected $traceTabs = array(
         'BASE' => 'Basic',
         'CONFIG' => 'Config',
         'SERVER' => 'Server',
@@ -1902,7 +1931,7 @@ class Kotori_Trace
      *
      * @return array
      */
-    private function getTrace()
+    protected function getTrace()
     {
         $files = get_included_files();
         $config = Kotori_Soul::getSoul('Config')->getArray();
@@ -2150,7 +2179,7 @@ class Kotori_Hook
      *
      * @var array
      */
-    private static $tags = array();
+    protected static $tags = array();
 
 /**
  * get the tags
@@ -3104,7 +3133,7 @@ class Kotori_Log
      * @param string $level Log level
      * @return void
      */
-    private static function write($msg, $level = '')
+    protected static function write($msg, $level = '')
     {
         if (Kotori_Soul::getSoul('Config')->APP_DEBUG == false) {
             return;
