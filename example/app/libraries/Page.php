@@ -8,6 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
+
+use Kotori\Http\Route;
+
 class Page
 {
     public $firstRow; // 起始行数
@@ -86,7 +89,7 @@ class Page
 
         /* 生成URL */
         $this->parameter[$this->p] = '[PAGE]';
-        $this->url                 = Kotori_Route::getInstance()->url(URI . '?' . http_build_query($this->parameter));
+        $this->url                 = Route::getInstance()->url(URI . '?' . http_build_query($this->parameter));
         /* 计算分页信息 */
         $this->totalPages = ceil($this->totalRows / $this->listRows); //总页数
         if (!empty($this->totalPages) && $this->nowPage > $this->totalPages)
