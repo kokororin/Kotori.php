@@ -1,7 +1,7 @@
 <?php
-require './Kotori.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-$app = new Kotori();
+$app = new Kotori\App();
 
 $config['APP_PATH'] = './app/';
 $config['DB_HOST'] = '127.0.0.1';

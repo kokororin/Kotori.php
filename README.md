@@ -8,26 +8,17 @@ Kotori.php is a Tiny Model-View-Controller(MVC) PHP Framework.
 
 ## Installation
 
-It's recommended that you use [Composer](https://getcomposer.org/) to install Kotori.php.
+You need [Composer](https://getcomposer.org/) to install Kotori.php.
 
 ```bash
 $ composer require kokororin/kotori-php
-```
-
-Or via git.
-
-```bash
-$ git clone https://github.com/kokororin/Kotori.php
 ```
 
 ## Usage
 
 ```php
 <?php
-# via Composer
 require 'vendor/autoload.php';
-# via git
-# require './Kotori.php';
 
 $app = new Kotori();
 

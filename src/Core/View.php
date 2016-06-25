@@ -1,0 +1,156 @@
+<?php
+/**
+ * Kotori.php
+ *
+ * A Tiny Model-View-Controller PHP Framework
+ *
+ * This content is released under the Apache 2 License
+ *
+ * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * View Class
+ *
+ * @package     Kotori
+ * @subpackage  View
+ * @author      Kokororin
+ * @link        https://kotori.love
+ */
+namespace Kotori\Core;
+
+use Kotori\Debug\Hook;
+use Kotori\Debug\Trace;
+
+class View
+{
+    /**
+     * Template Direcory
+     *
+     * @var string
+     */
+    protected $_tplDir;
+
+    /**
+     *
+     * Template Path
+     *
+     * @var string
+     */
+    protected $_viewPath;
+
+    /**
+     * Variable List
+     *
+     * @var array
+     */
+    protected $_data = array();
+
+    /**
+     * Variable List for TplInclude
+     *
+     * @var array
+     */
+    protected $_needData;
+
+    /**
+     * __get magic
+     *
+     * Allows view to access loaded classes using the same
+     * syntax as controllers.
+     *
+     * @param string $key
+     */
+    public function __get($key)
+    {
+        return Controller::getSoul()->$key;
+    }
+
+    /**
+     * @param string $tplDir Template Directory
+     */
+    public function __construct($tplDir = '')
+    {
+        if ('' == $tplDir) {
+            $this->_tplDir = Config::getSoul()->APP_FULL_PATH . '/views/';
+        } else {
+            $this->_tplDir = $tplDir;
+        }
+        Hook::listen('View');
+    }
+
+    /**
+     * Set variables for Template
+     *
+     * @param string $name key
+     * @param mixed $value value
+     * @return View
+     */
+    public function assign($key, $value)
+    {
+        $this->_data[$key] = $value;
+        return $this;
+    }
+
+    /**
+     * Display Output
+     *
+     * Processes and sends finalized output data to the browser along
+     *
+     * @param string $tpl Template Path
+     * @return void
+     */
+    public function display($tpl = '')
+    {
+        if ('' === $tpl) {
+            $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
+        }
+        $this->_viewPath = $this->_tplDir . $tpl . '.html';
+        if (!Common::isFile($this->_viewPath)) {
+            Handle::halt('Template is not existed.');
+        }
+        unset($tpl);
+        ob_start();
+        extract($this->_data, EXTR_OVERWRITE);
+        include $this->_viewPath;
+        $buffer = ob_get_contents();
+        ob_get_clean();
+        $output = Common::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Trace::getSoul()->showTrace();
+        if ($count > 0) {
+            $output .= '</body></html>';
+        }
+        echo $output;
+    }
+
+    /**
+     * Include Template
+     *
+     * @param string $path Template Path
+     * @param array $data Data Array
+     * @return void
+     */
+    public function need($path, $data = array())
+    {
+        $this->_needData = array(
+            'path' => Config::getSoul()->APP_FULL_PATH . '/views/' . $path . '.html',
+            'data' => $data,
+        );
+        unset($path);
+        unset($data);
+        extract($this->_needData['data']);
+        include $this->_needData['path'];
+    }
+
+}

@@ -1,5 +1,7 @@
 <?php
-class Index extends Kotori_Controller
+use Kotori\Core\Controller;
+
+class Index extends Controller
 {
     public function __construct()
     {
