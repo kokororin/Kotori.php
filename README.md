@@ -20,7 +20,7 @@ $ composer require kokororin/kotori-php
 <?php
 require 'vendor/autoload.php';
 
-$app = new Kotori();
+$app = new \Kotori\App();
 
 $config['APP_PATH'] = './app/';
 
@@ -45,7 +45,6 @@ Learn more at these links:
 
 - [Website](https://kotori.love/archives/kotori-php-framework.html)
 - [Documentation](https://github.com/kokororin/Kotori.php/wiki)
-- [Update API](https://api.kotori.love/framework/latest.php)
 
 ## Thanks
 

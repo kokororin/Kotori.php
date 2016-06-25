@@ -48,8 +48,8 @@ class App
      */
     public function __construct()
     {
-        version_compare(PHP_VERSION, '5.2.0', '<') && exit('Kotori.php requires PHP >= 5.2.0 !');
-        ini_set('display_errors', 'on');
+        version_compare(PHP_VERSION, '5.3.0', '<') && exit('Kotori.php requires PHP >= 5.3.0 !');
+        ini_set('display_errors', 'off');
         define('START_TIME', microtime(true));
         define('START_MEMORY', memory_get_usage());
     }
