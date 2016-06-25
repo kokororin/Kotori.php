@@ -1,6 +1,6 @@
 # Kotori.php Unit Tests
 
-Follow the directions below to run the Kotori.php unit tests. You'll need the latest version of PHPUnit. To save development time, these unit tests require PHP >= 5.3. However, the Kotori.php itself requires only PHP >= 5.2.
+Follow the directions below to run the Kotori.php unit tests. You'll need the latest version of PHPUnit. To save development time, these unit tests require PHP >= 5.3.
 
 1. Install the latest version of PHPUnit
 Visit http://www.phpunit.de/ for installation instructions.

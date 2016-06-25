@@ -32,7 +32,7 @@ $app->run();
 To execute the test suite, you'll need phpunit.
 
 ```bash
-$ phpunit --configuration phpunit.xml
+$ phpunit
 ```
 
 ## LICENSE

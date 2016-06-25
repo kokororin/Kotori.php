@@ -8,8 +8,6 @@ if (version_compare(PHP_VERSION, '5.3.0', '<')) {
 ini_set('display_errors', 1);
 error_reporting(E_ALL | E_STRICT);
 
-$autoloader = require dirname(__DIR__) . '/Kotori.php';
+$autoloader = require dirname(__DIR__) . '/vendor/autoload.php';
 
-$app = new Kotori();
-$config['APP_PATH'] = './app/';
-$app->run();
+$autoloader->addPsr4('Kotori\Tests\\', __DIR__);
