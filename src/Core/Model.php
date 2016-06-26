@@ -25,7 +25,7 @@
  * Model Class
  *
  * @package     Kotori
- * @subpackage  Model
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */

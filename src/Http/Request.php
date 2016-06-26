@@ -25,7 +25,7 @@
  * Request Class
  *
  * @package     Kotori
- * @subpackage  Request
+ * @subpackage  Http
  * @author      Kokororin
  * @link        https://kotori.love
  */

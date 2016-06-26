@@ -25,7 +25,7 @@
  * Hook Class
  *
  * @package     Kotori
- * @subpackage  Hook
+ * @subpackage  Debug
  * @author      Kokororin
  * @link        https://kotori.love
  */

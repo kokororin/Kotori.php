@@ -27,7 +27,7 @@
  * Parses URIs and determines routing
  *
  * @package     Kotori
- * @subpackage  Route
+ * @subpackage  Http
  * @author      Kokororin
  * @link        https://kotori.love
  */

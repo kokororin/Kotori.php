@@ -27,7 +27,7 @@
  * Common APIs.
  *
  * @package     Kotori
- * @subpackage  Common
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */

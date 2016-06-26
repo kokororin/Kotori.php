@@ -22,8 +22,6 @@ require 'vendor/autoload.php';
 
 $app = new \Kotori\App();
 
-$config['APP_PATH'] = './app/';
-
 $app->run();
 ```
 

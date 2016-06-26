@@ -25,7 +25,7 @@
  * Trace Class
  *
  * @package     Kotori
- * @subpackage  Trace
+ * @subpackage  Debug
  * @author      Kokororin
  * @link        https://kotori.love
  */

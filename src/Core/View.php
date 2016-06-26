@@ -25,7 +25,7 @@
  * View Class
  *
  * @package     Kotori
- * @subpackage  View
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */

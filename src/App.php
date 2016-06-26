@@ -40,18 +40,28 @@ use Kotori\Http\Route;
 class App
 {
     /**
+     * Config Array
+     *
+     * @var array
+     */
+    protected $_config = array();
+
+    /**
      * Class constructor
      *
      * Initialize Framework.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($config = array())
     {
         version_compare(PHP_VERSION, '5.3.0', '<') && exit('Kotori.php requires PHP >= 5.3.0 !');
         ini_set('display_errors', 'off');
         define('START_TIME', microtime(true));
         define('START_MEMORY', memory_get_usage());
+        if (!empty($config)) {
+            $this->_config = $config;
+        }
     }
 
     /**
@@ -61,8 +71,7 @@ class App
      */
     public function run()
     {
-        global $config;
-        Config::getSoul()->initialize($config);
+        Config::getSoul()->initialize($this->_config);
         //Define a custom error handler so we can log PHP errors
         set_error_handler(array('\\Kotori\Core\Handle', 'error'));
         set_exception_handler(array('\\Kotori\Core\Handle', 'exception'));
@@ -88,9 +97,9 @@ class App
         Route::getSoul()->dispatch();
 
         //Global security filter
-        array_walk_recursive($_GET, array('Request', 'filter'));
-        array_walk_recursive($_POST, array('Request', 'filter'));
-        array_walk_recursive($_REQUEST, array('Request', 'filter'));
+        array_walk_recursive($_GET, array('\\Kotori\Http\Request', 'filter'));
+        array_walk_recursive($_POST, array('\\Kotori\Http\Request', 'filter'));
+        array_walk_recursive($_REQUEST, array('\\Kotori\Http\Request', 'filter'));
     }
 
 }

@@ -25,7 +25,7 @@
  * Handle Class
  *
  * @package     Kotori
- * @subpackage  Handle
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */
