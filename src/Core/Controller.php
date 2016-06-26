@@ -27,7 +27,7 @@
  * This class object is the super class .
  *
  * @package     Kotori
- * @subpackage  Controller
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */

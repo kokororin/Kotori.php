@@ -25,7 +25,7 @@
  * Model Provider CLass
  *
  * @package     Kotori
- * @subpackage  ModelProvider
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */

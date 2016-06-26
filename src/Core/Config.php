@@ -27,7 +27,7 @@
  * This class contains functions that enable config files to be managed
  *
  * @package     Kotori
- * @subpackage  Config
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */

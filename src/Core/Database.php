@@ -25,7 +25,7 @@
  * Database Class
  *
  * @package     Kotori
- * @subpackage  Database
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */
@@ -96,44 +96,26 @@ class Database extends \medoo
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($options = null)
     {
-        parent::__construct();
+        parent::__construct($options);
         Hook::listen('Database');
     }
 
     public function query($query)
     {
-        if ($this->debug_mode) {
-            echo $query;
-
-            $this->debug_mode = false;
-
-            return false;
-        }
-
         array_push($this->logs, $query);
         Log::sql($this->last_query());
         array_push($this->queries, $this->last_query());
-
-        return $this->pdo->query($query);
+        return parent::query($query);
     }
 
     public function exec($query)
     {
-        if ($this->debug_mode) {
-            echo $query;
-
-            $this->debug_mode = false;
-
-            return false;
-        }
-
         array_push($this->logs, $query);
         Log::sql($this->last_query());
         array_push($this->queries, $this->last_query());
-
-        return $this->pdo->exec($query);
+        return parent::exec($query);
     }
 
 }

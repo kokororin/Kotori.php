@@ -89,7 +89,7 @@ class Page
 
         /* 生成URL */
         $this->parameter[$this->p] = '[PAGE]';
-        $this->url                 = Route::getInstance()->url(URI . '?' . http_build_query($this->parameter));
+        $this->url                 = Route::getSoul()->url(URI . '?' . http_build_query($this->parameter));
         /* 计算分页信息 */
         $this->totalPages = ceil($this->totalRows / $this->listRows); //总页数
         if (!empty($this->totalPages) && $this->nowPage > $this->totalPages)

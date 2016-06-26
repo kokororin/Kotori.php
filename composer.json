@@ -2,7 +2,7 @@
     "name": "kokororin/kotori-php",
     "description": "Tiny PHP Framework.",
     "type": "framework",
-    "keywords": ["framework"],
+    "keywords": ["framework", "micro", "api", "router"],
     "homepage": "https://kotori.love/",
     "license": "Apache",
     "support": {
@@ -17,9 +17,18 @@
         "php": ">=5.3.0",
         "catfan/Medoo": "^1.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.0"
+    },
     "autoload": {
         "psr-4": {
             "Kotori\\": "src/"
         }
+    },
+    "scripts": {
+        "test": [
+            "@phpunit"
+        ],
+        "phpunit": "php vendor/bin/phpunit"
     }
 }

@@ -25,7 +25,7 @@
  * Logging Class
  *
  * @package     Kotori
- * @subpackage  Log
+ * @subpackage  Debug
  * @author      Kokororin
  * @link        https://kotori.love
  */
