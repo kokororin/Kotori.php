@@ -33,6 +33,7 @@
  */
 namespace Kotori;
 
+use Kotori\Core\Build;
 use Kotori\Core\Common;
 use Kotori\Core\Config;
 use Kotori\Http\Route;
@@ -80,6 +81,9 @@ class App
         ini_set('date.timezone', Config::getSoul()->TIME_ZONE);
 
         !session_id() && session_start();
+
+        //Build
+        new Build(Config::getSoul()->APP_PATH);
 
         //Load application's common functions
         Common::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
