@@ -9,10 +9,12 @@ $config = [
     'DB_NAME' => 'test',
     'DB_TYPE' => 'mysql',
     'URL_ROUTE' => [
-        'new/([0-9])' => 'Index/showNews/$1',
+        '/' => 'Hello/index',
+        'news/([0-9])' => 'Hello/showNews/$1',
         'add' => [
-            'get' => 'Index/addNews',
-            'post' => 'Index/insertNews',
+            'get' => 'Hello/addNews',
+            'post' => 'Hello/insertNews',
+            'delete' => 'Hello/deleteNews',
         ],
     ],
 ];

@@ -33,9 +33,9 @@
  */
 namespace Kotori\Http;
 
-use Kotori\Debug\Hook;
-use Kotori\Core\Config;
 use Kotori\Core\Common;
+use Kotori\Core\Config;
+use Kotori\Debug\Hook;
 
 class Route
 {
@@ -133,8 +133,11 @@ class Route
             $this->_uri = $_SERVER['PATH_INFO'];
         }
 
+        if (substr($this->_uri, 0, 1) == '/') {
+            $this->_uri = ltrim($this->_uri, '/');
+        }
         if (trim($this->_uri, '/') == '') {
-            $this->_uri = '';
+            $this->_uri = '/';
         }
         Hook::listen('Route');
     }
@@ -159,6 +162,8 @@ class Route
 
         if ($parsedRoute) {
             $this->_uri = $parsedRoute;
+        } else {
+            throw new \Exception('Request URI ' . $this->_uri . ' is not Matched by any route.');
         }
 
         $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : array();
@@ -179,9 +184,7 @@ class Route
         define('PUBLIC_DIR', Request::getSoul()->getBaseUrl() . 'public');
 
         //If is already initialized
-        if ($this->_controller == 'System') {
-            $this->_controller = 'System';
-        }
+
         if (isset($this->_controllers[$this->_controller])) {
             $class = $this->_controllers[$this->_controller];
         } else {
@@ -192,7 +195,7 @@ class Route
         }
 
         if (!class_exists($this->_controller)) {
-            throw new \Exception('Request Controller ' . $this->_controller . ' is not Found');
+            throw new \Exception('Request Controller ' . $this->_controller . ' is not Found.');
         }
 
         if (!method_exists($class, $this->_action)) {
@@ -215,6 +218,7 @@ class Route
     /**
      * Returns the controller name
      *
+     * @deprecated since v20160718-1444
      * @return string
      */
     protected function getController()
@@ -222,7 +226,7 @@ class Route
         if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
             $_controller = $this->_uris[0];
         } else {
-            $_controller = 'Index';
+            throw new \Exception('Kotori.php Internal Error.');
         }
         return strip_tags($_controller);
     }
@@ -230,6 +234,7 @@ class Route
     /**
      * Returns the action name
      *
+     * @deprecated since v20160718-1444
      * @return string
      */
     protected function getAction()
@@ -237,7 +242,7 @@ class Route
         if (isset($this->_uris[1])) {
             $_action = $this->_uris[1];
         } else {
-            $_action = 'index';
+            throw new \Exception('Kotori.php Internal Error.');
         }
         return strip_tags($_action);
     }

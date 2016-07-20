@@ -1,7 +1,7 @@
 <?php
 use Kotori\Core\Controller;
 
-class Index extends Controller
+class Hello extends Controller
 {
     public function __construct()
     {
