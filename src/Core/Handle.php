@@ -60,9 +60,9 @@ class Handle
         if (Config::getSoul()->APP_DEBUG == false) {
             $message = '404 Not Found.';
         }
-        $tpl_path = Config::getSoul()->ERROR_TPL;
+        $tplPath = Config::getSoul()->ERROR_TPL;
 
-        if ($tpl_path == null) {
+        if ($tplPath == null || !Common::isFile(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#">
 <head>
@@ -179,7 +179,7 @@ function open_link(url){
 </body>
 </html>';
         } else {
-            $tpl = file_get_contents(Config::getSoul()->APP_FULL_PATH . '/views/' . $tpl_path . '.html');
+            $tpl = file_get_contents(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html');
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
@@ -220,7 +220,7 @@ function open_link(url){
      */
     public static function exception($exception)
     {
-        $text = '<p><strong>Exception:</strong>' . $exception->getMessage() . '</p>';
+        $text = '<p><strong>Exception:</strong> ' . $exception->getMessage() . '</p>';
         $txt = '[Type] Exception' . ' [Info] ' . $exception->getMessage();
         Log::normal($txt);
         self::halt($text, 500);
