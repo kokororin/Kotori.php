@@ -328,21 +328,34 @@ class Route
      * Build Full URL
      *
      * @param string $uri URI
-     * @param array $params Params Array
+     * @param string $module module name
      * @return string
      */
-    public function url($uri = '')
+    public function url($uri = '', $module = null)
     {
-        $base_url = Request::getSoul()->getBaseUrl();
+        if ($module != null) {
+            $appPaths = Config::getSoul()->APP_PATH;
+            if (is_array($appPaths)) {
+                foreach ($appPaths as &$appPath) {
+                    $appPath = str_replace('./', '', $appPath);
+                }
+                $appPaths = array_flip($appPaths);
+                $baseUrl = $appPaths[$module];
+                $baseUrl = '//' . $baseUrl . '/';
+            }
+        } else {
+            $baseUrl = Request::getSoul()->getBaseUrl();
+        }
+
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
-        $prefix = $base_url . 'index.php?_i=';
+        $prefix = $baseUrl . 'index.php?_i=';
 
         switch (Config::getSoul()->URL_MODE) {
             case 'PATH_INFO':
-                return $uri == '' ? rtrim($base_url, '/') : $base_url . $uri;
+                return $uri == '' ? rtrim($baseUrl, '/') : $baseUrl . $uri;
                 break;
             case 'QUERY_STRING':
-                return $uri == '' ? rtrim($base_url, '/') : $prefix . $uri;
+                return $uri == '' ? rtrim($baseUrl, '/') : $prefix . $uri;
                 break;
             default:
                 return;
