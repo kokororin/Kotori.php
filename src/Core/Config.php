@@ -34,6 +34,7 @@
 namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
+use Kotori\Http\Request;
 
 class Config
 {
@@ -112,7 +113,17 @@ class Config
         if (is_array($this->_config)) {
             if (array_keys($this->_config) !== range(0, count($this->_config) - 1)) {
                 $this->_config = array_merge($this->_defaults, $this->_config);
-                $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($this->APP_PATH, '/'))), $this->_config);
+                if (is_array($this->APP_PATH)) {
+                    $hostName = Request::getSoul()->getHostName();
+                    if (array_key_exists($hostName, $this->APP_PATH)) {
+                        $appPath = $this->APP_PATH[$hostName];
+                    } else {
+                        throw new \Exception('Cannot found any app paths.');
+                    }
+                } else {
+                    $appPath = $this->APP_PATH;
+                }
+                $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($appPath, '/'))), $this->_config);
             }
         }
         return false;

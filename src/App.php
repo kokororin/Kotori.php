@@ -72,18 +72,19 @@ class App
      */
     public function run()
     {
-        Config::getSoul()->initialize($this->_config);
         //Define a custom error handler so we can log PHP errors
         set_error_handler(array('\\Kotori\Core\Handle', 'error'));
         set_exception_handler(array('\\Kotori\Core\Handle', 'exception'));
         register_shutdown_function(array('\\Kotori\Core\Handle', 'end'));
+
+        Config::getSoul()->initialize($this->_config);
 
         ini_set('date.timezone', Config::getSoul()->TIME_ZONE);
 
         !session_id() && session_start();
 
         //Build
-        new Build(Config::getSoul()->APP_PATH);
+        new Build(Config::getSoul()->APP_FULL_PATH);
 
         //Load application's common functions
         Common::import(Config::getSoul()->APP_FULL_PATH . '/common.php');

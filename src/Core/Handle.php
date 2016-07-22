@@ -32,6 +32,7 @@
 namespace Kotori\Core;
 
 use Kotori\Debug\Log;
+use Kotori\Http\Request;
 use Kotori\Http\Response;
 
 class Handle
@@ -64,118 +65,53 @@ class Handle
 
         if ($tplPath == null || !Common::isFile(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" prefix="og: http://ogp.me/ns#">
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>Error Occurred.</title>
-<style type="text/css">
-html {
-    background: #f1f1f1;
-}
-body {
-    background: #fff;
-    color: #444;
-    font-family: "Open Sans", sans-serif;
-    margin: 2em auto;
-    padding: 1em 2em;
-    max-width: 700px;
-    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.13);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.13);
-}
-h1 {
-    border-bottom: 1px solid #dadada;
-    clear: both;
-    color: #666;
-    font: 24px "Open Sans", sans-serif;
-    margin: 30px 0 0 0;
-    padding: 0;
-    padding-bottom: 7px;
-}
-#error-page {
-    margin-top: 50px;
-}
-#error-page p {
-    font-size: 14px;
-    word-wrap: break-word;
-    word-break: normal;
-}
-#error-page code {
-    font-family: Consolas, Monaco, monospace;
-}
-ul li {
-    margin-bottom: 10px;
-    font-size: 14px ;
-}
-a {
-    color: #21759B;
-    text-decoration: none;
-}
-a:hover {
-    color: #D54E21;
-}
-.button {
-    background: #f7f7f7;
-    border: 1px solid #cccccc;
-    color: #555;
-    display: inline-block;
-    text-decoration: none;
-    font-size: 13px;
-    line-height: 26px;
-    height: 28px;
-    margin: 0;
-    padding: 0 10px 1px;
-    cursor: pointer;
-    -webkit-border-radius: 3px;
-    -webkit-appearance: none;
-    border-radius: 3px;
-    white-space: nowrap;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08);
-    box-shadow: inset 0 1px 0 #fff, 0 1px 0 rgba(0,0,0,.08);
-    vertical-align: top;
-}
-.button.button-large {
-    height: 29px;
-    line-height: 28px;
-    padding: 0 12px;
-}
-.button:hover, .button:focus {
-    background: #fafafa;
-    border-color: #999;
-    color: #222;
-}
-.button:focus {
-    -webkit-box-shadow: 1px 1px 1px rgba(0,0,0,.2);
-    box-shadow: 1px 1px 1px rgba(0,0,0,.2);
-}
-.button:active {
-    background: #eee;
-    border-color: #999;
-    color: #333;
-    -webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
-    box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
-}
-</style>
-<script>
-function open_link(url){
- var el = document.createElement("a");
- document.body.appendChild(el);
- el.href = url;
- el.target = "_blank";
- el.click();
- document.body.removeChild(el);
-}
-</script>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Kotori.php 500 Internal Error</title>
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <style type="text/css">
+    html * { padding:0; margin:0; }
+    body * { padding:10px 20px; }
+    body * * { padding:0; }
+    body { font:small sans-serif; background:#eee; }
+    body>div { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; margin-bottom:.4em; }
+    h1 span { font-size:60%; color:#666; font-weight:normal; }
+    table { border:none; border-collapse: collapse; width:100%; }
+    td, th { vertical-align:top; padding:2px 3px; }
+    th { width:12em; text-align:right; color:#666; padding-right:.5em; }
+    #info { background:#f6f6f6; }
+    #summary { background: #ffc; }
+    #explanation { background:#eee; border-bottom: 0px none; }
+  </style>
 </head>
+<body>
+  <div id="summary">
+    <h1>Kotori.php Internal Error <span>(500)</span></h1>
+    <table class="meta">
+      <tr>
+        <th>Request Method:</th>
+        <td>' . strtoupper($_SERVER['REQUEST_METHOD']) . '</td>
+      </tr>
+      <tr>
+        <th>Request URL:</th>
+        <td>' . Request::getSoul()->getBaseUrl() . ltrim($_SERVER["REQUEST_URI"], '/') . '</td>
+      </tr>
 
-<body id="error-page">
-    <h1>Error Occurred.</h1>
-    {$message}
-    <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php\')">Go to GitHub Page</button>
-    <button class="button" onclick="open_link(\'https://github.com/kokororin/Kotori.php/issues\')">Report a Bug</button>
+    </table>
+  </div>
+  <div id="info">
+      <h2>' . $message . '</h2>
+  </div>
+
+  <div id="explanation">
+    <p>
+      You\'re seeing this error because you have <code>APP_DEBUG = True</code> in
+      your index.php file. Change that to <code>False</code>, and Kotori.php
+      will display a standard 404 page.
+    </p>
+  </div>
 </body>
 </html>';
         } else {
