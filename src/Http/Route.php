@@ -158,6 +158,15 @@ class Route
 
         define('URI', $this->_uri);
 
+        if ($this->_uri == 'favicon.ico') {
+            header('Pragma: public');
+            header('Cache-Control: max-age=86400');
+            header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
+            header('Content-Type: image/x-icon');
+            echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Common::logo()));
+            exit;
+        }
+
         $parsedRoute = $this->parseRoutes($this->_uri);
 
         if ($parsedRoute) {
