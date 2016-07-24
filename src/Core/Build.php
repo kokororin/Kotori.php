@@ -37,10 +37,10 @@ use Kotori\Debug\Hook;
 
 class Build
 {
-	/**
-	 * App path
-	 * @var string
-	 */
+    /**
+     * App path
+     * @var string
+     */
     protected $_appPath;
 
     /**
@@ -70,30 +70,20 @@ class Build
 
     /**
      * start to build folders
-     * 
+     *
      * @return void
      */
     protected function startBuild()
     {
+        if (is_dir($this->_appPath)) {
+            return;
+        }
         foreach ($this->_folders as $folder) {
-            $this->mkdirs($this->_appPath . '/' . $folder);
+            Common::mkdirs($this->_appPath . '/' . $folder);
         }
         if (!is_file($this->_appPath . '/common.php')) {
             file_put_contents($this->_appPath . '/common.php', '<?php
 // common functions');
         }
-    }
-
-    /**
-     * recursively create a long directory path
-     * 
-     * @param  string $pathname directory path
-     * @param  integer $mode
-     * @return boolean
-     */
-    protected function mkdirs($pathname, $mode = 0755)
-    {
-        is_dir(dirname($pathname)) || $this->mkdirs(dirname($pathname), $mode);
-        return is_dir($pathname) || @mkdir($pathname, $mode);
     }
 }

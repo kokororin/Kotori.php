@@ -101,6 +101,19 @@ class Common
         }
     }
 
+    /**
+     * recursively create a long directory path
+     *
+     * @param  string $pathname directory path
+     * @param  int $mode
+     * @return boolean
+     */
+    public static function mkdirs($pathname, $mode = 0755)
+    {
+        is_dir(dirname($pathname)) || $this->mkdirs(dirname($pathname), $mode);
+        return is_dir($pathname) || @mkdir($pathname, $mode);
+    }
+
 /**
  * Show Kotori Logo
  *
