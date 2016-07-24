@@ -58,7 +58,7 @@ class Log
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
             $logPath = Config::getSoul()->APP_FULL_PATH . '/logs';
             if (!file_exists($logPath)) {
-                mkdir($logPath, 0755, true);
+                Common::mkdirs($logPath);
             }
             file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
         }
