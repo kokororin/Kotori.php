@@ -282,6 +282,12 @@ class Route
     {
         $routes = Config::getSoul()->URL_ROUTE;
 
+        $hostName = Request::getSoul()->getHostName();
+
+        if (isset($routes[$hostName])) {
+            $routes = $routes[$hostName];
+        }
+
         // Get HTTP verb
         $http_verb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
 
