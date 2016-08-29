@@ -32,6 +32,7 @@
 namespace Kotori\Debug;
 
 use Kotori\Core\Config;
+use Kotori\Core\Common;
 
 class Log
 {
