@@ -29,14 +29,12 @@ $config = [
     //     ],
     // ],
     'URL_ROUTE' => [
-        '1.kotori.php' => [
-            '/' => 'Hello/index',
-            'news/([0-9])' => 'Hello/showNews/$1',
-            'add' => [
-                'get' => 'Hello/addNews',
-                'post' => 'Hello/insertNews',
-                'delete' => 'Hello/deleteNews',
-            ],
+        '/' => 'Hello/index',
+        'news/([0-9])' => 'Hello/showNews/$1',
+        'add' => [
+            'get' => 'Hello/addNews',
+            'post' => 'Hello/insertNews',
+            'delete' => 'Hello/deleteNews',
         ],
     ],
 ];

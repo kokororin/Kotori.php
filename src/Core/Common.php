@@ -110,7 +110,7 @@ class Common
      */
     public static function mkdirs($pathname, $mode = 0755)
     {
-        is_dir(dirname($pathname)) || $this->mkdirs(dirname($pathname), $mode);
+        is_dir(dirname($pathname)) || self::mkdirs(dirname($pathname), $mode);
         return is_dir($pathname) || @mkdir($pathname, $mode);
     }
 
