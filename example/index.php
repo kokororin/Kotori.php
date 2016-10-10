@@ -19,15 +19,6 @@ $config = [
     'DB_USER' => 'root',
     'DB_PWD' => '123456',
     'DB_NAME' => 'test',
-    // 'URL_ROUTE' => [
-    //     '/' => 'Hello/index',
-    //     'news/([0-9])' => 'Hello/showNews/$1',
-    //     'add' => [
-    //         'get' => 'Hello/addNews',
-    //         'post' => 'Hello/insertNews',
-    //         'delete' => 'Hello/deleteNews',
-    //     ],
-    // ],
     'URL_ROUTE' => [
         '/' => 'Hello/index',
         'news/([0-9])' => 'Hello/showNews/$1',
@@ -35,6 +26,9 @@ $config = [
             'get' => 'Hello/addNews',
             'post' => 'Hello/insertNews',
             'delete' => 'Hello/deleteNews',
+        ],
+        'cliTest/(.*)' => [
+            'cli' => 'Hello/cli/$1',
         ],
     ],
 ];
