@@ -59,7 +59,7 @@ class Controller
         }
         return self::$_soul;
     }
-    
+
     /**
      * Class constructor
      *
@@ -75,6 +75,7 @@ class Controller
         $this->route = Route::getSoul();
         $this->db = Database::getSoul();
         $this->model = ModelProvider::getSoul();
+        $this->config = Config::getSoul();
         Hook::listen('Controller');
     }
 
