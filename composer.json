@@ -3,7 +3,7 @@
     "description": "Tiny PHP Framework.",
     "type": "framework",
     "keywords": ["framework", "micro", "api", "router"],
-    "homepage": "https://kotori.love/",
+    "homepage": "https://kotori.love",
     "license": "Apache",
     "support": {
         "wiki": "https://github.com/kokororin/Kotori.php/wiki",
