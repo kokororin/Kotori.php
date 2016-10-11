@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="Kotori.php coding tests">
+    <description>Kotori.php coding tests</description>
+
+    <!-- display progress -->
+    <arg value="p"/>
+    <!-- use colors in output -->
+    <arg name="colors"/>
+
+    <!-- inherit rules from: -->
+    <rule ref="PSR2"/>
+
+    <!-- Paths to check -->
+    <file>src</file>
+    <file>tests</file>
+</ruleset>

@@ -232,8 +232,7 @@ var tab_cont = document.getElementById(\'page_trace_tab_cont\').getElementsByTag
 var open     = document.getElementById(\'page_trace_open\');
 var close    = document.getElementById(\'page_trace_close\').children[0];
 var trace    = document.getElementById(\'page_trace_tab\');
-var update   = document.getElementById(\'page_trace_check_update\');
-var cookie   = document.cookie.match(/show_page_trace=(\d\|\d)/);
+var cookie   = document.cookie.match(/kotori_show_page_trace=(\d\|\d)/);
 var history  = (cookie && typeof cookie[1] != \'undefined\' && cookie[1].split(\'|\')) || [0,0];
 var bindClick = function(dom, listener) {
     if (dom.addEventListener) {
@@ -247,14 +246,14 @@ bindClick(open, function() {
     this.style.display = \'none\';
     close.parentNode.style.display = \'block\';
     history[0] = 1;
-    document.cookie = \'show_page_trace=\' + history.join(\'|\');
+    document.cookie = \'kotori_show_page_trace=\' + history.join(\'|\');
 });
 bindClick(close, function() {
     trace.style.display = \'none\';
     this.parentNode.style.display = \'none\';
     open.style.display = \'block\';
     history[0] = 0;
-    document.cookie = \'show_page_trace=\' + history.join(\'|\');
+    document.cookie = \'kotori_show_page_trace=\' + history.join(\'|\');
 });
 for (var i = 0; i < tab_tit.length; i++) {
     bindClick(tab_tit[i], (function(i) {
@@ -266,7 +265,7 @@ for (var i = 0; i < tab_tit.length; i++) {
             tab_cont[i].style.display = \'block\';
             tab_tit[i].style.color = \'#000\';
             history[1] = i;
-            document.cookie = \'show_page_trace=\' + history.join(\'|\');
+            document.cookie = \'kotori_show_page_trace=\' + history.join(\'|\');
         };
     })(i));
 }
