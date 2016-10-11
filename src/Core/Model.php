@@ -59,4 +59,17 @@ class Model
     {
         return Controller::getSoul()->$key;
     }
+
+    /**
+     * __call magic
+     *
+     * Allows model to access controller methods
+     * 
+     * @param  $name
+     * @param  $arguments
+     */
+    public function __call($name, $arguments)
+    {
+        return call_user_func_array(array(Controller::getSoul(), $name), $arguments);
+    }
 }

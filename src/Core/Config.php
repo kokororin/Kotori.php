@@ -53,8 +53,6 @@ class Config
     protected $_defaults = array(
         'APP_DEBUG' => true,
         'APP_PATH' => './app/',
-        'DB_PORT' => 3306,
-        'DB_CHARSET' => 'utf8',
         'URL_MODE' => 'QUERY_STRING',
         'TIME_ZONE' => 'Asia/Shanghai',
     );
@@ -112,6 +110,16 @@ class Config
         $this->_config = $config;
         if (is_array($this->_config)) {
             if (array_keys($this->_config) !== range(0, count($this->_config) - 1)) {
+                if (isset($this->_config['DB']) && is_array($this->_config['DB'])) {
+                    foreach ($this->_config['DB'] as $key => &$value) {
+                        if (!isset($value['PORT'])) {
+                            $value['PORT'] = 3306;
+                        }
+                        if (!isset($value['CHARSET'])) {
+                            $value['CHARSET'] = 'utf8';
+                        }
+                    }
+                }
                 $this->_config = array_merge($this->_defaults, $this->_config);
                 if (is_array($this->APP_PATH)) {
                     $hostName = Request::getSoul()->getHostName();
