@@ -18,6 +18,7 @@
         "catfan/Medoo": "^1.0"
     },
     "require-dev": {
+        "squizlabs/php_codesniffer": "^2.5",
         "phpunit/phpunit": "^4.0"
     },
     "autoload": {
@@ -29,6 +30,7 @@
         "test": [
             "@phpunit"
         ],
-        "phpunit": "php vendor/bin/phpunit"
+        "phpunit": "php vendor/bin/phpunit",
+        "phpcs": "php vendor/bin/phpcs"
     }
 }
