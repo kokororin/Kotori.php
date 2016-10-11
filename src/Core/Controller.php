@@ -61,6 +61,17 @@ class Controller
     }
 
     /**
+     * DB selector
+     *
+     * @param  string $key database key in config
+     * @return Database
+     */
+    public function db($key = null)
+    {
+        return Database::getSoul($key);
+    }
+
+    /**
      * Class constructor
      *
      * Initialize view and database classes.
@@ -73,7 +84,7 @@ class Controller
         $this->response = Response::getSoul();
         $this->request = Request::getSoul();
         $this->route = Route::getSoul();
-        $this->db = Database::getSoul();
+        $this->db = $this->db();
         $this->model = ModelProvider::getSoul();
         $this->config = Config::getSoul();
         Hook::listen('Controller');

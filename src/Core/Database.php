@@ -66,23 +66,29 @@ class Database extends \medoo
      *
      * @return object
      */
-    public static function getSoul()
+    public static function getSoul($key = null)
     {
-        if (Config::getSoul()->DB_TYPE == null) {
-            $config = array();
+        if (count(Config::getSoul()->DB) == 0) {
             return null;
-        } else {
-            $config = array(
-                'database_type' => Config::getSoul()->DB_TYPE,
-                'database_name' => Config::getSoul()->DB_NAME,
-                'server' => Config::getSoul()->DB_HOST,
-                'username' => Config::getSoul()->DB_USER,
-                'password' => Config::getSoul()->DB_PWD,
-                'charset' => Config::getSoul()->DB_CHARSET,
-                'port' => Config::getSoul()->DB_PORT,
-            );
+        } elseif ($key == null) {
+            $dbKeys = array_keys(Config::getSoul()->DB);
+            if (isset($dbKeys[0])) {
+                $key = $dbKeys[0];
+            } else {
+                return null;
+            }
         }
-        $key = $config['server'] . ':' . $config['port'];
+        Config::getSoul()->SELECTED_DB_KEY = $key;
+        $config = array(
+            'database_type' => Config::getSoul()->DB[$key]['TYPE'],
+            'database_name' => Config::getSoul()->DB[$key]['NAME'],
+            'server' => Config::getSoul()->DB[$key]['HOST'],
+            'username' => Config::getSoul()->DB[$key]['USER'],
+            'password' => Config::getSoul()->DB[$key]['PWD'],
+            'charset' => Config::getSoul()->DB[$key]['CHARSET'],
+            'port' => Config::getSoul()->DB[$key]['PORT'],
+        );
+       
         if (!isset(self::$_soul[$key])) {
             self::$_soul[$key] = new self($config);
         }

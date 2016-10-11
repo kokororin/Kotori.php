@@ -15,10 +15,22 @@ $config = [
     //     '1.kotori.php' => './app',
     //     '2.kotori.php' => './module2'
     // ],
-    'DB_HOST' => '127.0.0.1',
-    'DB_USER' => 'root',
-    'DB_PWD' => '123456',
-    'DB_NAME' => 'test',
+    'DB' => [
+        'test' => [
+            'HOST' => '127.0.0.1',
+            'USER' => 'root',
+            'PWD' => '123456',
+            'NAME' => 'test',
+            'TYPE' => 'mysql',
+        ],
+        'dist' => [
+            'HOST' => '127.0.0.1',
+            'USER' => 'root',
+            'PWD' => '123456',
+            'NAME' => 'data',
+            'TYPE' => 'mysql',
+        ],
+    ],
     'URL_ROUTE' => [
         '/' => 'Hello/index',
         'news/([0-9])' => 'Hello/showNews/$1',

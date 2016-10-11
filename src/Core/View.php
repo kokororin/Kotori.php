@@ -79,6 +79,19 @@ class View
     }
 
     /**
+     * __call magic
+     *
+     * Allows view to access controller methods
+     *
+     * @param  $name
+     * @param  $arguments
+     */
+    public function __call($name, $arguments)
+    {
+        return call_user_func_array(array(Controller::getSoul(), $name), $arguments);
+    }
+
+    /**
      * @param string $tplDir Template Directory
      */
     public function __construct($tplDir = '')

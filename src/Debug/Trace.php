@@ -117,7 +117,7 @@ class Trace
             $hook[$key] = ' ( ' . $value . ' μs )';
         }
         $error = Handle::$errors;
-        $database = Database::getSoul();
+        $database = Database::getSoul(Config::getSoul()->SELECTED_DB_KEY);
 
         $sql = $database == null ? array() : $database->queries;
 
