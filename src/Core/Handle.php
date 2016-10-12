@@ -82,6 +82,7 @@ class Handle
     td, th { vertical-align:top; padding:2px 3px; }
     th { width:12em; text-align:right; color:#666; padding-right:.5em; }
     #info { background:#f6f6f6; }
+    #info p {font-size: 16px}
     #summary { background: #ffc; }
     #explanation { background:#eee; border-bottom: 0px none; }
   </style>
@@ -102,7 +103,7 @@ class Handle
     </table>
   </div>
   <div id="info">
-      <h2>' . $message . '</h2>
+      ' . $message . '
   </div>
 
   <div id="explanation">
@@ -139,8 +140,10 @@ class Handle
      */
     public static function error($errno, $errstr, $errfile, $errline)
     {
-        $txt = '[Type] ' . self::getErrorType($errno) . ' [Info] ' . $errstr . ' [Line] ' . $errline . ' [File] ' . $errfile;
-        array_push(self::$errors, $txt);
+        $type = self::getErrorType($errno);
+        $text = self::renderErrorText($type, $errstr, $errline, $errfile);
+        $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
+        array_push(self::$errors, $text);
         Log::normal($txt);
     }
 
@@ -156,8 +159,8 @@ class Handle
      */
     public static function exception($exception)
     {
-        $text = '<p><strong>Exception:</strong> ' . $exception->getMessage() . '</p>';
-        $txt = '[Type] Exception' . ' [Info] ' . $exception->getMessage();
+        $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
+        $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine());
         Log::normal($txt);
         self::halt($text, 500);
     }
@@ -179,15 +182,24 @@ class Handle
         $last_error = error_get_last();
         if (isset($last_error) &&
             ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
-            $text = '<p><strong>Error Type: </strong>' . self::getErrorType($last_error['type']) . '</p>' . '<p><strong>Info: </strong>' . $last_error['message'] . '</p>' . '<p><strong>Line: </strong>' . $last_error['line'] . '</p>' . '<p><strong>File: </strong>' . $last_error['file'] . '</p>';
-            $txt = '[Type] ' . $last_error['type'] . ' [Info] ' . $last_error['message'] . ' [Line] ' . $last_error['line'] . ' [File] ' . $last_error['file'];
+            $type = self::getErrorType($last_error['type']);
+            $text = self::renderHaltBody($type, $last_error['message'], $last_error['line'], $last_error['file']);
+
+            $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
+
             Log::normal($txt);
             self::halt($text, 500);
         }
 
     }
 
-    public static function getErrorType($errno)
+    /**
+     * convert PHP ERROR to error detail
+     *
+     * @param  int $errno
+     * @return string
+     */
+    protected static function getErrorType($errno)
     {
         switch ($errno) {
             case E_ERROR:
@@ -234,6 +246,131 @@ class Handle
                 break;
         }
         return $errtype;
+    }
+
+    /**
+     * render Halt Body
+     *
+     * @param string $type Error type
+     * @param int $message Error string
+     * @param string $file Error filepath
+     * @param int $errline Error line
+     * @return string
+     */
+    protected static function renderHaltBody($type, $message, $line, $file)
+    {
+        $text = '<p><strong>Error Type: </strong>' . $type . '</p>' . '<p><strong>Info: </strong>' . $message . '</p>' . '<p><strong>Line: </strong>' . $line . '</p>' . '<p><strong>File: </strong>' . $file . '</p>';
+        $source = self::getSourceCode($file, $line);
+
+        $sourceLen = strlen(strval(count($source['source']) + $source['first']));
+        $padding = 40 + ($sourceLen - 1) * 8;
+        if (!empty($source)) {
+            $text .= '<style>
+.source-code {
+    padding: 6px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    overflow-x: auto;
+}
+
+.source-code pre {
+    margin: 0;
+}
+
+.source-code pre ol {
+    margin: 0;
+    color: #4288ce;
+    display: inline-block;
+    min-width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    padding-left: ' . $padding . 'px;
+}
+
+.source-code pre li {
+    border-left: 1px solid #ddd;
+    height: 18px;
+    line-height: 18px;
+}
+
+.source-code pre code {
+    color: #333;
+    height: 100%;
+    display: inline-block;
+    border-left: 1px solid #fff;
+    font-size: 14px;
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+
+.source-code pre li.line-error {
+    background: #f8cbcb;
+}
+
+</style>';
+            $text .= '<p><strong>Source Code: </strong></p><div class="source-code">
+<pre class="prettyprint lang-php">
+    <ol start="' . $source['first'] . '">';
+            foreach ($source['source'] as $key => $value) {
+                $currentLine = $key + $source['first'];
+                $extendClass = ($currentLine == $line) ? ' line-error' : '';
+                $text .= '<li class="line-' . $currentLine . $extendClass . '"><code>' . htmlentities($value) . '</code></li>';
+            }
+            $text .= '</ol></pre></div>';
+
+        }
+        return $text;
+    }
+
+    /**
+     * render log body
+     *
+     * @param string $type Error type
+     * @param int $message Error string
+     * @param string $file Error filepath
+     * @param int $line Error line
+     * @return string
+     */
+    protected static function renderLogBody($type, $message, $line, $file)
+    {
+        return '[Type] ' . $type . ' [Info] ' . $message . ' [Line] ' . $line . ' [File] ' . $file;
+    }
+
+    /**
+     * render errors display in trace
+     *
+     * @param string $type Error type
+     * @param int $message Error string
+     * @param string $file Error filepath
+     * @param int $line Error line
+     * @return string
+     */
+    protected static function renderErrorText($type, $message, $line, $file)
+    {
+        return $message . ' in ' . $file . ' on line ' . $line;
+    }
+
+    /**
+     * get source code from file
+     *
+     * @param  string $file Error filepath
+     * @param  int $line Error line
+     * @return array
+     */
+    protected static function getSourceCode($file, $line)
+    {
+        $first = ($line - 9 > 0) ? $line - 9 : 1;
+
+        try {
+            $contents = file($file);
+            $source = [
+                'first' => $first,
+                'source' => array_slice($contents, $first - 1, 19),
+            ];
+        } catch (Exception $e) {
+            $source = [];
+        }
+        return $source;
     }
 
 }

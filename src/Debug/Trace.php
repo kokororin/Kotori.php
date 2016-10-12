@@ -168,12 +168,6 @@ class Trace
                     break;
             }
         }
-        foreach ($trace as $key => $value) {
-            $value = array_filter($value);
-            if (empty($value)) {
-                unset($trace[$key]);
-            }
-        }
         return $trace;
     }
 
@@ -191,7 +185,7 @@ class Trace
         $tpl = '
 <!-- Kotori Page Trace (If you want to hide this feature, please set APP_DEBUG to false.)-->
 <div id="page_trace" style="position:fixed;bottom:0;right:0;font-size:14px;width:100%;z-index: 999999;color: #000;text-align:left;font-family:\'Hiragino Sans GB\',\'Microsoft YaHei\',\'WenQuanYi Micro Hei\';">
-<div id="page_trace_tab" style="display: none;background:white;margin:0;height:250px;">
+<div id="page_trace_tab" style="display:none;background:white;margin:0;height:250px;">
 <div id="page_trace_tab_tit" style="height:30px;padding: 6px 12px 0;border-bottom:1px solid #ececec;border-top:1px solid #ececec;font-size:16px">';
         foreach ($trace as $key => $value) {
             $tpl .= '<span id="page_trace_tab_tit_' . strtolower($key) . '" style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
