@@ -151,7 +151,7 @@ class Config
         if (is_string($key)) {
             $this->_config[$key] = $value;
         } else {
-            Handle::halt('Config Error.');
+            throw new \Exception('Config Error.');
         }
     }
 

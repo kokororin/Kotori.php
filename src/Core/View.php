@@ -132,7 +132,7 @@ class View
         }
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
         if (!Common::isFile($this->_viewPath)) {
-            Handle::halt('Template is not existed.');
+            throw new \Exception('Template is not existed.');
         }
         unset($tpl);
         ob_start();

@@ -120,7 +120,7 @@ class Route
      */
     public function __construct()
     {
-        if ($this->isCli()) {
+        if (Request::getSoul()->isCli()) {
             $this->_uri = $this->parseArgv();
         } else {
             if (isset($_GET['_i'])) {
@@ -158,13 +158,22 @@ class Route
 
         define('URI', $this->_uri);
 
-        if ($this->_uri == 'favicon.ico') {
-            header('Pragma: public');
-            header('Cache-Control: max-age=86400');
-            header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 86400));
-            header('Content-Type: image/x-icon');
-            echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Common::logo()));
-            exit;
+        switch ($this->_uri) {
+            case 'favicon.ico':
+                Response::getSoul()->setCacheHeader();
+                Response::getSoul()->setHeader('Content-Type', 'image/x-icon');
+                echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Common::logo()));
+                exit;
+            case 'kotori-php-system-route/highlight-github.css':
+                Response::getSoul()->setCacheHeader();
+                Response::getSoul()->setHeader('Content-Type', 'text/css; charset=utf-8');
+                echo file_get_contents(Common::getComposerVendorPath() . '/components/highlightjs/styles/github.css');
+                exit;
+            case 'kotori-php-system-route/highlight.js':
+                Response::getSoul()->setCacheHeader();
+                Response::getSoul()->setHeader('Content-Type', 'text/javascript; charset=utf-8');
+                echo file_get_contents(Common::getComposerVendorPath() . '/components/highlightjs/highlight.pack.min.js');
+                exit;
         }
 
         $parsedRoute = $this->parseRoutes($this->_uri);
@@ -235,7 +244,7 @@ class Route
         if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
             $_controller = $this->_uris[0];
         } else {
-            throw new \Exception('Kotori.php Internal Error.');
+            throw new \Exception('Cannot dispatch controller name.');
         }
         return strip_tags($_controller);
     }
@@ -251,7 +260,7 @@ class Route
         if (isset($this->_uris[1])) {
             $_action = $this->_uris[1];
         } else {
-            throw new \Exception('Kotori.php Internal Error.');
+            throw new \Exception('Cannot dispatch action name.');
         }
         return strip_tags($_action);
     }
@@ -373,22 +382,9 @@ class Route
                 return $uri == '' ? rtrim($baseUrl, '/') : $prefix . $uri;
                 break;
             default:
-                return;
-                break;
+                throw new \Exception('URL_MODE Config ERROR');
         }
 
-    }
-
-    /**
-     * Is CLI?
-     *
-     * Test to see if a request was made from the command line.
-     *
-     * @return  boolean
-     */
-    public function isCli()
-    {
-        return PHP_SAPI === 'cli';
     }
 
 }
