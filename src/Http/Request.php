@@ -413,6 +413,18 @@ class Request
     }
 
     /**
+     * Is CLI?
+     *
+     * Test to see if a request was made from the command line.
+     *
+     * @return  boolean
+     */
+    public function isCli()
+    {
+        return PHP_SAPI === 'cli';
+    }
+
+    /**
      * Detect whether user agent is Mobile
      *
      * @return boolean

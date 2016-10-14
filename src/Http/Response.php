@@ -163,7 +163,7 @@ class Response
     public function setStatus($code = 200, $text = '')
     {
         if (empty($code) or !is_numeric($code)) {
-            Handle::halt('Status codes must be numeric.', 500);
+            throw new \Exception('Status codes must be numeric.');
         }
 
         if (empty($text)) {
@@ -172,7 +172,7 @@ class Response
             if (isset($this->_httpCode[$code])) {
                 $text = $this->_httpCode[$code];
             } else {
-                Handle::halt('No status text available. Please check your status code number or supply your own message text.', 500);
+                throw new \Exception('No status text available. Please check your status code number or supply your own message text.');
             }
         }
 
@@ -243,6 +243,22 @@ class Response
             header('Location: ' . $location, false, 302);
             exit;
         }
+    }
+
+    /**
+     * Output static file with 304 header
+     *
+     * @return void
+     */
+    public function setCacheHeader()
+    {
+        if ($_SERVER['HTTP_IF_MODIFIED_SINCE']) {
+            $this->setStatus(304);
+            exit;
+        }
+        $this->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + 365 * 24 * 60 * 60) . ' GMT');
+        $this->setHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+        $this->setHeader('Cache-Control', 'immutable');
     }
 
 }

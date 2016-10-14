@@ -34,6 +34,8 @@ namespace Kotori\Core;
 use Kotori\Debug\Log;
 use Kotori\Http\Request;
 use Kotori\Http\Response;
+use Kotori\Http\Route;
+use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 class Handle
 {
@@ -97,7 +99,7 @@ class Handle
       </tr>
       <tr>
         <th>Request URL:</th>
-        <td>' . Request::getSoul()->getBaseUrl() . ltrim($_SERVER["REQUEST_URI"], '/') . '</td>
+        <td>' . Request::getSoul()->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</td>
       </tr>
 
     </table>
@@ -120,6 +122,8 @@ class Handle
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
+        $htmlParser = htmlParserFactory::construct();
+        $tpl = $htmlParser->compress($tpl);
         exit($tpl);
     }
 
@@ -265,6 +269,7 @@ class Handle
         $sourceLen = strlen(strval(count($source['source']) + $source['first']));
         $padding = 40 + ($sourceLen - 1) * 8;
         if (!empty($source)) {
+            $text .= '<link href="' . Route::getSoul()->url('kotori-php-system-route/highlight-github.css') . '" rel="stylesheet" />';
             $text .= '<style>
 .source-code {
     padding: 6px;
@@ -309,7 +314,7 @@ class Handle
 
 </style>';
             $text .= '<p><strong>Source Code: </strong></p><div class="source-code">
-<pre class="prettyprint lang-php">
+<pre id="code-block" class="lang-php">
     <ol start="' . $source['first'] . '">';
             foreach ($source['source'] as $key => $value) {
                 $currentLine = $key + $source['first'];
@@ -317,6 +322,12 @@ class Handle
                 $text .= '<li class="line-' . $currentLine . $extendClass . '"><code>' . htmlentities($value) . '</code></li>';
             }
             $text .= '</ol></pre></div>';
+            $text .= '<script type="text/javascript" src="' . Route::getSoul()->url('kotori-php-system-route/highlight.js') . '"></script>';
+            $text .= '<script type="text/javascript">
+window.onload = function() {
+    hljs.highlightBlock(document.getElementById("code-block"));
+};
+</script>';
 
         }
         return $text;
