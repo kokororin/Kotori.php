@@ -218,7 +218,7 @@ class Response
      * @param mixed $data Original Data
      * @return void
      */
-    public function throwJson($data)
+    public function throwJSON($data)
     {
         if (function_exists('json_encode')) {
             $this->setContentType('application/json');
