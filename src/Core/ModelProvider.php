@@ -93,17 +93,16 @@ class ModelProvider
      */
     public function __get($key)
     {
-        $key .= '_model';
         if (isset($this->_models[$key])) {
             return $this->_models[$key];
         }
 
-        Common::import(Config::getSoul()->APP_FULL_PATH . '/models/' . $key . '.php');
+        $modelClassName = Config::getSoul()->NAMESPACE_PREFIX . 'models\\' . $key;
 
-        if (!class_exists($key)) {
+        if (!class_exists($modelClassName)) {
             throw new \Exception('Request Model ' . $key . ' is not Found');
         } else {
-            $model = new $key();
+            $model = new $modelClassName();
             $this->_models[$key] = $model;
             return $model;
         }

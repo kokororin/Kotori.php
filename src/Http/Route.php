@@ -202,17 +202,17 @@ class Route
         define('PUBLIC_DIR', Request::getSoul()->getBaseUrl() . 'public');
 
         //If is already initialized
+        $prefix = Config::getSoul()->NAMESPACE_PREFIX;
 
+        $controllerClassName = $prefix . 'controllers\\' . $this->_controller;
         if (isset($this->_controllers[$this->_controller])) {
             $class = $this->_controllers[$this->_controller];
         } else {
-            Common::import(Config::getSoul()->APP_FULL_PATH .
-                '/controllers/' . $this->_controller . '.php');
-            $class = new $this->_controller();
+            $class = new $controllerClassName();
             $this->_controllers[$this->_controller] = $class;
         }
 
-        if (!class_exists($this->_controller)) {
+        if (!class_exists($controllerClassName)) {
             throw new \Exception('Request Controller ' . $this->_controller . ' is not Found.');
         }
 

@@ -93,12 +93,25 @@ class Common
     public static function autoload($class)
     {
         $baseRoot = Config::getSoul()->APP_FULL_PATH;
+        // project-specific namespace prefix
+        $prefix = Config::getSoul()->NAMESPACE_PREFIX;
 
-        if (!Common::import($baseRoot . '/libraries/' . $class . '.php')) {
-            if (!Common::import($baseRoot . '/controllers/' . $class . '.php')) {
-                Common::import($baseRoot . '/models/' . $class . '.php');
-            }
+        // does the class use the namespace prefix?
+        $len = strlen($prefix);
+        if (strncmp($prefix, $class, $len) !== 0) {
+            // no, move to the next registered autoloader
+            return;
         }
+
+        // get the relative class name
+        $relativeClass = substr($class, $len);
+
+        // replace the namespace prefix with the base directory, replace namespace
+        // separators with directory separators in the relative class name, append
+        // with .php
+        $file = $baseRoot . '/' . str_replace('\\', '/', $relativeClass) . '.php';
+
+        Common::import($file);
     }
 
     /**

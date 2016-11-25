@@ -8,7 +8,7 @@
 // +----------------------------------------------------------------------
 // | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://www.zjzit.cn>
 // +----------------------------------------------------------------------
-
+namespace app\libraries;
 use Kotori\Http\Route;
 
 class Page

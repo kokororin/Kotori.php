@@ -1,7 +1,9 @@
 <?php
+namespace app\models;
+
 use Kotori\Core\Model;
 
-class News_model extends Model
+class News extends Model
 {
     public function getNewsList()
     {
