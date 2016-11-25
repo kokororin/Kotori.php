@@ -1,4 +1,6 @@
 <?php
+namespace app\libraries;
+
 // 验证码类
 class Captcha
 {

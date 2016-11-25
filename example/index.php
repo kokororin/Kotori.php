@@ -39,6 +39,7 @@ $config = [
             'post' => 'Hello/insertNews',
             'delete' => 'Hello/deleteNews',
         ],
+        'captcha' => 'Hello/captcha',
         'cliTest/(.*)' => [
             'cli' => 'Hello/cli/$1',
         ],

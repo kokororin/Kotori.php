@@ -1,4 +1,6 @@
 <?php
+namespace app\controllers;
+
 use Kotori\Core\Controller;
 
 class Hello extends Controller
@@ -41,7 +43,7 @@ class Hello extends Controller
     {
         header('Content-Type: text/html;charset=utf-8');
         $count = $this->db->count("test", "title");
-        $Page = new Page($count, 20);
+        $Page = new \app\libraries\Page($count, 20);
         $show = $Page->show();
         $data = $this->db->select("test", "title", array(
             "LIMIT" => array($Page->firstRow, $Page->listRows),
@@ -52,7 +54,7 @@ class Hello extends Controller
 
     public function captcha()
     {
-        $captcha = new Captcha();
+        $captcha = new \app\libraries\Captcha();
         $captcha->getImg();
         $_SESSION['verify'] = md5($vc->getCode());
     }

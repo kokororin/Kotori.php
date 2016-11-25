@@ -90,7 +90,7 @@ class App
         Common::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
 
         if (function_exists('spl_autoload_register')) {
-            spl_autoload_register(array('\\Kotori\Core\Common', 'autoload'));
+            spl_autoload_register(array('\\Kotori\\Core\\Common', 'autoload'));
         } else {
             function __autoload($className)
             {

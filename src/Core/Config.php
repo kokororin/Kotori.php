@@ -132,6 +132,7 @@ class Config
                     $appPath = $this->APP_PATH;
                 }
                 $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($appPath, '/'))), $this->_config);
+                $this->NAMESPACE_PREFIX = basename($this->APP_FULL_PATH) . '\\';
             }
         }
         return false;
