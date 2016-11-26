@@ -31,6 +31,7 @@ $config = [
             'TYPE' => 'mysql',
         ],
     ],
+    'URL_MODE' => 'PATH_INFO',
     'URL_ROUTE' => [
         '/' => 'Hello/index',
         'news/([0-9])' => 'Hello/showNews/$1',
