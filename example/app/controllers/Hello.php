@@ -59,6 +59,17 @@ class Hello extends Controller
         $_SESSION['verify'] = md5($vc->getCode());
     }
 
+    public function memcache()
+    {
+        $this->cache->set('testvalue', 'TESTVALUE');
+        print_r($this->cache->get('testvalue'));
+        $this->cache->set('testarray', array(
+            'id' => 1,
+            'name' => 'abc',
+        ));
+        print_r($this->cache->get('testarray'));
+    }
+
     public function cli($to = 'World')
     {
         echo "Hello {$to}!" . PHP_EOL;

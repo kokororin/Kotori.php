@@ -25,15 +25,16 @@
  * Model Provider CLass
  *
  * @package     Kotori
- * @subpackage  Core
+ * @subpackage  Model
  * @author      Kokororin
  * @link        https://kotori.love
  */
-namespace Kotori\Core;
+namespace Kotori\Core\Model;
 
+use Kotori\Core\Config;
 use Kotori\Debug\Hook;
 
-class ModelProvider
+class Provider
 {
     /**
      * Initialized Models
@@ -81,7 +82,7 @@ class ModelProvider
      */
     public function __construct()
     {
-        Hook::listen('Model_Provider');
+        Hook::listen(__CLASS__);
     }
 
     /**

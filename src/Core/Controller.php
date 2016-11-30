@@ -33,6 +33,7 @@
  */
 namespace Kotori\Core;
 
+use Kotori\Core\Model\Provider as ModelProvider;
 use Kotori\Debug\Hook;
 use Kotori\Http\Request;
 use Kotori\Http\Response;
@@ -87,7 +88,8 @@ class Controller
         $this->db = $this->db();
         $this->model = ModelProvider::getSoul();
         $this->config = Config::getSoul();
-        Hook::listen('Controller');
+        $this->cache = Cache::getSoul();
+        Hook::listen(__CLASS__);
     }
 
 }

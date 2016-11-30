@@ -65,7 +65,7 @@ class Build
     {
         $this->_appPath = $appPath;
         $this->startBuild();
-        Hook::listen('Build');
+        Hook::listen(__CLASS__);
     }
 
     /**

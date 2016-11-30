@@ -105,7 +105,7 @@ class Database extends \medoo
     public function __construct($options = null)
     {
         parent::__construct($options);
-        Hook::listen('Database');
+        Hook::listen(__CLASS__);
     }
 
     public function query($query)

@@ -129,7 +129,7 @@ class Response
      */
     public function __construct()
     {
-        Hook::listen('Response');
+        Hook::listen(__CLASS__);
         $this->setCharset('UTF-8');
     }
 
