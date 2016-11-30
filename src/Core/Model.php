@@ -44,7 +44,7 @@ class Model
      */
     public function __construct()
     {
-        Hook::listen('Model');
+        Hook::listen(__CLASS__);
     }
 
     /**

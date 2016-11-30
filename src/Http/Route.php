@@ -139,7 +139,7 @@ class Route
         if (trim($this->_uri, '/') == '') {
             $this->_uri = '/';
         }
-        Hook::listen('Route');
+        Hook::listen(__CLASS__);
     }
 
     /**
@@ -160,18 +160,18 @@ class Route
 
         switch ($this->_uri) {
             case 'favicon.ico':
-                Response::getSoul()->setCacheHeader();
                 Response::getSoul()->setHeader('Content-Type', 'image/x-icon');
+                Response::getSoul()->setCacheHeader();
                 echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Common::logo()));
                 exit;
             case 'kotori-php-system-route/highlight-github.css':
-                Response::getSoul()->setCacheHeader();
                 Response::getSoul()->setHeader('Content-Type', 'text/css; charset=utf-8');
+                Response::getSoul()->setCacheHeader();
                 echo file_get_contents(Common::getComposerVendorPath() . '/components/highlightjs/styles/github.css');
                 exit;
             case 'kotori-php-system-route/highlight.js':
-                Response::getSoul()->setCacheHeader();
                 Response::getSoul()->setHeader('Content-Type', 'text/javascript; charset=utf-8');
+                Response::getSoul()->setCacheHeader();
                 echo file_get_contents(Common::getComposerVendorPath() . '/components/highlightjs/highlight.pack.min.js');
                 exit;
         }

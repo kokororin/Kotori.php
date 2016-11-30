@@ -94,7 +94,7 @@ class Trace
      */
     public function __construct()
     {
-        Hook::listen('Trace');
+        Hook::listen(__CLASS__);
     }
 
     /**
@@ -123,8 +123,8 @@ class Trace
 
         $base = array(
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
-            'Run Time' => Hook::listen('Kotori') . 'μs',
-            'TPR' => Hook::listen('Kotori') != 0 ? pow(10, 6) / Hook::listen('Kotori') . ' req/s' : '+inf',
+            'Run Time' => Hook::listen('\\Kotori\\App') . 'μs',
+            'TPR' => Hook::listen('\\Kotori\\App') != 0 ? pow(10, 6) / Hook::listen('\\Kotori\\App') . ' req/s' : '+inf',
             'Memory Uses' => number_format((memory_get_usage() - START_MEMORY) / 1024, 2) . ' kb',
             'SQL Queries' => count($sql) . ' queries ',
             'File Loaded' => count(get_included_files()),
@@ -213,7 +213,7 @@ class Trace
         $errorCount = count(Handle::$errors);
 
         if ($errorCount == 0) {
-            $tpl .= Hook::listen('Kotori') . 'μs';
+            $tpl .= Hook::listen('\\Kotori\\App') . 'μs';
         } else {
             $tpl .= $errorCount . ' errors';
         }

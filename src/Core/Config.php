@@ -96,7 +96,7 @@ class Config
      */
     public function __construct()
     {
-        Hook::listen('Config');
+        Hook::listen(__CLASS__);
     }
 
     /**

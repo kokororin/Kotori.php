@@ -41,6 +41,7 @@ $config = [
             'delete' => 'Hello/deleteNews',
         ],
         'captcha' => 'Hello/captcha',
+        'memcache' => 'Hello/memcache',
         'cliTest/(.*)' => [
             'cli' => 'Hello/cli/$1',
         ],

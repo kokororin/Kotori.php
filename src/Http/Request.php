@@ -88,7 +88,7 @@ class Request
      */
     public function __construct()
     {
-        Hook::listen('Request');
+        Hook::listen(__CLASS__);
     }
 
     /**

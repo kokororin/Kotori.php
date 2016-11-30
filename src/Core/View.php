@@ -92,16 +92,19 @@ class View
     }
 
     /**
+     * Class constructor
+     * 
      * @param string $tplDir Template Directory
+     * @return void
      */
-    public function __construct($tplDir = '')
+    public function __construct($tplDir = null)
     {
-        if ('' == $tplDir) {
+        if (null == $tplDir) {
             $this->_tplDir = Config::getSoul()->APP_FULL_PATH . '/views/';
         } else {
             $this->_tplDir = $tplDir;
         }
-        Hook::listen('View');
+        Hook::listen(__CLASS__);
     }
 
     /**
