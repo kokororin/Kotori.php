@@ -62,12 +62,12 @@ class Hello extends Controller
     public function memcache()
     {
         $this->cache->set('testvalue', 'TESTVALUE');
-        print_r($this->cache->get('testvalue'));
+        var_dump($this->cache->get('testvalue'));
         $this->cache->set('testarray', array(
             'id' => 1,
             'name' => 'abc',
         ));
-        print_r($this->cache->get('testarray'));
+        var_dump($this->cache->get('testarray'));
     }
 
     public function cli($to = 'World')

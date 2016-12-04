@@ -31,6 +31,9 @@ $config = [
             'TYPE' => 'mysql',
         ],
     ],
+    // 'CACHE' => [
+    //     'ADAPTER' => 'memcached',
+    // ],
     'URL_MODE' => 'PATH_INFO',
     'URL_ROUTE' => [
         '/' => 'Hello/index',

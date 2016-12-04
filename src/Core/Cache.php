@@ -32,6 +32,7 @@
 namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
+use Kotori\Debug\Log;
 
 class Cache
 {
@@ -41,6 +42,7 @@ class Cache
      * @var array
      */
     protected $validDrivers = array(
+        'dummy',
         'memcached',
     );
 
@@ -79,7 +81,7 @@ class Cache
      *
      * @var mixed
      */
-    protected $_adapter = 'memcached';
+    protected $_adapter = 'dummy';
 
     /**
      * Cache key prefix
@@ -93,23 +95,22 @@ class Cache
      *
      * Initialize class properties based on the configuration array.
      *
-     * @param array $config
      * @return void
      */
-    public function __construct($config = array())
+    public function __construct()
     {
-        isset($config['adapter']) && $this->_adapter = $config['adapter'];
-        isset($config['prefix']) && $this->keyPrefix = $config['prefix'];
+        $config = Config::getSoul()->CACHE;
+        isset($config['ADAPTER']) && $this->_adapter = $config['ADAPTER'];
+        isset($config['PREFIX']) && $this->keyPrefix = $config['PREFIX'];
         $className = '\\Kotori\\Core\\Cache\\' . ucfirst($this->_adapter);
         $this->{$this->_adapter} = new $className();
-        // If the specified adapter isn't available, check the backup.
+
         if (!$this->isSupported($this->_adapter)) {
-            throw new \Exception('Cache adapter "' . $this->_adapter . '" is unavailable.');
+            Log::normal('[Error] Cache adapter "' . $this->_adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
+            $this->_adapter = 'dummy';
         }
         Hook::listen(__CLASS__);
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Get
@@ -125,8 +126,6 @@ class Cache
         return $this->{$this->_adapter}->get($this->keyPrefix . $id);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Cache Set
      *
@@ -141,8 +140,6 @@ class Cache
         return $this->{$this->_adapter}->set($this->keyPrefix . $id, $data, $ttl, $raw);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Delete from Cache
      *
@@ -153,8 +150,6 @@ class Cache
     {
         return $this->{$this->_adapter}->delete($this->keyPrefix . $id);
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Increment a raw value
@@ -168,8 +163,6 @@ class Cache
         return $this->{$this->_adapter}->increment($this->keyPrefix . $id, $offset);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Decrement a raw value
      *
@@ -182,8 +175,6 @@ class Cache
         return $this->{$this->_adapter}->decrement($this->keyPrefix . $id, $offset);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Clean the cache
      *
@@ -193,8 +184,6 @@ class Cache
     {
         return $this->{$this->_adapter}->clean();
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Cache Info
@@ -207,8 +196,6 @@ class Cache
         return $this->{$this->_adapter}->cacheInfo($type);
     }
 
-    // ------------------------------------------------------------------------
-
     /**
      * Get Cache Metadata
      *
@@ -219,8 +206,6 @@ class Cache
     {
         return $this->{$this->_adapter}->getMetadata($this->keyPrefix . $id);
     }
-
-    // ------------------------------------------------------------------------
 
     /**
      * Is the requested driver supported in this environment?

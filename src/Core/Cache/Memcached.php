@@ -33,6 +33,7 @@ namespace Kotori\Core\Cache;
 
 use Kotori\Core\Config;
 use Kotori\Debug\Hook;
+use Kotori\Debug\Log;
 
 class Memcached
 {
@@ -50,9 +51,9 @@ class Memcached
      */
     protected $_memcacheConf = array(
         'default' => array(
-            'host' => '127.0.0.1',
-            'port' => 11211,
-            'weight' => 1,
+            'HOST' => '127.0.0.1',
+            'PORT' => 11211,
+            'WEIGHT' => 1,
         ),
     );
 
@@ -67,11 +68,13 @@ class Memcached
     {
         // Try to load memcached server info from the config file.
         $defaults = $this->_memcacheConf['default'];
+        $config = Config::getSoul()->CACHE;
+        $memcacheConf = isset($config['MEMCACHED']) ? $config['MEMCACHED'] : null;
 
-        if (is_array(Config::getSoul()->MEMCACHED)) {
+        if (is_array($memcacheConf)) {
             $this->_memcacheConf = array();
 
-            foreach (Config::getSoul()->MEMCACHED as $name => $conf) {
+            foreach ($memcacheConf as $name => $conf) {
                 $this->_memcacheConf[$name] = $conf;
             }
         }
@@ -81,27 +84,27 @@ class Memcached
         } elseif (class_exists('Memcache', false)) {
             $this->_memcached = new \Memcache();
         } else {
-            throw new \Exception('Failed to create Memcache(d) object; extension not loaded?');
+            Log::normal('[Error] Failed to create Memcache(d) object; extension not loaded?');
         }
 
         foreach ($this->_memcacheConf as $cacheServer) {
-            isset($cacheServer['hostname']) or $cacheServer['hostname'] = $defaults['host'];
-            isset($cacheServer['port']) or $cacheServer['port'] = $defaults['port'];
-            isset($cacheServer['weight']) or $cacheServer['weight'] = $defaults['weight'];
+            isset($cacheServer['HOST']) or $cacheServer['HOST'] = $defaults['HOST'];
+            isset($cacheServer['PORT']) or $cacheServer['PORT'] = $defaults['PORT'];
+            isset($cacheServer['WEIGHT']) or $cacheServer['WEIGHT'] = $defaults['WEIGHT'];
 
             if (get_class($this->_memcached) === 'Memcache') {
                 // Third parameter is persistance and defaults to TRUE.
                 $this->_memcached->addServer(
-                    $cacheServer['hostname'],
-                    $cacheServer['port'],
+                    $cacheServer['HOST'],
+                    $cacheServer['PORT'],
                     true,
-                    $cacheServer['weight']
+                    $cacheServer['WEIGHT']
                 );
             } else {
                 $this->_memcached->addServer(
-                    $cacheServer['hostname'],
-                    $cacheServer['port'],
-                    $cacheServer['weight']
+                    $cacheServer['HOST'],
+                    $cacheServer['PORT'],
+                    $cacheServer['WEIGHT']
                 );
             }
         }
