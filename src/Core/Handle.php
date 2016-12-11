@@ -37,7 +37,7 @@ use Kotori\Http\Response;
 use Kotori\Http\Route;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
-class Handle
+abstract class Handle
 {
     /**
      * Error Array
@@ -65,7 +65,7 @@ class Handle
         }
         $tplPath = Config::getSoul()->ERROR_TPL;
 
-        if ($tplPath == null || !Common::isFile(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html')) {
+        if ($tplPath == null || !Helper::isFile(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -374,12 +374,12 @@ window.onload = function() {
 
         try {
             $contents = file($file);
-            $source = [
+            $source = array(
                 'first' => $first,
                 'source' => array_slice($contents, $first - 1, 19),
-            ];
-        } catch (Exception $e) {
-            $source = [];
+            );
+        } catch (\Exception $e) {
+            $source = array();
         }
         return $source;
     }

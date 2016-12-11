@@ -79,7 +79,7 @@ class Build
             return;
         }
         foreach ($this->_folders as $folder) {
-            Common::mkdirs($this->_appPath . '/' . $folder);
+            Helper::mkdirs($this->_appPath . '/' . $folder);
         }
         if (!is_file($this->_appPath . '/common.php')) {
             file_put_contents($this->_appPath . '/common.php', '<?php

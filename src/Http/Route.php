@@ -33,8 +33,8 @@
  */
 namespace Kotori\Http;
 
-use Kotori\Core\Common;
 use Kotori\Core\Config;
+use Kotori\Core\Helper;
 use Kotori\Debug\Hook;
 
 class Route
@@ -162,17 +162,17 @@ class Route
             case 'favicon.ico':
                 Response::getSoul()->setHeader('Content-Type', 'image/x-icon');
                 Response::getSoul()->setCacheHeader();
-                echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Common::logo()));
+                echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Helper::logo()));
                 exit;
             case 'kotori-php-system-route/highlight-github.css':
                 Response::getSoul()->setHeader('Content-Type', 'text/css; charset=utf-8');
                 Response::getSoul()->setCacheHeader();
-                echo file_get_contents(Common::getComposerVendorPath() . '/components/highlightjs/styles/github.css');
+                echo file_get_contents(Helper::getComposerVendorPath() . '/components/highlightjs/styles/github.css');
                 exit;
             case 'kotori-php-system-route/highlight.js':
                 Response::getSoul()->setHeader('Content-Type', 'text/javascript; charset=utf-8');
                 Response::getSoul()->setCacheHeader();
-                echo file_get_contents(Common::getComposerVendorPath() . '/components/highlightjs/highlight.pack.min.js');
+                echo file_get_contents(Helper::getComposerVendorPath() . '/components/highlightjs/highlight.pack.min.js');
                 exit;
         }
 

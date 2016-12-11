@@ -34,8 +34,8 @@
 namespace Kotori;
 
 use Kotori\Core\Build;
-use Kotori\Core\Common;
 use Kotori\Core\Config;
+use Kotori\Core\Helper;
 use Kotori\Http\Route;
 
 class App
@@ -87,14 +87,14 @@ class App
         new Build(Config::getSoul()->APP_FULL_PATH);
 
         //Load application's common functions
-        Common::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
+        Helper::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
 
         if (function_exists('spl_autoload_register')) {
-            spl_autoload_register(array('\\Kotori\\Core\\Common', 'autoload'));
+            spl_autoload_register(array('\\Kotori\\Core\\Helper', 'autoload'));
         } else {
             function __autoload($className)
             {
-                Common::autoload($className);
+                Helper::autoload($className);
             }
         }
 

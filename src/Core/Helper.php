@@ -22,9 +22,9 @@
  */
 
 /**
- * Common Class
+ * Helper Class
  *
- * Common APIs.
+ * Common API Helpers.
  *
  * @package     Kotori
  * @subpackage  Core
@@ -35,7 +35,7 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 
-class Common
+abstract class Helper
 {
     /**
      * Require Array
@@ -111,7 +111,7 @@ class Common
         // with .php
         $file = $baseRoot . '/' . str_replace('\\', '/', $relativeClass) . '.php';
 
-        Common::import($file);
+        self::import($file);
     }
 
     /**

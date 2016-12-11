@@ -134,7 +134,7 @@ class View
             $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
         }
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
-        if (!Common::isFile($this->_viewPath)) {
+        if (!Helper::isFile($this->_viewPath)) {
             throw new \Exception('Template is not existed.');
         }
         unset($tpl);
@@ -143,7 +143,7 @@ class View
         include $this->_viewPath;
         $buffer = ob_get_contents();
         ob_get_clean();
-        $output = Common::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Trace::getSoul()->showTrace();
+        $output = Helper::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Trace::getSoul()->showTrace();
         if ($count > 0) {
             $output .= '</body></html>';
         }
