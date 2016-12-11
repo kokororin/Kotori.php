@@ -31,10 +31,10 @@
  */
 namespace Kotori\Debug;
 
-use Kotori\Core\Common;
 use Kotori\Core\Config;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
+use Kotori\Core\Helper;
 
 class Trace
 {
@@ -218,7 +218,7 @@ class Trace
             $tpl .= $errorCount . ' errors';
         }
 
-        $tpl .= '</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="' . Common::logo() . '"></div>
+        $tpl .= '</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="' . Helper::logo() . '"></div>
 <script type="text/javascript">
 (function() {
 \'use strict\';

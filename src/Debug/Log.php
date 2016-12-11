@@ -32,9 +32,9 @@
 namespace Kotori\Debug;
 
 use Kotori\Core\Config;
-use Kotori\Core\Common;
+use Kotori\Core\Helper;
 
-class Log
+abstract class Log
 {
     /**
      * Write Log File
@@ -59,7 +59,7 @@ class Log
             $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
             $logPath = Config::getSoul()->APP_FULL_PATH . '/logs';
             if (!file_exists($logPath)) {
-                Common::mkdirs($logPath);
+                Helper::mkdirs($logPath);
             }
             file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
         }

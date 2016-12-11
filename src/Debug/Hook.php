@@ -31,7 +31,7 @@
  */
 namespace Kotori\Debug;
 
-class Hook
+abstract class Hook
 {
     /**
      * Hook tags
