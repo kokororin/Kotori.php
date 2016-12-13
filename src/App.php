@@ -81,7 +81,9 @@ class App
 
         ini_set('date.timezone', Config::getSoul()->TIME_ZONE);
 
-        !session_id() && session_start();
+        if (Config::getSoul()->USE_SESSION) {
+            !session_id() && session_start();
+        }
 
         //Build
         new Build(Config::getSoul()->APP_FULL_PATH);
