@@ -55,6 +55,7 @@ class Config
         'APP_PATH' => './app/',
         'URL_MODE' => 'QUERY_STRING',
         'TIME_ZONE' => 'Asia/Shanghai',
+        'USE_SESSION' => true,
     );
 
     /**
