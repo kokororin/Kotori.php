@@ -316,7 +316,9 @@ class Request
             return $this->_ip[$type];
         }
 
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            $this->_ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
             $pos = array_search('unknown', $arr);
             if (false !== $pos) {
