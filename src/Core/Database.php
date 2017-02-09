@@ -34,8 +34,9 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
+use Medoo\Medoo as Medoo;
 
-class Database extends \medoo
+class Database extends Medoo
 {
     /**
      * SQL queries
