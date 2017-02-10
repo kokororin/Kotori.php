@@ -61,6 +61,7 @@ abstract class Hook
         if (!isset(self::$tags[$name])) {
             self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
         }
+
         return self::$tags[$name];
     }
 

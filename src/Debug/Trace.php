@@ -35,6 +35,7 @@ use Kotori\Core\Config;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
 use Kotori\Core\Helper;
+use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 class Trace
 {
@@ -82,6 +83,7 @@ class Trace
         if (self::$_soul === null) {
             self::$_soul = new self();
         }
+
         return self::$_soul;
     }
 
@@ -112,10 +114,12 @@ class Trace
         foreach ($files as $key => $file) {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
+
         $hook = Hook::getTags();
         foreach ($hook as $key => $value) {
             $hook[$key] = ' ( ' . $value . ' μs )';
         }
+
         $error = Handle::$errors;
         $database = Database::getSoul(Config::getSoul()->SELECTED_DB_KEY);
 
@@ -168,6 +172,7 @@ class Trace
                     break;
             }
         }
+
         return $trace;
     }
 
@@ -181,6 +186,7 @@ class Trace
         if (Config::getSoul()->APP_DEBUG == false) {
             return;
         }
+
         $trace = $this->getTrace();
         $tpl = '
 <!-- Kotori Page Trace (If you want to hide this feature, please set APP_DEBUG to false.)-->
@@ -190,6 +196,7 @@ class Trace
         foreach ($trace as $key => $value) {
             $tpl .= '<span id="page_trace_tab_tit_' . strtolower($key) . '" style="color:#000;padding-right:12px;height:30px;line-height: 30px;display:inline-block;margin-right:3px;cursor: pointer;font-weight:700">' . $key . '</span>';
         }
+
         $tpl .= '</div>
 <div id="page_trace_tab_cont" style="overflow:auto;height:212px;padding:0;line-height:24px">';
         foreach ($trace as $key => $info) {
@@ -202,9 +209,11 @@ class Trace
                     $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $val . '</li>';
                 }
             }
+
             $tpl .= '</ol>
     </div>';
         }
+
         $tpl .= '</div>
 </div>
 <div id="page_trace_close" style="display:none;text-align:right;height:15px;position:absolute;top:10px;right:12px;cursor: pointer;"><img style="vertical-align:top;" src="data:image/gif;base64,R0lGODlhDwAPAJEAAAAAAAMDA////wAAACH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4wLWMwNjAgNjEuMTM0Nzc3LCAyMDEwLzAyLzEyLTE3OjMyOjAwICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IFdpbmRvd3MiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MUQxMjc1MUJCQUJDMTFFMTk0OUVGRjc3QzU4RURFNkEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MUQxMjc1MUNCQUJDMTFFMTk0OUVGRjc3QzU4RURFNkEiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoxRDEyNzUxOUJBQkMxMUUxOTQ5RUZGNzdDNThFREU2QSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoxRDEyNzUxQUJBQkMxMUUxOTQ5RUZGNzdDNThFREU2QSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAAAAAAALAAAAAAPAA8AAAIdjI6JZqotoJPR1fnsgRR3C2jZl3Ai9aWZZooV+RQAOw==" /></div>
@@ -218,8 +227,8 @@ class Trace
             $tpl .= $errorCount . ' errors';
         }
 
-        $tpl .= '</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="' . Helper::logo() . '"></div>
-<script type="text/javascript">
+        $tpl .= '</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="' . Helper::logo() . '"></div>';
+        $tpl .= htmlParserFactory::construct()->compress('<script type="text/javascript">
 (function() {
 \'use strict\';
 var tab_tit = document.getElementById(\'page_trace_tab_tit\').getElementsByTagName(\'span\'),
@@ -267,7 +276,7 @@ for (var i = 0; i < tab_tit.length; i++) {
 parseInt(history[0]) && open.click();
 tab_tit[history[1]].click();
 })();
-</script>';
+</script>');
         return $tpl;
     }
 }

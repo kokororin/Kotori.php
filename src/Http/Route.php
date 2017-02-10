@@ -108,6 +108,7 @@ class Route
         if (self::$_soul === null) {
             self::$_soul = new self();
         }
+
         return self::$_soul;
     }
 
@@ -126,6 +127,7 @@ class Route
             if (isset($_GET['_i'])) {
                 $_SERVER['PATH_INFO'] = $_GET['_i'];
             }
+
             $_SERVER['PATH_INFO'] = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO']
             : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
                 : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
@@ -136,9 +138,11 @@ class Route
         if (substr($this->_uri, 0, 1) == '/') {
             $this->_uri = ltrim($this->_uri, '/');
         }
+
         if (trim($this->_uri, '/') == '') {
             $this->_uri = '/';
         }
+
         Hook::listen(__CLASS__);
     }
 
@@ -164,16 +168,6 @@ class Route
                 Response::getSoul()->setCacheHeader();
                 echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Helper::logo()));
                 exit;
-            case 'kotori-php-system-route/highlight-github.css':
-                Response::getSoul()->setHeader('Content-Type', 'text/css; charset=utf-8');
-                Response::getSoul()->setCacheHeader();
-                echo file_get_contents(Helper::getComposerVendorPath() . '/components/highlightjs/styles/github.css');
-                exit;
-            case 'kotori-php-system-route/highlight.js':
-                Response::getSoul()->setHeader('Content-Type', 'text/javascript; charset=utf-8');
-                Response::getSoul()->setCacheHeader();
-                echo file_get_contents(Helper::getComposerVendorPath() . '/components/highlightjs/highlight.pack.min.js');
-                exit;
         }
 
         $parsedRoute = $this->parseRoutes($this->_uri);
@@ -192,6 +186,7 @@ class Route
                 unset($this->_uris[$key]);
             }
         }
+
         $this->_uris = array_merge($this->_uris);
 
         $this->_controller = $this->getController();
@@ -219,6 +214,7 @@ class Route
         if (!method_exists($class, $this->_action)) {
             throw new \Exception('Request Action ' . $this->_action . ' is not Found.');
         }
+
         //Parse params from uri
         $this->_params = $this->getParams();
 
@@ -246,6 +242,7 @@ class Route
         } else {
             throw new \Exception('Cannot dispatch controller name.');
         }
+
         return strip_tags($_controller);
     }
 
@@ -262,6 +259,7 @@ class Route
         } else {
             throw new \Exception('Cannot dispatch action name.');
         }
+
         return strip_tags($_action);
     }
 
@@ -329,7 +327,6 @@ class Route
 
                     return $val;
                 }
-
             }
         }
 
@@ -363,6 +360,7 @@ class Route
                 foreach ($appPaths as &$appPath) {
                     $appPath = str_replace('./', '', $appPath);
                 }
+
                 $appPaths = array_flip($appPaths);
                 $baseUrl = $appPaths[$module];
                 $baseUrl = '//' . $baseUrl . '/';
@@ -377,10 +375,8 @@ class Route
         switch (Config::getSoul()->URL_MODE) {
             case 'PATH_INFO':
                 return $uri == '' ? rtrim($baseUrl, '/') : $baseUrl . $uri;
-                break;
             case 'QUERY_STRING':
                 return $uri == '' ? rtrim($baseUrl, '/') : $prefix . $uri;
-                break;
             default:
                 throw new \Exception('URL_MODE Config ERROR');
         }

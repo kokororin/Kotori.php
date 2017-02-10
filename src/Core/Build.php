@@ -78,9 +78,11 @@ class Build
         if (is_dir($this->_appPath)) {
             return;
         }
+
         foreach ($this->_folders as $folder) {
             Helper::mkdirs($this->_appPath . '/' . $folder);
         }
+
         if (!is_file($this->_appPath . '/common.php')) {
             file_put_contents($this->_appPath . '/common.php', '<?php
 // common functions');
