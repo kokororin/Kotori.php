@@ -79,6 +79,7 @@ class Database extends Medoo
                 return null;
             }
         }
+
         Config::getSoul()->SELECTED_DB_KEY = $key;
         $config = array(
             'database_type' => Config::getSoul()->DB[$key]['TYPE'],
@@ -93,6 +94,7 @@ class Database extends Medoo
         if (!isset(self::$_soul[$key])) {
             self::$_soul[$key] = new self($config);
         }
+
         return self::$_soul[$key];
     }
 

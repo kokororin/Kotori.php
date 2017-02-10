@@ -85,6 +85,7 @@ class Config
         if (self::$_soul === null) {
             self::$_soul = new self();
         }
+
         return self::$_soul;
     }
 
@@ -116,11 +117,13 @@ class Config
                         if (!isset($value['PORT'])) {
                             $value['PORT'] = 3306;
                         }
+
                         if (!isset($value['CHARSET'])) {
                             $value['CHARSET'] = 'utf8';
                         }
                     }
                 }
+
                 $this->_config = array_merge($this->_defaults, $this->_config);
                 if (is_array($this->APP_PATH)) {
                     $hostName = Request::getSoul()->getHostName();
@@ -132,10 +135,12 @@ class Config
                 } else {
                     $appPath = $this->APP_PATH;
                 }
+
                 $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($appPath, '/'))), $this->_config);
                 $this->NAMESPACE_PREFIX = basename($this->APP_FULL_PATH) . '\\';
             }
         }
+
         return false;
     }
 
@@ -170,6 +175,7 @@ class Config
         if (is_string($key)) {
             return isset($this->_config[$key]) ? $this->_config[$key] : null;
         }
+
         return null;
     }
 

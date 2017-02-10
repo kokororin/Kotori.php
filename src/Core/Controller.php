@@ -58,6 +58,7 @@ class Controller
         if (self::$_soul === null) {
             self::$_soul = new self();
         }
+
         return self::$_soul;
     }
 

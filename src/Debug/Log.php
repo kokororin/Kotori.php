@@ -50,6 +50,7 @@ abstract class Log
         if (Config::getSoul()->APP_DEBUG == false) {
             return;
         }
+
         if (function_exists('saeAutoLoader')) {
             $msg = "[{$level}]" . $msg;
             sae_set_display_errors(false);
@@ -61,6 +62,7 @@ abstract class Log
             if (!file_exists($logPath)) {
                 Helper::mkdirs($logPath);
             }
+
             file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
         }
     }

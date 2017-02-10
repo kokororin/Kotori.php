@@ -117,6 +117,7 @@ class Response
         if (self::$_soul === null) {
             self::$_soul = new self();
         }
+
         return self::$_soul;
     }
 
@@ -167,7 +168,9 @@ class Response
         }
 
         if (empty($text)) {
-            is_int($code) or $code = (int) $code;
+            if (!is_int($code)) {
+                $code = (int) $code;
+            }
 
             if (isset($this->_httpCode[$code])) {
                 $text = $this->_httpCode[$code];
@@ -224,6 +227,7 @@ class Response
             $this->setContentType('application/json');
             exit(json_encode($data));
         }
+
         exit('json_encode function needs PHP > 5.2');
     }
 
@@ -256,6 +260,7 @@ class Response
             $this->setStatus(304);
             exit;
         }
+
         $this->setHeader('Expires', gmdate('D, d M Y H:i:s', time() + 365 * 24 * 60 * 60) . ' GMT');
         $this->setHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
         $this->setHeader('Cache-Control', 'immutable');
