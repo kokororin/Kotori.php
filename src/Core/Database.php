@@ -114,16 +114,16 @@ class Database extends Medoo
     public function query($query)
     {
         array_push($this->logs, $query);
-        Log::sql($this->last_query());
-        array_push($this->queries, $this->last_query());
+        Log::sql($this->last());
+        array_push($this->queries, $this->last());
         return parent::query($query);
     }
 
     public function exec($query)
     {
         array_push($this->logs, $query);
-        Log::sql($this->last_query());
-        array_push($this->queries, $this->last_query());
+        Log::sql($this->last());
+        array_push($this->queries, $this->last());
         return parent::exec($query);
     }
 
