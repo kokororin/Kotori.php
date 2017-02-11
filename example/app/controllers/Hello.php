@@ -13,7 +13,9 @@ class Hello extends Controller
     public function index()
     {
         $news_list = $this->model->News->getNewsList();
-        $this->view->assign('title', 'Welcome to Kotori.php')
+        $this->view->assign('news_list', $news_list)
+            ->assign('title', 'Welcome to Kotori.php')
+            ->assign('logo', 'https://raw.githubusercontent.com/kokororin/Kotori.php/master/src/Kotori.gif')
             ->display();
     }
 

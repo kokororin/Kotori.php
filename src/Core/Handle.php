@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@
  */
 namespace Kotori\Core;
 
+use Highlight\Highlighter;
 use Kotori\Debug\Log;
 use Kotori\Http\Request;
 use Kotori\Http\Response;
-use Kotori\Http\Route;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 abstract class Handle
@@ -63,6 +63,7 @@ abstract class Handle
         if (Config::getSoul()->APP_DEBUG == false) {
             $message = '404 Not Found.';
         }
+
         $tplPath = Config::getSoul()->ERROR_TPL;
 
         if ($tplPath == null || !Helper::isFile(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html')) {
@@ -84,7 +85,7 @@ abstract class Handle
     td, th { vertical-align:top; padding:2px 3px; }
     th { width:12em; text-align:right; color:#666; padding-right:.5em; }
     #info { background:#f6f6f6; }
-    #info p {font-size: 16px}
+    #info p {font-size: 16px; margin: 5px;}
     #summary { background: #ffc; }
     #explanation { background:#eee; border-bottom: 0px none; }
   </style>
@@ -122,8 +123,7 @@ abstract class Handle
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
-        $htmlParser = htmlParserFactory::construct();
-        $tpl = $htmlParser->compress($tpl);
+        $tpl = htmlParserFactory::construct()->compress($tpl);
         exit($tpl);
     }
 
@@ -249,6 +249,7 @@ abstract class Handle
                 $errtype = 'Unknown';
                 break;
         }
+
         return $errtype;
     }
 
@@ -269,7 +270,7 @@ abstract class Handle
         $sourceLen = strlen(strval(count($source['source']) + $source['first']));
         $padding = 40 + ($sourceLen - 1) * 8;
         if (!empty($source)) {
-            $text .= '<link href="' . Route::getSoul()->url('kotori-php-system-route/highlight-github.css') . '" rel="stylesheet" />';
+            $text .= '<style>' . file_get_contents(Helper::getComposerVendorPath() . '/scrivo/highlight.php/styles/github.css') . '</style>';
             $text .= '<style>
 .source-code {
     padding: 6px;
@@ -314,22 +315,18 @@ abstract class Handle
 
 </style>';
             $text .= '<p><strong>Source Code: </strong></p><div class="source-code">
-<pre id="code-block" class="lang-php">
+<pre id="code-block" class="hljs language-php">
     <ol start="' . $source['first'] . '">';
+            $highlighter = new Highlighter();
             foreach ($source['source'] as $key => $value) {
                 $currentLine = $key + $source['first'];
                 $extendClass = ($currentLine == $line) ? ' line-error' : '';
-                $text .= '<li class="line-' . $currentLine . $extendClass . '"><code>' . htmlentities($value) . '</code></li>';
+                $text .= '<li class="line-' . $currentLine . $extendClass . '"><code>' . $highlighter->highlight('php', $value)->value . '</code></li>';
             }
-            $text .= '</ol></pre></div>';
-            $text .= '<script type="text/javascript" src="' . Route::getSoul()->url('kotori-php-system-route/highlight.js') . '"></script>';
-            $text .= '<script type="text/javascript">
-window.onload = function() {
-    hljs.highlightBlock(document.getElementById("code-block"));
-};
-</script>';
 
+            $text .= '</ol></pre></div>';
         }
+
         return $text;
     }
 
@@ -356,10 +353,12 @@ window.onload = function() {
      * @param int $line Error line
      * @return string
      */
+    // @codingStandardsIgnoreStart
     protected static function renderErrorText($type, $message, $line, $file)
     {
         return $message . ' in ' . $file . ' on line ' . $line;
     }
+    // @codingStandardsIgnoreEnd
 
     /**
      * get source code from file
@@ -381,6 +380,7 @@ window.onload = function() {
         } catch (\Exception $e) {
             $source = array();
         }
+
         return $source;
     }
 

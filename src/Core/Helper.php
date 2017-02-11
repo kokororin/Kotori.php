@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ abstract class Helper
                 self::$_require[$path] = false;
             }
         }
+
         return self::$_require[$path];
 
     }
@@ -79,8 +80,10 @@ abstract class Helper
                     return false;
                 }
             }
+
             return true;
         }
+
         return false;
     }
 
@@ -124,7 +127,7 @@ abstract class Helper
     public static function mkdirs($pathname, $mode = 0755)
     {
         is_dir(dirname($pathname)) || self::mkdirs(dirname($pathname), $mode);
-        return is_dir($pathname) || @mkdir($pathname, $mode);
+        return is_dir($pathname) || @mkdir($pathname, $mode);// @codingStandardsIgnoreLine
     }
 
     /**
@@ -152,7 +155,6 @@ abstract class Helper
             if (file_exists($composer)) {
                 $root = $directory;
             }
-
         } while (is_null($root) && $directory != '/');
 
         // We either are at the root or we got lost.

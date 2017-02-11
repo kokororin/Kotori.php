@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ class Cache
         if (self::$_soul === null) {
             self::$_soul = new self();
         }
+
         return self::$_soul;
     }
 
@@ -100,8 +101,14 @@ class Cache
     public function __construct()
     {
         $config = Config::getSoul()->CACHE;
-        isset($config['ADAPTER']) && $this->_adapter = $config['ADAPTER'];
-        isset($config['PREFIX']) && $this->keyPrefix = $config['PREFIX'];
+        if (isset($config['ADAPTER'])) {
+            $this->_adapter = $config['ADAPTER'];
+        }
+
+        if (isset($config['PREFIX'])) {
+            $this->keyPrefix = $config['PREFIX'];
+        }
+        
         $className = '\\Kotori\\Core\\Cache\\' . ucfirst($this->_adapter);
         $this->{$this->_adapter} = new $className();
 
@@ -109,6 +116,7 @@ class Cache
             Log::normal('[Error] Cache adapter "' . $this->_adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
             $this->_adapter = 'dummy';
         }
+
         Hook::listen(__CLASS__);
     }
 

@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,6 +104,7 @@ class View
         } else {
             $this->_tplDir = $tplDir;
         }
+
         Hook::listen(__CLASS__);
     }
 
@@ -133,10 +134,12 @@ class View
         if ('' === $tpl) {
             $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
         }
+
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
         if (!Helper::isFile($this->_viewPath)) {
             throw new \Exception('Template is not existed.');
         }
+
         unset($tpl);
         ob_start();
         extract($this->_data, EXTR_OVERWRITE);
@@ -147,6 +150,7 @@ class View
         if ($count > 0) {
             $output .= '</body></html>';
         }
+
         echo $output;
     }
 

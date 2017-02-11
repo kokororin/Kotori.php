@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +78,11 @@ class Build
         if (is_dir($this->_appPath)) {
             return;
         }
+
         foreach ($this->_folders as $folder) {
             Helper::mkdirs($this->_appPath . '/' . $folder);
         }
+
         if (!is_file($this->_appPath . '/common.php')) {
             file_put_contents($this->_appPath . '/common.php', '<?php
 // common functions');

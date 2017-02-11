@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
-use Medoo\Medoo as Medoo;
+use Medoo\Medoo;
 
 class Database extends Medoo
 {
@@ -79,6 +79,7 @@ class Database extends Medoo
                 return null;
             }
         }
+
         Config::getSoul()->SELECTED_DB_KEY = $key;
         $config = array(
             'database_type' => Config::getSoul()->DB[$key]['TYPE'],
@@ -89,10 +90,11 @@ class Database extends Medoo
             'charset' => Config::getSoul()->DB[$key]['CHARSET'],
             'port' => Config::getSoul()->DB[$key]['PORT'],
         );
-       
+
         if (!isset(self::$_soul[$key])) {
             self::$_soul[$key] = new self($config);
         }
+
         return self::$_soul[$key];
     }
 

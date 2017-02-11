@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,9 +88,17 @@ class Memcached
         }
 
         foreach ($this->_memcacheConf as $cacheServer) {
-            isset($cacheServer['HOST']) or $cacheServer['HOST'] = $defaults['HOST'];
-            isset($cacheServer['PORT']) or $cacheServer['PORT'] = $defaults['PORT'];
-            isset($cacheServer['WEIGHT']) or $cacheServer['WEIGHT'] = $defaults['WEIGHT'];
+            if (!isset($cacheServer['HOST'])) {
+                $cacheServer['HOST'] = $defaults['HOST'];
+            }
+
+            if (!isset($cacheServer['PORT'])) {
+                $cacheServer['PORT'] = $defaults['PORT'];
+            }
+
+            if (!isset($cacheServer['WEIGHT'])) {
+                $cacheServer['WEIGHT'] = $defaults['WEIGHT'];
+            }
 
             if (get_class($this->_memcached) === 'Memcache') {
                 // Third parameter is persistance and defaults to TRUE.
@@ -108,6 +116,7 @@ class Memcached
                 );
             }
         }
+
         Hook::listen(__CLASS__);
     }
 

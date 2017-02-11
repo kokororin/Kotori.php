@@ -6,7 +6,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2016 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,11 @@ class App
      */
     public function __construct($config = array())
     {
-        version_compare(PHP_VERSION, '5.3.0', '<') && exit('Kotori.php requires PHP >= 5.3.0 !');
+
+        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+            exit('Kotori.php requires PHP >= 5.3.0 !');
+        }
+
         ini_set('display_errors', 'off');
         define('START_TIME', microtime(true));
         define('START_MEMORY', memory_get_usage());
@@ -91,6 +95,7 @@ class App
         //Load application's common functions
         Helper::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
 
+        // @codingStandardsIgnoreStart
         if (function_exists('spl_autoload_register')) {
             spl_autoload_register(array('\\Kotori\\Core\\Helper', 'autoload'));
         } else {
@@ -99,6 +104,7 @@ class App
                 Helper::autoload($className);
             }
         }
+        // @codingStandardsIgnoreEnd
 
         //Load route class
         Route::getSoul()->dispatch();
