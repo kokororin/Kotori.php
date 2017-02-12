@@ -31,7 +31,7 @@ class Hello extends Controller
 
     public function insertNews()
     {
-        //print_r($this->request->input('post.'));
+        print_r($this->request->input('post.'));
         $this->db->update('news',
             array('hits[+]' => 1),
             array(
