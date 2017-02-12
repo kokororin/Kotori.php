@@ -328,14 +328,14 @@ class Route implements SoulInterface
     public function url($uri = '', $module = null)
     {
         if ($module != null) {
-            $appPaths = Config::getSoul()->APP_PATH;
-            if (is_array($appPaths)) {
-                foreach ($appPaths as &$appPath) {
-                    $appPath = str_replace('./', '', $appPath);
+            $appNames = Config::getSoul()->APP_NAME;
+            if (is_array($appNames)) {
+                foreach ($appNames as &$appName) {
+                    $appName = str_replace('./', '', $appName);
                 }
 
-                $appPaths = array_flip($appPaths);
-                $baseUrl = $appPaths[$module];
+                $appNames = array_flip($appNames);
+                $baseUrl = $appNames[$module];
                 $baseUrl = '//' . $baseUrl . '/';
             }
         } else {

@@ -54,10 +54,11 @@ class Config implements SoulInterface
      */
     protected $_defaults = [
         'APP_DEBUG' => true,
-        'APP_PATH' => './app/',
+        'APP_NAME' => 'app',
         'URL_MODE' => 'QUERY_STRING',
         'TIME_ZONE' => 'Asia/Shanghai',
         'USE_SESSION' => true,
+        'ENV' => 'normal',
     ];
 
     /**
@@ -96,18 +97,25 @@ class Config implements SoulInterface
                 }
 
                 $this->_config = array_merge($this->_defaults, $this->_config);
-                if (is_array($this->APP_PATH)) {
+                if (is_array($this->APP_NAME)) {
                     $hostName = Request::getSoul()->getHostName();
-                    if (array_key_exists($hostName, $this->APP_PATH)) {
-                        $appPath = $this->APP_PATH[$hostName];
+                    if (array_key_exists($hostName, $this->APP_NAME)) {
+                        $appName = $this->APP_NAME[$hostName];
                     } else {
-                        throw new Exception('Cannot found any app paths.');
+                        throw new Exception('Cannot find any app paths.');
                     }
                 } else {
-                    $appPath = $this->APP_PATH;
+                    $appName = $this->APP_NAME;
                 }
 
-                $this->_config = array_merge(['APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($appPath, '/'))], $this->_config);
+                $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
+                if (!$appFullPath && $this->ENV == 'normal') {
+                    throw new Exception('Cannot find your app directory (' . $appName . ').');
+                }
+
+                $this->_config = array_merge([
+                    'APP_FULL_PATH' => $appFullPath,
+                ], $this->_config);
                 $this->NAMESPACE_PREFIX = basename($this->APP_FULL_PATH) . '\\';
             }
         }
