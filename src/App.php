@@ -45,7 +45,7 @@ class App
      *
      * @var array
      */
-    protected $_config = array();
+    protected $_config = [];
 
     /**
      * Class constructor
@@ -54,11 +54,10 @@ class App
      *
      * @return void
      */
-    public function __construct($config = array())
+    public function __construct($config = [])
     {
-
-        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-            exit('Kotori.php requires PHP >= 5.3.0 !');
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            exit('Kotori.php requires PHP >= 5.4.0 !');
         }
 
         ini_set('display_errors', 'off');
@@ -76,10 +75,10 @@ class App
      */
     public function run()
     {
-        //Define a custom error handler so we can log PHP errors
-        set_error_handler(array('\\Kotori\Core\Handle', 'error'));
-        set_exception_handler(array('\\Kotori\Core\Handle', 'exception'));
-        register_shutdown_function(array('\\Kotori\Core\Handle', 'end'));
+        // Define a custom error handler so we can log PHP errors
+        set_error_handler(['\\Kotori\Core\Handle', 'error']);
+        set_exception_handler(['\\Kotori\Core\Handle', 'exception']);
+        register_shutdown_function(['\\Kotori\Core\Handle', 'end']);
 
         Config::getSoul()->initialize($this->_config);
 
@@ -89,15 +88,15 @@ class App
             !session_id() && session_start();
         }
 
-        //Build
+        // Build
         new Build(Config::getSoul()->APP_FULL_PATH);
 
-        //Load application's common functions
+        // Load application's common functions
         Helper::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
 
         // @codingStandardsIgnoreStart
         if (function_exists('spl_autoload_register')) {
-            spl_autoload_register(array('\\Kotori\\Core\\Helper', 'autoload'));
+            spl_autoload_register(['\\Kotori\\Core\\Helper', 'autoload']);
         } else {
             function __autoload($className)
             {
@@ -109,10 +108,10 @@ class App
         //Load route class
         Route::getSoul()->dispatch();
 
-        //Global security filter
-        array_walk_recursive($_GET, array('\\Kotori\Http\Request', 'filter'));
-        array_walk_recursive($_POST, array('\\Kotori\Http\Request', 'filter'));
-        array_walk_recursive($_REQUEST, array('\\Kotori\Http\Request', 'filter'));
+        // Global security filter
+        array_walk_recursive($_GET, ['\\Kotori\Http\Request', 'filter']);
+        array_walk_recursive($_POST, ['\\Kotori\Http\Request', 'filter']);
+        array_walk_recursive($_REQUEST, ['\\Kotori\Http\Request', 'filter']);
     }
 
 }

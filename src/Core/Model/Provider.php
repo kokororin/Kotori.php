@@ -31,48 +31,21 @@
  */
 namespace Kotori\Core\Model;
 
+use Exception;
 use Kotori\Core\Config;
+use Kotori\Core\SoulInterface;
+use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
 
-class Provider
+class Provider implements SoulInterface
 {
+    use SoulTrait;
     /**
      * Initialized Models
      *
      * @var array
      */
     protected $_models = array();
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
 
     /**
      * Class constructor
@@ -102,7 +75,7 @@ class Provider
         $modelClassName = Config::getSoul()->NAMESPACE_PREFIX . 'models\\' . $key;
 
         if (!class_exists($modelClassName)) {
-            throw new \Exception('Request Model ' . $key . ' is not Found');
+            throw new Exception('Request Model ' . $key . ' is not Found');
         } else {
             $model = new $modelClassName();
             $this->_models[$key] = $model;

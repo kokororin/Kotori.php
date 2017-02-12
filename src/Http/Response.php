@@ -31,16 +31,20 @@
  */
 namespace Kotori\Http;
 
+use Exception;
+use Kotori\Core\SoulInterface;
+use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
 
-class Response
+class Response implements SoulInterface
 {
+    use SoulTrait;
     /**
      * Status array
      *
      * @var array
      */
-    protected $_httpCode = array(
+    protected $_httpCode = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -81,7 +85,7 @@ class Response
         503 => 'Service Unavailable',
         504 => 'Gateway Timeout',
         505 => 'HTTP Version Not Supported',
-    );
+    ];
 
     /**
      * Default Charset
@@ -89,37 +93,6 @@ class Response
      * @var string
      */
     protected $_charset = null;
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
 
     /**
      * Class constructor
@@ -164,7 +137,7 @@ class Response
     public function setStatus($code = 200, $text = '')
     {
         if (empty($code) or !is_numeric($code)) {
-            throw new \Exception('Status codes must be numeric.');
+            throw new Exception('Status codes must be numeric.');
         }
 
         if (empty($text)) {
@@ -175,7 +148,7 @@ class Response
             if (isset($this->_httpCode[$code])) {
                 $text = $this->_httpCode[$code];
             } else {
-                throw new \Exception('No status text available. Please check your status code number or supply your own message text.');
+                throw new Exception('No status text available. Please check your status code number or supply your own message text.');
             }
         }
 

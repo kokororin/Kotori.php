@@ -33,6 +33,7 @@
  */
 namespace Kotori\Core;
 
+use Exception;
 use Kotori\Debug\Hook;
 
 abstract class Helper
@@ -41,7 +42,7 @@ abstract class Helper
      * Require Array
      * @var array
      */
-    protected static $_require = array();
+    protected static $_require = [];
 
     /**
      * Include One File
@@ -127,7 +128,7 @@ abstract class Helper
     public static function mkdirs($pathname, $mode = 0755)
     {
         is_dir(dirname($pathname)) || self::mkdirs(dirname($pathname), $mode);
-        return is_dir($pathname) || @mkdir($pathname, $mode);// @codingStandardsIgnoreLine
+        return is_dir($pathname) || @mkdir($pathname, $mode); // @codingStandardsIgnoreLine
     }
 
     /**
@@ -167,7 +168,7 @@ abstract class Helper
         } else {
             // Oh no! Can we default to something?
             // Or just bail out?
-            throw new \Exception('Oops, did you require this package via composer?');
+            throw new Exception('Oops, did you require this package via composer?');
         }
     }
 

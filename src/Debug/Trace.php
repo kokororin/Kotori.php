@@ -35,16 +35,19 @@ use Kotori\Core\Config;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
 use Kotori\Core\Helper;
+use Kotori\Core\SoulInterface;
+use Kotori\Core\SoulTrait;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
-class Trace
+class Trace implements SoulInterface
 {
+    use SoulTrait;
     /**
      * traceTab
      *
      * @var array
      */
-    protected $traceTabs = array(
+    protected $traceTabs = [
         'BASE' => 'Basic',
         'CONFIG' => 'Config',
         'SERVER' => 'Server',
@@ -54,38 +57,7 @@ class Trace
         'ERROR' => 'Error',
         'SQL' => 'SQL',
         'SUPPORT' => 'Support',
-    );
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
+    ];
 
     /**
      * Class constructor
@@ -110,7 +82,7 @@ class Trace
         $config = Config::getSoul()->getArray();
         $server = $_SERVER;
         $cookie = $_COOKIE;
-        $info = array();
+        $info = [];
         foreach ($files as $key => $file) {
             $info[] = $file . ' ( ' . number_format(filesize($file) / 1024, 2) . ' KB )';
         }
@@ -123,9 +95,9 @@ class Trace
         $error = Handle::$errors;
         $database = Database::getSoul(Config::getSoul()->SELECTED_DB_KEY);
 
-        $sql = $database == null ? array() : $database->queries;
+        $sql = $database == null ? [] : $database->queries;
 
-        $base = array(
+        $base = [
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
             'Run Time' => Hook::listen('\\Kotori\\App') . 'μs',
             'TPR' => Hook::listen('\\Kotori\\App') != 0 ? pow(10, 6) / Hook::listen('\\Kotori\\App') . ' req/s' : '+inf',
@@ -133,14 +105,14 @@ class Trace
             'SQL Queries' => count($sql) . ' queries ',
             'File Loaded' => count(get_included_files()),
             'Session Info' => 'SESSION_ID=' . session_id(),
-        );
+        ];
 
-        $support = array(
+        $support = [
             '<a target="_blank" href="https://github.com/kokororin/Kotori.php">GitHub</a>',
             '<a target="_blank" href="https://kotori.love/archives/kotori-php-framework.html">Blog</a>',
-        );
+        ];
 
-        $trace = array();
+        $trace = [];
         foreach ($this->traceTabs as $name => $title) {
             switch (strtoupper($name)) {
                 case 'BASE':
@@ -205,7 +177,7 @@ class Trace
             if (is_array($info)) {
                 foreach ($info as $k => $val) {
                     $val = is_array($val) ? print_r($val, true) : (is_bool($val) ? json_encode($val) : $val);
-                    $val = (in_array($key, array('Support'))) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
+                    $val = (in_array($key, ['Support'])) ? $val : htmlentities($val, ENT_COMPAT, 'utf-8');
                     $tpl .= '<li style="border-bottom:1px solid #EEE;font-size:14px;padding:0 12px">' . (is_numeric($k) ? '' : $k . ' : ') . $val . '</li>';
                 }
             }

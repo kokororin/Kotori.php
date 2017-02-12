@@ -31,10 +31,13 @@
  */
 namespace Kotori\Http;
 
+use Kotori\Core\SoulInterface;
+use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
 
-class Request
+class Request implements SoulInterface
 {
+    use SoulTrait;
     /**
      * Params
      *
@@ -48,37 +51,6 @@ class Request
      * @var array
      */
     protected $_ip = null;
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
 
     /**
      * Class constructor
@@ -146,7 +118,7 @@ class Request
                 }
                 break;
             case 'path':
-                $input = array();
+                $input = [];
                 if (!empty($_SERVER['PATH_INFO'])) {
                     $depr = '/';
                     $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
@@ -197,7 +169,7 @@ class Request
                         $filters = explode(',', $filters);
                     }
                 } elseif (is_int($filters)) {
-                    $filters = array($filters);
+                    $filters = [$filters];
                 }
 
                 if (is_array($filters)) {
@@ -238,7 +210,7 @@ class Request
             $data = isset($default) ? $default : null;
         }
 
-        is_array($data) && array_walk_recursive($data, array('Request', 'filter'));
+        is_array($data) && array_walk_recursive($data, ['Request', 'filter']);
         return $data;
     }
 
@@ -251,7 +223,7 @@ class Request
      */
     protected function array_map_recursive($filter, $data)
     {
-        $result = array();
+        $result = [];
         foreach ($data as $key => $val) {
             $result[$key] = is_array($val)
             ? $this->array_map_recursive($filter, $val)
@@ -346,7 +318,7 @@ class Request
 
         // Check ip
         $long = sprintf("%u", ip2long($this->_ip));
-        $this->_ip = $long ? array($this->_ip, $long) : array('0.0.0.0', 0);
+        $this->_ip = $long ? [$this->_ip, $long] : ['0.0.0.0', 0];
         return $this->_ip[$type];
     }
 
@@ -357,13 +329,13 @@ class Request
      */
     public function getHostName()
     {
-        $possibleHostSources = array('HTTP_X_FORWARDED_HOST', 'HTTP_HOST', 'SERVER_NAME', 'SERVER_ADDR');
-        $sourceTransformations = array(
+        $possibleHostSources = ['HTTP_X_FORWARDED_HOST', 'HTTP_HOST', 'SERVER_NAME', 'SERVER_ADDR'];
+        $sourceTransformations = [
             "HTTP_X_FORWARDED_HOST" => function ($value) {
                 $elements = explode(',', $value);
                 return trim(end($elements));
             },
-        );
+        ];
         $host = '';
         foreach ($possibleHostSources as $source) {
             if (!empty($host)) {

@@ -34,48 +34,18 @@ namespace Kotori\Core;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
 
-class Cache
+class Cache implements SoulInterface
 {
+    use SoulTrait;
     /**
      * Valid cache drivers
      *
      * @var array
      */
-    protected $validDrivers = array(
+    protected $validDrivers = [
         'dummy',
         'memcached',
-    );
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
+    ];
 
     /**
      * Reference to the driver
@@ -108,7 +78,7 @@ class Cache
         if (isset($config['PREFIX'])) {
             $this->keyPrefix = $config['PREFIX'];
         }
-        
+
         $className = '\\Kotori\\Core\\Cache\\' . ucfirst($this->_adapter);
         $this->{$this->_adapter} = new $className();
 

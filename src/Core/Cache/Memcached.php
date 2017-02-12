@@ -49,13 +49,13 @@ class Memcached
      *
      * @var array
      */
-    protected $_memcacheConf = array(
-        'default' => array(
+    protected $_memcacheConf = [
+        'default' => [
             'HOST' => '127.0.0.1',
             'PORT' => 11211,
             'WEIGHT' => 1,
-        ),
-    );
+        ],
+    ];
 
     /**
      * Class constructor
@@ -72,7 +72,7 @@ class Memcached
         $memcacheConf = isset($config['MEMCACHED']) ? $config['MEMCACHED'] : null;
 
         if (is_array($memcacheConf)) {
-            $this->_memcacheConf = array();
+            $this->_memcacheConf = [];
 
             foreach ($memcacheConf as $name => $conf) {
                 $this->_memcacheConf[$name] = $conf;
@@ -145,7 +145,7 @@ class Memcached
     public function set($id, $data, $ttl = 60, $raw = false)
     {
         if ($raw !== true) {
-            $data = array($data, time(), $ttl);
+            $data = [$data, time(), $ttl];
         }
 
         if (get_class($this->_memcached) === 'Memcached') {
@@ -228,11 +228,11 @@ class Memcached
 
         list($data, $time, $ttl) = $stored;
 
-        return array(
+        return [
             'expire' => $time + $ttl,
             'mtime' => $time,
             'data' => $data,
-        );
+        ];
     }
 
     /**

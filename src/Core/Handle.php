@@ -44,7 +44,7 @@ abstract class Handle
      *
      * @var array
      */
-    public static $errors = array();
+    public static $errors = [];
 
     /**
      * General Error Page
@@ -373,12 +373,12 @@ abstract class Handle
 
         try {
             $contents = file($file);
-            $source = array(
+            $source = [
                 'first' => $first,
                 'source' => array_slice($contents, $first - 1, 19),
-            );
+            ];
         } catch (\Exception $e) {
-            $source = array();
+            $source = [];
         }
 
         return $source;
