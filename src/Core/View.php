@@ -31,6 +31,7 @@
  */
 namespace Kotori\Core;
 
+use Exception;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Trace;
 
@@ -56,7 +57,7 @@ class View
      *
      * @var array
      */
-    protected $_data = array();
+    protected $_data = [];
 
     /**
      * Variable List for TplInclude
@@ -88,12 +89,12 @@ class View
      */
     public function __call($name, $arguments)
     {
-        return call_user_func_array(array(Controller::getSoul(), $name), $arguments);
+        return call_user_func_array([Controller::getSoul(), $name], $arguments);
     }
 
     /**
      * Class constructor
-     * 
+     *
      * @param string $tplDir Template Directory
      * @return void
      */
@@ -137,7 +138,7 @@ class View
 
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
         if (!Helper::isFile($this->_viewPath)) {
-            throw new \Exception('Template is not existed.');
+            throw new Exception('Template is not existed.');
         }
 
         unset($tpl);
@@ -161,12 +162,12 @@ class View
      * @param array $data Data Array
      * @return void
      */
-    public function need($path, $data = array())
+    public function need($path, $data = [])
     {
-        $this->_needData = array(
+        $this->_needData = [
             'path' => Config::getSoul()->APP_FULL_PATH . '/views/' . $path . '.html',
             'data' => $data,
-        );
+        ];
         unset($path);
         unset($data);
         extract($this->_needData['data']);

@@ -43,7 +43,7 @@ class Database extends Medoo
      *
      * @var array
      */
-    public $queries = array();
+    public $queries = [];
 
     /**
      * Instance Handle
@@ -81,18 +81,9 @@ class Database extends Medoo
         }
 
         Config::getSoul()->SELECTED_DB_KEY = $key;
-        $config = array(
-            'database_type' => Config::getSoul()->DB[$key]['TYPE'],
-            'database_name' => Config::getSoul()->DB[$key]['NAME'],
-            'server' => Config::getSoul()->DB[$key]['HOST'],
-            'username' => Config::getSoul()->DB[$key]['USER'],
-            'password' => Config::getSoul()->DB[$key]['PWD'],
-            'charset' => Config::getSoul()->DB[$key]['CHARSET'],
-            'port' => Config::getSoul()->DB[$key]['PORT'],
-        );
 
         if (!isset(self::$_soul[$key])) {
-            self::$_soul[$key] = new self($config);
+            self::$_soul[$key] = new self(Config::getSoul()->DB[$key]);
         }
 
         return self::$_soul[$key];
@@ -107,7 +98,15 @@ class Database extends Medoo
      */
     public function __construct($options = null)
     {
-        parent::__construct($options);
+        parent::__construct([
+            'database_type' => $options['TYPE'],
+            'database_name' => $options['NAME'],
+            'server' => $options['HOST'],
+            'username' => $options['USER'],
+            'password' => $options['PWD'],
+            'charset' => $options['CHARSET'],
+            'port' => $options['PORT'],
+        ]);
         Hook::listen(__CLASS__);
     }
 

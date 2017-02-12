@@ -33,18 +33,22 @@
  */
 namespace Kotori\Http;
 
+use Exception;
 use Kotori\Core\Config;
 use Kotori\Core\Helper;
+use Kotori\Core\SoulInterface;
+use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
 
-class Route
+class Route implements SoulInterface
 {
+    use SoulTrait;
     /**
      * Controllers Array
      *
      * @var array
      */
-    protected $_controllers = array();
+    protected $_controllers = [];
 
     /**
      * Current controller
@@ -72,45 +76,14 @@ class Route
      *
      * @var array
      */
-    protected $_uris = array();
+    protected $_uris = [];
 
     /**
      * Parsed params
      *
      * @var array
      */
-    protected $_params = array();
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
+    protected $_params = [];
 
     /**
      * Class constructor
@@ -175,12 +148,12 @@ class Route
         if ($parsedRoute) {
             $this->_uri = $parsedRoute;
         } else {
-            throw new \Exception('Request URI ' . $this->_uri . ' is not Matched by any route.');
+            throw new Exception('Request URI ' . $this->_uri . ' is not Matched by any route.');
         }
 
-        $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : array();
+        $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : [];
 
-        //Clean uris
+        // Clean uris
         foreach ($this->_uris as $key => $value) {
             if ($value == '') {
                 unset($this->_uris[$key]);
@@ -191,12 +164,12 @@ class Route
 
         $this->_controller = $this->getController();
         $this->_action = $this->getAction();
-        //Define some variables
+        // Define some variables
         define('CONTROLLER_NAME', $this->_controller);
         define('ACTION_NAME', $this->_action);
         define('PUBLIC_DIR', Request::getSoul()->getBaseUrl() . 'public');
 
-        //If is already initialized
+        // If is already initialized
         $prefix = Config::getSoul()->NAMESPACE_PREFIX;
 
         $controllerClassName = $prefix . 'controllers\\' . $this->_controller;
@@ -208,25 +181,25 @@ class Route
         }
 
         if (!class_exists($controllerClassName)) {
-            throw new \Exception('Request Controller ' . $this->_controller . ' is not Found.');
+            throw new Exception('Request Controller ' . $this->_controller . ' is not Found.');
         }
 
         if (!method_exists($class, $this->_action)) {
-            throw new \Exception('Request Action ' . $this->_action . ' is not Found.');
+            throw new Exception('Request Action ' . $this->_action . ' is not Found.');
         }
 
-        //Parse params from uri
+        // Parse params from uri
         $this->_params = $this->getParams();
 
-        //Do some final cleaning of the params
+        // Do some final cleaning of the params
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
 
         Response::getSoul()->setHeader('X-Powered-By', 'Kotori');
         Response::getSoul()->setHeader('Cache-control', 'private');
 
-        //Call the requested method
-        call_user_func_array(array($class, $this->_action), $this->_params);
+        // Call the requested method
+        call_user_func_array([$class, $this->_action], $this->_params);
     }
 
     /**
@@ -240,7 +213,7 @@ class Route
         if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
             $_controller = $this->_uris[0];
         } else {
-            throw new \Exception('Cannot dispatch controller name.');
+            throw new Exception('Cannot dispatch controller name.');
         }
 
         return strip_tags($_controller);
@@ -257,7 +230,7 @@ class Route
         if (isset($this->_uris[1])) {
             $_action = $this->_uris[1];
         } else {
-            throw new \Exception('Cannot dispatch action name.');
+            throw new Exception('Cannot dispatch action name.');
         }
 
         return strip_tags($_action);
@@ -378,7 +351,7 @@ class Route
             case 'QUERY_STRING':
                 return $uri == '' ? rtrim($baseUrl, '/') : $prefix . $uri;
             default:
-                throw new \Exception('URL_MODE Config ERROR');
+                throw new Exception('URL_MODE Config ERROR');
         }
 
     }

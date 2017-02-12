@@ -38,7 +38,7 @@ abstract class Hook
      *
      * @var array
      */
-    protected static $tags = array();
+    protected static $tags = [];
 
 /**
  * get the tags

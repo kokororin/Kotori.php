@@ -22,54 +22,22 @@
  */
 
 /**
- * Model Class
+ * Soul interface
  *
  * @package     Kotori
  * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */
+
 namespace Kotori\Core;
 
-use Kotori\Debug\Hook;
-
-class Model
+interface SoulInterface
 {
     /**
-     * Class constructor
+     * Returns instance
      *
-     * Initialize Model.
-     *
-     * @return void
+     * @return $this
      */
-    public function __construct()
-    {
-        Hook::listen(__CLASS__);
-    }
-
-    /**
-     * __get magic
-     *
-     * Allows models to access loaded classes using the same
-     * syntax as controllers.
-     *
-     * @param string $key
-     */
-    public function __get($key)
-    {
-        return Controller::getSoul()->$key;
-    }
-
-    /**
-     * __call magic
-     *
-     * Allows model to access controller methods
-     *
-     * @param  $name
-     * @param  $arguments
-     */
-    public function __call($name, $arguments)
-    {
-        return call_user_func_array([Controller::getSoul(), $name], $arguments);
-    }
+    public static function getSoul();
 }

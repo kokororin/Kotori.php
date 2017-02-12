@@ -22,9 +22,7 @@
  */
 
 /**
- * Build Class
- *
- * This class builds folders for Kotori.php
+ * Soul trait
  *
  * @package     Kotori
  * @subpackage  Core
@@ -33,59 +31,37 @@
  */
 namespace Kotori\Core;
 
-use Kotori\Debug\Hook;
-
-class Build
+trait SoulTrait
 {
     /**
-     * App path
-     * @var string
+     * Disable Clone
+     *
+     * @return boolean
      */
-    protected $_appPath;
+    public function __clone()
+    {
+        return false;
+    }
 
     /**
-     * folders
+     * Instance Handle
+     *
      * @var array
      */
-    protected $_folders = [
-        'controllers',
-        'libraries',
-        'logs',
-        'models',
-        'views',
-    ];
-    /**
-     * Class constructor
-     *
-     * Initialize Build Class.
-     *
-     * @return void
-     */
-    public function __construct($appPath)
-    {
-        $this->_appPath = $appPath;
-        $this->startBuild();
-        Hook::listen(__CLASS__);
-    }
+    protected static $_soul;
 
     /**
-     * start to build folders
+     * get singleton
      *
-     * @return void
+     * @return object
      */
-    protected function startBuild()
+    public static function getSoul()
     {
-        if (is_dir($this->_appPath)) {
-            return;
+        if (self::$_soul === null) {
+            self::$_soul = new self();
         }
 
-        foreach ($this->_folders as $folder) {
-            Helper::mkdirs($this->_appPath . '/' . $folder);
-        }
-
-        if (!is_file($this->_appPath . '/common.php')) {
-            file_put_contents($this->_appPath . '/common.php', '<?php
-// common functions');
-        }
+        return self::$_soul;
     }
+
 }

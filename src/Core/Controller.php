@@ -39,29 +39,9 @@ use Kotori\Http\Request;
 use Kotori\Http\Response;
 use Kotori\Http\Route;
 
-class Controller
+class Controller implements SoulInterface
 {
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
-
+    use SoulTrait;
     /**
      * DB selector
      *

@@ -10,13 +10,17 @@ use PHPUnit_Framework_TestCase;
 
 class AppTest extends PHPUnit_Framework_TestCase
 {
-    const MYSQL_HOST = '127.0.0.1';
-    const MYSQL_USER = 'root';
-    const MYSQL_PWD = '';
-    const MYSQL_DB = 'kotori_php_test_db';
+    protected static $MYSQL_HOST = '127.0.0.1';
+    protected static $MYSQL_USER = 'root';
+    protected static $MYSQL_PWD = '123456';
+    protected static $MYSQL_DB = 'kotori_php_test_db';
 
     public function __construct()
     {
+        if (getenv('CI')) {
+            self::$MYSQL_PWD = '';
+        }
+
         $this->createTestDatabase();
     }
 
@@ -52,11 +56,11 @@ class AppTest extends PHPUnit_Framework_TestCase
     protected function createTestDatabase()
     {
         try {
-            $pdo = new PDO('mysql:host=' . self::MYSQL_HOST, self::MYSQL_USER, self::MYSQL_PWD);
+            $pdo = new PDO('mysql:host=' . self::$MYSQL_HOST, self::$MYSQL_USER, self::$MYSQL_PWD);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $pdo->exec('DROP DATABASE IF EXISTS `' . self::MYSQL_DB . '`;
-CREATE DATABASE `' . self::MYSQL_DB . '`;
-USE `' . self::MYSQL_DB . '`;
+            $pdo->exec('DROP DATABASE IF EXISTS `' . self::$MYSQL_DB . '`;
+CREATE DATABASE `' . self::$MYSQL_DB . '`;
+USE `' . self::$MYSQL_DB . '`;
 
 DROP TABLE IF EXISTS `table`;
 CREATE TABLE `table` (
@@ -77,10 +81,10 @@ CREATE TABLE `table` (
             'DB' => [
                 'db' => [
                     'TYPE' => 'mysql',
-                    'NAME' => self::MYSQL_DB,
-                    'HOST' => self::MYSQL_HOST,
-                    'USER' => self::MYSQL_USER,
-                    'PWD' => self::MYSQL_PWD,
+                    'NAME' => self::$MYSQL_DB,
+                    'HOST' => self::$MYSQL_HOST,
+                    'USER' => self::$MYSQL_USER,
+                    'PWD' => self::$MYSQL_PWD,
                 ],
             ],
         ]);

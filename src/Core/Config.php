@@ -33,61 +33,32 @@
  */
 namespace Kotori\Core;
 
+use Exception;
 use Kotori\Debug\Hook;
 use Kotori\Http\Request;
 
-class Config
+class Config implements SoulInterface
 {
+    use SoulTrait;
     /**
      * Config Array
      *
      * @var array
      */
-    protected $_config = array();
+    protected $_config = [];
 
     /**
      * Default Config Array
      *
      * @var array
      */
-    protected $_defaults = array(
+    protected $_defaults = [
         'APP_DEBUG' => true,
         'APP_PATH' => './app/',
         'URL_MODE' => 'QUERY_STRING',
         'TIME_ZONE' => 'Asia/Shanghai',
         'USE_SESSION' => true,
-    );
-
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
-
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
+    ];
 
     /**
      * Class constructor
@@ -107,7 +78,7 @@ class Config
      * @param $config Config Array
      * @return boolean
      */
-    public function initialize($config = array())
+    public function initialize($config = [])
     {
         $this->_config = $config;
         if (is_array($this->_config)) {
@@ -130,13 +101,13 @@ class Config
                     if (array_key_exists($hostName, $this->APP_PATH)) {
                         $appPath = $this->APP_PATH[$hostName];
                     } else {
-                        throw new \Exception('Cannot found any app paths.');
+                        throw new Exception('Cannot found any app paths.');
                     }
                 } else {
                     $appPath = $this->APP_PATH;
                 }
 
-                $this->_config = array_merge(array('APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($appPath, '/'))), $this->_config);
+                $this->_config = array_merge(['APP_FULL_PATH' => realpath(realpath('.') . '/' . rtrim($appPath, '/'))], $this->_config);
                 $this->NAMESPACE_PREFIX = basename($this->APP_FULL_PATH) . '\\';
             }
         }
@@ -158,7 +129,7 @@ class Config
         if (is_string($key)) {
             $this->_config[$key] = $value;
         } else {
-            throw new \Exception('Config Error.');
+            throw new Exception('Config Error.');
         }
     }
 
