@@ -7,13 +7,13 @@
  * PSR-4 autoloader.
  */
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 $config = [
-    'APP_PATH' => './app',
-    // 'APP_PATH' => [
-    //     '1.kotori.php' => './app',
-    //     '2.kotori.php' => './module2'
+    'APP_NAME' => 'app',
+    // 'APP_NAME' => [
+    //     '1.kotori.php' => 'app',
+    //     '2.kotori.php' => 'module2'
     // ],
     'DB' => [
         'test' => [

@@ -63,7 +63,9 @@ abstract class Log
                 Helper::mkdirs($logPath);
             }
 
-            file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
+            if (file_exists($logPath)) {
+                file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
+            }
         }
     }
 

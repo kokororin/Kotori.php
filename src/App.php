@@ -88,9 +88,6 @@ class App
             !session_id() && session_start();
         }
 
-        // Build
-        new Build(Config::getSoul()->APP_FULL_PATH);
-
         // Load application's common functions
         Helper::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
 

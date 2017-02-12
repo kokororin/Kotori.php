@@ -33,7 +33,9 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testGetConfig()
     {
         $config = new Config();
-        $config->initialize();
+        $config->initialize([
+            'ENV' => 'test',
+        ]);
         $this->assertEquals(true, $config->APP_DEBUG);
     }
 
@@ -41,6 +43,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config();
         $config->initialize([
+            'ENV' => 'test',
             'MY_ENV' => 'MY_ENV',
         ]);
         $this->assertEquals('MY_ENV', $config->MY_ENV);
@@ -49,7 +52,9 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testGetConfigArray()
     {
         $config = new Config();
-        $config->initialize();
+        $config->initialize([
+            'ENV' => 'test',
+        ]);
         $this->assertTrue(is_array($config->getArray()));
     }
 
@@ -77,6 +82,7 @@ CREATE TABLE `table` (
     {
         $config = Config::getSoul();
         $config->initialize([
+            'ENV' => 'test',
             'APP_DEBUG' => false,
             'DB' => [
                 'db' => [
