@@ -19,8 +19,7 @@ $ composer require kokororin/kotori-php:dev-master
 ## Usage
 
 ```php
-<?php
-require 'vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $app = new \Kotori\App();
 
