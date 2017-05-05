@@ -87,7 +87,7 @@ abstract class Handle
     #info { background:#f6f6f6; }
     #info p { font-size:16px; margin:5px; color:#5d5d5d; }
     #info strong { font-size:17px; color:#696969; }
-    #summary { background:#f8cbcb; }
+    #summary { background:#eee; }
     #explanation { background:#eee; border-bottom: 0px none; }
   </style>
 </head>
@@ -369,7 +369,7 @@ abstract class Handle
                 'first' => $first,
                 'source' => array_slice($contents, $first - 1, 19),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $source = [];
         }
 
