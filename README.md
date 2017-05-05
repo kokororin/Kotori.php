@@ -45,6 +45,7 @@ Learn more at these links:
 
 - [Website](https://kotori.love/archives/kotori-php-framework.html)
 - [Documentation](https://github.com/kokororin/Kotori.php/wiki)
+- [CLI tool](https://github.com/kasumi9863/kotori-php-cli)
 
 ## Thanks
 
