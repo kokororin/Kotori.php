@@ -40,11 +40,11 @@ abstract class Hook
      */
     protected static $tags = [];
 
-/**
- * get the tags
- *
- * @return array
- */
+    /**
+     * get the tags
+     *
+     * @return array
+     */
     public static function getTags()
     {
         return self::$tags;
