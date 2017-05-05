@@ -71,41 +71,33 @@ abstract class Handle
 <html lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <title>Kotori.php 500 Internal Error</title>
+  <title>Oops! some error(s) occurred with your application</title>
   <meta name="robots" content="NONE,NOARCHIVE">
   <style type="text/css">
     html * { padding:0; margin:0; }
     body * { padding:10px 20px; }
     body * * { padding:0; }
-    body { font:small sans-serif; background:#eee; }
-    body>div { border-bottom:1px solid #ddd; }
-    h1 { font-weight:normal; margin-bottom:.4em; }
+    body { font-family:Avenir,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased;  -moz-osx-font-smoothing:grayscale;background:#eee; }
+    body > div { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; color:#5d5d5d;}
     h1 span { font-size:60%; color:#666; font-weight:normal; }
-    table { border:none; border-collapse: collapse; width:100%; }
+    table { border-collapse:collapse; width:100%; }
     td, th { vertical-align:top; padding:2px 3px; }
     th { width:12em; text-align:right; color:#666; padding-right:.5em; }
     #info { background:#f6f6f6; }
-    #info p {font-size: 16px; margin: 5px;}
-    #summary { background: #ffc; }
+    #info p { font-size:16px; margin:5px; color:#5d5d5d; }
+    #info strong { font-size:17px; color:#696969; }
+    #summary { background:#f8cbcb; }
     #explanation { background:#eee; border-bottom: 0px none; }
   </style>
 </head>
 <body>
   <div id="summary">
-    <h1>Kotori.php Internal Error <span>(500)</span></h1>
-    <table class="meta">
-      <tr>
-        <th>Request Method:</th>
-        <td>' . strtoupper($_SERVER['REQUEST_METHOD']) . '</td>
-      </tr>
-      <tr>
-        <th>Request URL:</th>
-        <td>' . Request::getSoul()->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</td>
-      </tr>
-
-    </table>
+    <h1>Oops! some error(s) occurred with your application</span></h1>
   </div>
   <div id="info">
+    <p><strong>Request Method: </strong>'.strtoupper($_SERVER['REQUEST_METHOD']).'</p>
+    <p><strong>Request URL: </strong>'.Request::getSoul()->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/').'</p>
       ' . $message . '
   </div>
 
@@ -314,7 +306,7 @@ abstract class Handle
 }
 
 </style>';
-            $text .= '<p><strong>Source Code: </strong></p><div class="source-code">
+            $text .= '<div class="source-code">
 <pre id="code-block" class="hljs language-php">
     <ol start="' . $source['first'] . '">';
             $highlighter = new Highlighter();
