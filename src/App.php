@@ -102,7 +102,7 @@ class App
         }
         // @codingStandardsIgnoreEnd
 
-        //Load route class
+        // Load route class
         Route::getSoul()->dispatch();
 
         // Global security filter

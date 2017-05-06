@@ -31,6 +31,7 @@
  */
 namespace Kotori\Core;
 
+use Exception;
 use Highlight\Highlighter;
 use Kotori\Debug\Log;
 use Kotori\Http\Request;
@@ -96,8 +97,8 @@ abstract class Handle
     <h1>Oops! some error(s) occurred with your application</span></h1>
   </div>
   <div id="info">
-    <p><strong>Request Method: </strong>'.strtoupper($_SERVER['REQUEST_METHOD']).'</p>
-    <p><strong>Request URL: </strong>'.Request::getSoul()->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/').'</p>
+    <p><strong>Request Method: </strong>' . strtoupper($_SERVER['REQUEST_METHOD']) . '</p>
+    <p><strong>Request URL: </strong>' . Request::getSoul()->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</p>
       ' . $message . '
   </div>
 

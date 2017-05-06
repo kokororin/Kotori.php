@@ -15,7 +15,7 @@
     }],
     "require": {
         "php": ">=5.4.0",
-        "catfan/Medoo": "^1.0",
+        "catfan/Medoo": "1.2.1",
         "wyrihaximus/html-compress": "^1.2",
         "scrivo/highlight.php": "8.*"
     },
@@ -36,5 +36,8 @@
         "phpunit": "php vendor/bin/phpunit",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"
+    },
+    "suggest": {
+        "kasumi/kotori-php-cli": "Scaffold CLI tool for the PHP framework Kotori.php"
     }
 }
