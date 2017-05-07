@@ -33,7 +33,6 @@
  */
 namespace Kotori;
 
-use Kotori\Core\Build;
 use Kotori\Core\Config;
 use Kotori\Core\Helper;
 use Kotori\Http\Route;
@@ -104,11 +103,6 @@ class App
 
         // Load route class
         Route::getSoul()->dispatch();
-
-        // Global security filter
-        array_walk_recursive($_GET, ['\\Kotori\Http\Request', 'filter']);
-        array_walk_recursive($_POST, ['\\Kotori\Http\Request', 'filter']);
-        array_walk_recursive($_REQUEST, ['\\Kotori\Http\Request', 'filter']);
     }
 
 }

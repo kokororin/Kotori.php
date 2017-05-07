@@ -65,185 +65,160 @@ class Request implements SoulInterface
     }
 
     /**
-     * Safe Inputs
+     * Internal method used to retrieve values from given arrays.
      *
-     * @param string $name Param Name
-     * @param mixed $default Default Value
-     * @param mixed $filter Filter
-     * @param mixed $datas Extend Data Source
+     * @param  array $source $_GET, $_POST, $_COOKIE, $_SERVER, etc.
+     * @param  mixed $key Index for item to be fetched from $source
      * @return mixed
      */
-    public function input($name, $default = '', $filter = null, $datas = null)
+    protected function getRequestParams(&$source, $key = null)
     {
-        if (strpos($name, '/')) {
-            list($name, $type) = explode('/', $name, 2);
-        } else {
-            $type = 's';
+        // If $key is NULL, it means that the whole $source is requested
+        if (!isset($key) || $key == null) {
+            $key = array_keys($source);
         }
 
-        if (strpos($name, '.')) {
-            list($method, $name) = explode('.', $name, 2);
-        } else {
-            $method = 'param';
+        if (is_array($key)) {
+            $output = array();
+            foreach ($key as $k) {
+                $output[$k] = $this->getRequestParams($source, $k);
+            }
+
+            return $output;
         }
 
-        switch (strtolower($method)) {
-            case 'get':
-                $input = &$_GET;
-                break;
-            case 'post':
-                $input = &$_POST;
-                break;
-            case 'put':
-                if (is_null($this->_put)) {
-                    parse_str(file_get_contents('php://input'), $this->_put);
-                }
+        if (isset($source[$key])) {
+            $value = $source[$key];
+        } else {
+            return null;
+        }
 
-                $input = $this->_put;
-                break;
-            case 'param':
-                switch ($_SERVER['REQUEST_METHOD']) {
-                    case 'POST':
-                        $input = $_POST;
-                        break;
-                    case 'PUT':
-                        if (is_null($this->_put)) {
-                            parse_str(file_get_contents('php://input'), $this->_put);
-                        }
+        return $value;
 
-                        $input = $this->_put;
-                        break;
-                    default:
-                        $input = $_GET;
-                }
-                break;
-            case 'path':
-                $input = [];
-                if (!empty($_SERVER['PATH_INFO'])) {
-                    $depr = '/';
-                    $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
-                }
-                break;
-            case 'request':
-                $input = &$_REQUEST;
-                break;
-            case 'session':
-                $input = &$_SESSION;
-                break;
-            case 'cookie':
-                $input = &$_COOKIE;
-                break;
-            case 'server':
-                $input = &$_SERVER;
-                break;
-            case 'globals':
-                $input = &$GLOBALS;
-                break;
-            case 'data':
-                $input = &$datas;
-                break;
-            default:
+    }
+
+    /**
+     * Fetch an item from the GET array
+     *
+     * @param  mixed $key Index for item to be fetched from $_GET
+     * @return mixed
+     */
+    public function get($key = null)
+    {
+        return $this->getRequestParams($_GET, $key);
+    }
+
+    /**
+     * Fetch an item from the POST array
+     *
+     * @param  mixed $key Index for item to be fetched from $_POST
+     * @return mixed
+     */
+    public function post($key = null)
+    {
+        $rawPostData = file_get_contents('php://input');
+        $source = json_decode($rawPostData, true);
+        if (json_last_error() != JSON_ERROR_NONE) {
+            $source = $_POST;
+        }
+
+        return $this->getRequestParams($source, $key);
+    }
+
+    /**
+     * Fetch an item from the SERVER array
+     *
+     * @param  mixed $key Index for item to be fetched from $_SERVER
+     * @return mixed
+     */
+    public function server($key = null)
+    {
+        return $this->getRequestParams($_SERVER, $key);
+    }
+
+    /**
+     * Set or Get cookie
+     *
+     * @param  mixed $key Index for item for cookie
+     * @param  string $value cookie value
+     * @param  mixed  options for cookie setting
+     * @return mixed
+     */
+    public function cookie($key = '', $value = '', $options = null)
+    {
+        $defaultOptions = [
+            'prefix' => '',
+            'expire' => 86400,
+            'path' => '/',
+            'secure' => false,
+            'httponly' => false,
+        ];
+
+        if (!is_null($options)) {
+            if (is_numeric($options)) {
+                $options = ['expire' => $options];
+            } elseif (is_string($options)) {
+                parse_str($options, $options);
+            }
+
+            $options = array_merge($defaultOptions, array_change_key_case($options));
+        }
+
+        if (!empty($options['httponly'])) {
+            ini_set('session.cookie_httponly', 1);
+        }
+
+        if (is_null($key)) {
+            if (empty($_COOKIE)) {
                 return null;
+            }
+
+            $prefix = empty($value) ? $options['prefix'] : $value;
+            if (!empty($prefix)) {
+                foreach ($_COOKIE as $key => $val) {
+                    if (0 === stripos($key, $prefix)) {
+                        setcookie($key, '', time() - 3600, $options['path'], $options['domain'], $options['secure'], $options['httponly']);
+                        unset($_COOKIE[$key]);
+                    }
+                }
+            }
+
+            return null;
+        } elseif ('' === $key) {
+            // Get All Cookie
+            return $_COOKIE;
         }
 
-        if ('' == $name) {
-            $data = $input;
-            $filters = isset($filter) ? $filter : 'htmlspecialchars';
-            if ($filters) {
-                if (is_string($filters)) {
-                    $filters = explode(',', $filters);
+        $key = $options['prefix'] . str_replace('.', '_', $key);
+        if ('' === $value) {
+            if (isset($_COOKIE[$key])) {
+                $value = $_COOKIE[$key];
+                if (0 === strpos($value, 'kotori:')) {
+                    $value = substr($value, 6);
+                    return array_map('urldecode', json_decode(MAGIC_QUOTES_GPC ? stripslashes($value) : $value, true));
+                } else {
+                    return $value;
                 }
-
-                foreach ($filters as $filter) {
-                    $data = $this->array_map_recursive($filter, $data); // 参数过滤
-                }
-            }
-        } elseif (isset($input[$name])) {
-            $data = $input[$name];
-            $filters = isset($filter) ? $filter : 'htmlspecialchars';
-            if ($filters) {
-                if (is_string($filters)) {
-                    if (0 === strpos($filters, '/') && 1 !== preg_match($filters, (string) $data)) {
-                        return isset($default) ? $default : null;
-                    } else {
-                        $filters = explode(',', $filters);
-                    }
-                } elseif (is_int($filters)) {
-                    $filters = [$filters];
-                }
-
-                if (is_array($filters)) {
-                    foreach ($filters as $filter) {
-                        if (function_exists($filter)) {
-                            $data = is_array($data) ? $this->array_map_recursive($filter, $data) : $filter($data);
-                        } else {
-                            $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
-                            if (false === $data) {
-                                return isset($default) ? $default : null;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!empty($type)) {
-                switch (strtolower($type)) {
-                    case 'a':
-                        $data = (array) $data;
-                        break;
-                    case 'd':
-                        $data = (int) $data;
-                        break;
-                    case 'f':
-                        $data = (float) $data;
-                        break;
-                    case 'b':
-                        $data = (boolean) $data;
-                        break;
-                    case 's':
-                    default:
-                        $data = (string) $data;
-                }
+            } else {
+                return null;
             }
         } else {
-            // default
-            $data = isset($default) ? $default : null;
+            if (is_null($value)) {
+                setcookie($key, '', time() - 3600, $options['path'], $options['domain'], $options['secure'], $options['httponly']);
+                unset($_COOKIE[$key]); // Delete Cookie
+            } else {
+                // Set Cookie
+                if (is_array($value)) {
+                    $value = 'kotori:' . json_encode(array_map('urlencode', $value));
+                }
+
+                $expire = !empty($options['expire']) ? time() + intval($options['expire']) : 0;
+                setcookie($key, $value, $expire, $options['path'], $options['domain'], $options['secure'], $options['httponly']);
+                $_COOKIE[$key] = $value;
+            }
         }
 
-        is_array($data) && array_walk_recursive($data, ['Request', 'filter']);
-        return $data;
-    }
-
-    /**
-     * Callback Function
-     *
-     * @param string $filter Filter
-     * @param $data mixed Orginal data
-     * @return mixed
-     */
-    protected function array_map_recursive($filter, $data)
-    {
-        $result = [];
-        foreach ($data as $key => $val) {
-            $result[$key] = is_array($val)
-            ? $this->array_map_recursive($filter, $val)
-            : call_user_func($filter, $val);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Security Filter
-     *
-     * @param  $value Value
-     * @return void
-     */
-    public static function filter(&$value)
-    {
-        if (preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i', $value)) {
-            $value .= ' ';
-        }
+        return null;
     }
 
     /**
