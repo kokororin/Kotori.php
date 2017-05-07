@@ -29,7 +29,7 @@
 
     <php>
         <env name="APP_ENV" value="test" />
-        <const name="WEB_SERVER_HOST" value="127.0.0.1" />
+        <const name="WEB_SERVER_HOST" value="localhost" />
         <const name="WEB_SERVER_PORT" value="2333" />
         <const name="WEB_SERVER_DOCROOT" value="./example/public" />
     </php>

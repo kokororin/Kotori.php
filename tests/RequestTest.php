@@ -8,7 +8,12 @@ use PHPUnit_Framework_TestCase;
 class RequestTest extends PHPUnit_Framework_TestCase
 {
 
-    protected $route = 'http://' . WEB_SERVER_HOST . ':' . WEB_SERVER_PORT . '/test';
+    protected $route = null;
+
+    public function __construct()
+    {
+        $this->route = 'http://' . WEB_SERVER_HOST . ':' . WEB_SERVER_PORT . '/test';
+    }
 
     public function testPost()
     {
