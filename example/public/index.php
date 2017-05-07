@@ -48,6 +48,10 @@ $config = [
         'cliTest/(.*)' => [
             'cli' => 'Hello/cli/$1',
         ],
+        'test' => [
+            'get' => 'Test/receiveGet',
+            'post' => 'Test/receivePost',
+        ],
     ],
 ];
 

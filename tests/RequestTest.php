@@ -1,39 +1,46 @@
 <?php
 namespace Kotori\Tests;
 
+use Curl\Curl;
 use Kotori\Http\Request;
 use PHPUnit_Framework_TestCase;
 
 class RequestTest extends PHPUnit_Framework_TestCase
 {
+
+    protected $route = 'http://' . WEB_SERVER_HOST . ':' . WEB_SERVER_PORT . '/test';
+
     public function testPost()
     {
-        $_POST = [
+        $curl = new Curl();
+        $curl->post($this->route, [
             'id' => 1,
             'name' => 'honoka',
-        ];
-        $request = new Request();
-        $this->assertEquals('honoka', $request->post('name'));
+        ]);
+        $response = $curl->response;
+        $this->assertEquals('honoka', $curl->response->name);
     }
 
     public function testPostJSON()
     {
-        $GLOBALS['HTTP_RAW_POST_DATA'] = json_encode([
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', 'application/json');
+        $curl->post($this->route, [
             'id' => 1,
             'name' => 'honoka',
         ]);
-        $request = new Request();
-        $this->assertEquals('honoka', $request->post('name'));
+        $this->assertEquals('honoka', $curl->response->name);
     }
 
     public function testGet()
     {
-        $_GET = [
+        $curl = new Curl();
+        $curl->get($this->route, [
             'id' => 1,
             'name' => 'honoka',
-        ];
-        $request = new Request();
-        $this->assertEquals('honoka', $request->get('name'));
+        ]);
+        $response = $curl->response;
+        $this->assertEquals('honoka', $curl->response->name);
     }
 
     public function testCookieGet()
