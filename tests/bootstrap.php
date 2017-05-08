@@ -32,11 +32,17 @@ echo sprintf(
 
 sleep(1);
 
+// Set env
+if (getenv('CI')) {
+    putenv('MYSQL_PWD=');
+}
+
 // Create test database
-\Kotori\Tests\DatabaseTest::setUpBeforeClass();
+\Kotori\Tests\Util::createTestDatabase();
 
 // Kill the web server when the process ends
 register_shutdown_function(function () use ($pid) {
+    \Kotori\Tests\Util::dropTestDatabase();
     echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
     exec('kill ' . $pid);
 });
