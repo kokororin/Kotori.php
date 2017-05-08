@@ -6,9 +6,15 @@ php:
   - 7.0
   - 7.1
   - hhvm
+  - nightly
 
 services:
   - mysql
+
+cache:
+  directories
+    - vendor
+    - $HOME/.composer/cache
 
 before_install:
   - composer self-update

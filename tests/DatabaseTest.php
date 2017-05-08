@@ -9,21 +9,22 @@ use PHPUnit_Framework_TestCase;
 
 class DatabaseTest extends PHPUnit_Framework_TestCase
 {
-    protected static $MYSQL_HOST = '127.0.0.1';
-    protected static $MYSQL_USER = 'root';
-    protected static $MYSQL_PWD = '123456';
-    protected static $MYSQL_DB = 'kotori_php_test_db';
+    protected static $MYSQL_HOST = '';
+    protected static $MYSQL_USER = '';
+    protected static $MYSQL_PWD = '';
+    protected static $MYSQL_DB = '';
 
-    public function __construct()
+    public static function setUpBeforeClass()
     {
-        if (getenv('CI')) {
-            self::$MYSQL_PWD = '';
-        }
+        self::$MYSQL_HOST = getenv('MYSQL_HOST');
+        self::$MYSQL_USER = getenv('MYSQL_USER');
+        self::$MYSQL_PWD = getenv('CI') ? '' : getenv('MYSQL_PWD');
+        self::$MYSQL_DB = getenv('MYSQL_DB');
 
-        $this->createTestDatabase();
+        self::createTestDatabase();
     }
 
-    protected function createTestDatabase()
+    protected static function createTestDatabase()
     {
         try {
             $pdo = new PDO('mysql:host=' . self::$MYSQL_HOST, self::$MYSQL_USER, self::$MYSQL_PWD);
