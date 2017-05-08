@@ -19,4 +19,27 @@ class Test extends Controller
     {
         $this->response->throwJSON($this->request->post());
     }
+
+    public function setAndGetCookie()
+    {
+        $this->request->cookie('name', 'honoka');
+        $this->response->throwJSON($this->request->cookie('name'));
+    }
+
+    public function deleteCookie()
+    {
+        $this->request->cookie('name', 'honoka');
+        $this->request->cookie('name', null);
+        $this->response->throwJSON($this->request->cookie('name'));
+    }
+
+    public function isSecure()
+    {
+        $this->response->throwJSON($this->request->isSecure());
+    }
+
+    public function getBaseUrl()
+    {
+        $this->response->throwJSON($this->request->getBaseUrl());
+    }
 }

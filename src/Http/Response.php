@@ -229,7 +229,7 @@ class Response implements SoulInterface
      */
     public function setCacheHeader()
     {
-        if ($_SERVER['HTTP_IF_MODIFIED_SINCE']) {
+        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             $this->setStatus(304);
             exit;
         }

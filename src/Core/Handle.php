@@ -142,6 +142,7 @@ abstract class Handle
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
         Log::normal($txt);
+        self::setDebugHeader($txt);
     }
 
     /**
@@ -159,6 +160,7 @@ abstract class Handle
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine());
         Log::normal($txt);
+        self::setDebugHeader($txt);
         self::halt($text, 500);
     }
 
@@ -185,9 +187,23 @@ abstract class Handle
             $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
 
             Log::normal($txt);
+            self::setDebugHeader($txt);
             self::halt($text, 500);
         }
 
+    }
+
+    /**
+     * output debug info to header
+     *
+     * @param string $txt debug detail
+     * @return void
+     */
+    protected static function setDebugHeader($txt)
+    {
+        if (Config::getSoul()->APP_DEBUG) {
+            Response::getSoul()->setHeader('Kotori-Debug', $txt);
+        }
     }
 
     /**
@@ -257,7 +273,7 @@ abstract class Handle
      */
     protected static function renderHaltBody($type, $message, $line, $file)
     {
-        $text = '<p><strong>Error Type: </strong>' . $type . '</p>' . '<p><strong>Info: </strong>' . $message . '</p>' . '<p><strong>Line: </strong>' . $line . '</p>' . '<p><strong>File: </strong>' . $file . '</p>';
+        $text = '<p><strong>Error Type: </strong>' . $type . '</p>' . '<p><strong>Info: </strong>' . nl2br($message) . '</p>' . '<p><strong>Line: </strong>' . $line . '</p>' . '<p><strong>File: </strong>' . $file . '</p>';
         $source = self::getSourceCode($file, $line);
 
         $sourceLen = strlen(strval(count($source['source']) + $source['first']));
