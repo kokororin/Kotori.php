@@ -17,17 +17,10 @@ $config = [
     // ],
     'DB' => [
         'test' => [
-            'HOST' => '127.0.0.1',
-            'USER' => 'root',
-            'PWD' => '123456',
-            'NAME' => 'test',
-            'TYPE' => 'mysql',
-        ],
-        'dist' => [
-            'HOST' => '127.0.0.1',
-            'USER' => 'root',
-            'PWD' => '123456',
-            'NAME' => 'data',
+            'HOST' => getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : '127.0.0.1',
+            'USER' => getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root',
+            'PWD' => getenv('MYSQL_PWD') ? (getenv('CI') ? '' : getenv('MYSQL_PWD')) : '123456',
+            'NAME' => getenv('MYSQL_DB') ? getenv('MYSQL_DB') : 'test',
             'TYPE' => 'mysql',
         ],
     ],

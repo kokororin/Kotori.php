@@ -2,27 +2,31 @@
 namespace Kotori\Tests;
 
 use Curl\Curl;
+use Exception;
 use Kotori\Http\Request;
 use PHPUnit_Framework_TestCase;
 
 class RequestTest extends PHPUnit_Framework_TestCase
 {
 
-    protected $route = null;
+    protected static $ROUTE = null;
 
-    public function __construct()
+    public static function setUpBeforeClass()
     {
-        $this->route = 'http://' . WEB_SERVER_HOST . ':' . WEB_SERVER_PORT . '/test';
+        self::$ROUTE = 'http://' . getenv('WEB_SERVER_HOST') . ':' . getenv('WEB_SERVER_PORT') . '/test';
     }
 
     public function testPost()
     {
         $curl = new Curl();
-        $curl->post($this->route, [
+        $curl->post(self::$ROUTE, [
             'id' => 1,
             'name' => 'honoka',
         ]);
-        $response = $curl->response;
+        if ($curl->error) {
+            throw new Exception('Error: ' . $curl->errorCode . ': ' . $curl->errorMessage);
+        }
+
         $this->assertEquals('honoka', $curl->response->name);
     }
 
@@ -30,21 +34,28 @@ class RequestTest extends PHPUnit_Framework_TestCase
     {
         $curl = new Curl();
         $curl->setHeader('Content-Type', 'application/json');
-        $curl->post($this->route, [
+        $curl->post(self::$ROUTE, [
             'id' => 1,
             'name' => 'honoka',
         ]);
+        if ($curl->error) {
+            throw new Exception('Error: ' . $curl->errorCode . ': ' . $curl->errorMessage);
+        }
+
         $this->assertEquals('honoka', $curl->response->name);
     }
 
     public function testGet()
     {
         $curl = new Curl();
-        $curl->get($this->route, [
+        $curl->get(self::$ROUTE, [
             'id' => 1,
             'name' => 'honoka',
         ]);
-        $response = $curl->response;
+        if ($curl->error) {
+            throw new Exception('Error: ' . $curl->errorCode . ': ' . $curl->errorMessage);
+        }
+
         $this->assertEquals('honoka', $curl->response->name);
     }
 
