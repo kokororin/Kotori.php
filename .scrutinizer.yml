@@ -1,0 +1,7 @@
+imports:
+    - php
+
+tools:
+    external_code_coverage: true
+    php_sim: false
+    php_cpd: false
