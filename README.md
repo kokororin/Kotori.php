@@ -3,6 +3,7 @@
 [![Build Status](https://api.travis-ci.org/kokororin/Kotori.php.svg)](https://travis-ci.org/kokororin/Kotori.php)
 [![Packagist](https://img.shields.io/packagist/dt/kokororin/kotori-php.svg?maxAge=2592000)](https://packagist.org/packages/kokororin/kotori-php)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/kokororin/Kotori.php/blob/master/LICENSE)
+[![Code Coverage](https://scrutinizer-ci.com/g/kokororin/Kotori.php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kokororin/Kotori.php/?branch=master)
 
 Kotori.php is a Tiny Model-View-Controller(MVC) PHP Framework.
 
