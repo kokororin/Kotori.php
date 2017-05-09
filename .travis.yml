@@ -23,7 +23,6 @@ before_script:
 
 script:
   - composer test
-  - if [[ "$TRAVIS_PHP_VERSION" == '5.6' ]]; then vendor/bin/phpunit --coverage-text ; fi
 
 after_script:
   - if [[ "$TRAVIS_PHP_VERSION" == '5.6' ]]; then wget https://scrutinizer-ci.com/ocular.phar ; fi
