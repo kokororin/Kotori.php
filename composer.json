@@ -34,7 +34,7 @@
             "@phpunit",
             "@phpcs"
         ],
-        "phpunit": "php vendor/bin/phpunit",
+        "phpunit": "php vendor/bin/phpunit --debug --coverage-text",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"
     },

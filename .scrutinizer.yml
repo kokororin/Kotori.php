@@ -5,3 +5,8 @@ tools:
     external_code_coverage: true
     php_sim: false
     php_cpd: false
+
+filter:
+    excluded_paths:
+        - "example/"
+        - "tests/"
