@@ -57,7 +57,13 @@ class Model
      */
     public function __get($key)
     {
-        return Controller::getSoul()->$key;
+        if (property_exists(Controller::getSoul(), $key)) {
+            return Controller::getSoul()->$key;
+        }
+
+        $backTrace = debug_backtrace();
+        $className = get_class($backTrace[0]['object']);
+        throw new \Exception($className . '::$' . $key . ' is not defined');
     }
 
     /**
@@ -70,6 +76,13 @@ class Model
      */
     public function __call($name, $arguments)
     {
-        return call_user_func_array([Controller::getSoul(), $name], $arguments);
+        $callback = [Controller::getSoul(), $name];
+        if (!is_callable($callback)) {
+            $backTrace = debug_backtrace();
+            $className = get_class($backTrace[0]['object']);
+            throw new \Exception($className . '::' . $name . '() is not callable');
+        }
+
+        return call_user_func_array($callback, $arguments);
     }
 }
