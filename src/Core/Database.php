@@ -32,9 +32,12 @@
 
 namespace Kotori\Core;
 
+use Exception;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
+use Kotori\Exception\DatabaseException;
 use Medoo\Medoo;
+use PDOException;
 
 class Database extends Medoo
 {
@@ -83,7 +86,13 @@ class Database extends Medoo
         Config::getSoul()->SELECTED_DB_KEY = $key;
 
         if (!isset(self::$_soul[$key])) {
-            self::$_soul[$key] = new self(Config::getSoul()->DB[$key]);
+            try {
+                self::$_soul[$key] = new self(Config::getSoul()->DB[$key]);
+            } catch (PDOException $e) {
+                throw new DatabaseException($e);
+            } catch (Exception $e) {
+                throw new DatabaseException($e);
+            }
         }
 
         return self::$_soul[$key];

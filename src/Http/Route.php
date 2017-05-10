@@ -33,12 +33,14 @@
  */
 namespace Kotori\Http;
 
-use Exception;
 use Kotori\Core\Config;
 use Kotori\Core\Helper;
-use Kotori\Core\SoulInterface;
-use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
+use Kotori\Exception\ConfigException;
+use Kotori\Exception\NotFoundException;
+use Kotori\Exception\RouteNotFoundException;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 
 class Route implements SoulInterface
 {
@@ -148,7 +150,7 @@ class Route implements SoulInterface
         if ($parsedRoute) {
             $this->_uri = $parsedRoute;
         } else {
-            throw new Exception('Request URI ' . $this->_uri . ' is not Matched by any route.');
+            throw new RouteNotFoundException('Request URI ' . $this->_uri . ' is not Matched by any route.');
         }
 
         $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : [];
@@ -181,11 +183,11 @@ class Route implements SoulInterface
         }
 
         if (!class_exists($controllerClassName)) {
-            throw new Exception('Request Controller ' . $this->_controller . ' is not Found.');
+            throw new NotFoundException('Request Controller ' . $this->_controller . ' is not Found.');
         }
 
         if (!method_exists($class, $this->_action)) {
-            throw new Exception('Request Action ' . $this->_action . ' is not Found.');
+            throw new NotFoundException('Request Action ' . $this->_action . ' is not Found.');
         }
 
         // Parse params from uri
@@ -213,7 +215,7 @@ class Route implements SoulInterface
         if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
             $_controller = $this->_uris[0];
         } else {
-            throw new Exception('Cannot dispatch controller name.');
+            throw new NotFoundException('Cannot dispatch controller name.');
         }
 
         return strip_tags($_controller);
@@ -230,7 +232,7 @@ class Route implements SoulInterface
         if (isset($this->_uris[1])) {
             $_action = $this->_uris[1];
         } else {
-            throw new Exception('Cannot dispatch action name.');
+            throw new NotFoundException('Cannot dispatch action name.');
         }
 
         return strip_tags($_action);
@@ -351,7 +353,7 @@ class Route implements SoulInterface
             case 'QUERY_STRING':
                 return $uri == '' ? rtrim($baseUrl, '/') : $prefix . $uri;
             default:
-                throw new Exception('URL_MODE Config ERROR');
+                throw new ConfigException('URL_MODE Config ERROR');
         }
 
     }

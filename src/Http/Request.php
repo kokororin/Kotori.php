@@ -31,24 +31,18 @@
  */
 namespace Kotori\Http;
 
-use Kotori\Core\SoulInterface;
-use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 
 class Request implements SoulInterface
 {
     use SoulTrait;
-    /**
-     * Params
-     *
-     * @var string
-     */
-    protected $_put = null;
 
     /**
      * Ip address
      *
-     * @var array
+     * @var mixed
      */
     protected $_ip = null;
 

@@ -31,10 +31,10 @@
  */
 namespace Kotori\Http;
 
-use Exception;
-use Kotori\Core\SoulInterface;
-use Kotori\Core\SoulTrait;
 use Kotori\Debug\Hook;
+use Kotori\Exception\ResponseException;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 
 class Response implements SoulInterface
 {
@@ -137,7 +137,7 @@ class Response implements SoulInterface
     public function setStatus($code = 200, $text = '')
     {
         if (empty($code) or !is_numeric($code)) {
-            throw new Exception('Status codes must be numeric.');
+            throw new ResponseException('Status codes must be numeric.');
         }
 
         if (empty($text)) {
@@ -148,7 +148,7 @@ class Response implements SoulInterface
             if (isset($this->_httpCode[$code])) {
                 $text = $this->_httpCode[$code];
             } else {
-                throw new Exception('No status text available. Please check your status code number or supply your own message text.');
+                throw new ResponseException('No status text available. Please check your status code number or supply your own message text.');
             }
         }
 

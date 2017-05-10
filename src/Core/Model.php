@@ -32,6 +32,7 @@
 namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
+use Kotori\Exception\NotFoundException;
 
 class Model
 {
@@ -63,7 +64,7 @@ class Model
 
         $backTrace = debug_backtrace();
         $className = get_class($backTrace[0]['object']);
-        throw new \Exception($className . '::$' . $key . ' is not defined');
+        throw new NotFoundException($className . '::$' . $key . ' is not defined');
     }
 
     /**
@@ -80,7 +81,7 @@ class Model
         if (!is_callable($callback)) {
             $backTrace = debug_backtrace();
             $className = get_class($backTrace[0]['object']);
-            throw new \Exception($className . '::' . $name . '() is not callable');
+            throw new NotFoundException($className . '::' . $name . '() is not callable');
         }
 
         return call_user_func_array($callback, $arguments);

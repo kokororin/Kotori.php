@@ -22,46 +22,16 @@
  */
 
 /**
- * Soul trait
+ *
+ * Exception when error occured with database
  *
  * @package     Kotori
- * @subpackage  Core
+ * @subpackage  Exception
  * @author      Kokororin
  * @link        https://kotori.love
  */
-namespace Kotori\Core;
+namespace Kotori\Exception;
 
-trait SoulTrait
-{
-    /**
-     * Disable Clone
-     *
-     * @return boolean
-     */
-    public function __clone()
-    {
-        return false;
-    }
+use RuntimeException;
 
-    /**
-     * Instance Handle
-     *
-     * @var array
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
-
-}
+class DatabaseException extends RuntimeException {}

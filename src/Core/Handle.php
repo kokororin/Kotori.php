@@ -267,8 +267,8 @@ abstract class Handle
      *
      * @param string $type Error type
      * @param int $message Error string
+     * @param int $line Error line
      * @param string $file Error filepath
-     * @param int $errline Error line
      * @return string
      */
     protected static function renderHaltBody($type, $message, $line, $file)
