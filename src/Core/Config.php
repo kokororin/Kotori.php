@@ -33,9 +33,11 @@
  */
 namespace Kotori\Core;
 
-use Exception;
 use Kotori\Debug\Hook;
+use Kotori\Exception\ConfigException;
 use Kotori\Http\Request;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 
 class Config implements SoulInterface
 {
@@ -102,7 +104,7 @@ class Config implements SoulInterface
                     if (array_key_exists($hostName, $this->APP_NAME)) {
                         $appName = $this->APP_NAME[$hostName];
                     } else {
-                        throw new Exception('Cannot find any app paths.');
+                        throw new ConfigException('Cannot find any app paths.');
                     }
                 } else {
                     $appName = $this->APP_NAME;
@@ -110,7 +112,7 @@ class Config implements SoulInterface
 
                 $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
                 if (!$appFullPath && $this->ENV == 'normal') {
-                    throw new Exception('Cannot find your app directory (' . $appName . ').');
+                    throw new ConfigException('Cannot find your app directory (' . $appName . ').');
                 }
 
                 $this->_config = array_merge([
@@ -137,7 +139,7 @@ class Config implements SoulInterface
         if (is_string($key)) {
             $this->_config[$key] = $value;
         } else {
-            throw new Exception('Config Error.');
+            throw new ConfigException('Config Error.');
         }
     }
 

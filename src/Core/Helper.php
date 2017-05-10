@@ -33,8 +33,8 @@
  */
 namespace Kotori\Core;
 
-use Exception;
 use Kotori\Debug\Hook;
+use Kotori\Exception\NotFoundException;
 
 abstract class Helper
 {
@@ -168,7 +168,7 @@ abstract class Helper
         } else {
             // Oh no! Can we default to something?
             // Or just bail out?
-            throw new Exception('Oops, did you require this package via composer?');
+            throw new NotFoundException('Oops, did you require this package via composer?');
         }
     }
 

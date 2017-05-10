@@ -35,8 +35,8 @@ use Kotori\Core\Config;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
 use Kotori\Core\Helper;
-use Kotori\Core\SoulInterface;
-use Kotori\Core\SoulTrait;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 class Trace implements SoulInterface

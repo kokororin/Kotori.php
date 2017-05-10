@@ -38,6 +38,8 @@ use Kotori\Debug\Hook;
 use Kotori\Http\Request;
 use Kotori\Http\Response;
 use Kotori\Http\Route;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 
 class Controller implements SoulInterface
 {

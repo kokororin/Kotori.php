@@ -22,22 +22,16 @@
  */
 
 /**
- * Soul interface
+ *
+ * Exception when anything is not found
  *
  * @package     Kotori
- * @subpackage  Core
+ * @subpackage  Exception
  * @author      Kokororin
  * @link        https://kotori.love
  */
+namespace Kotori\Exception;
 
-namespace Kotori\Core;
+use RuntimeException;
 
-interface SoulInterface
-{
-    /**
-     * Returns instance
-     *
-     * @return $this
-     */
-    public static function getSoul();
-}
+class NotFoundException extends RuntimeException {}

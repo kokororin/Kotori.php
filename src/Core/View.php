@@ -31,9 +31,9 @@
  */
 namespace Kotori\Core;
 
-use Exception;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Trace;
+use Kotori\Exception\NotFoundException;
 
 class View
 {
@@ -82,7 +82,7 @@ class View
 
         $backTrace = debug_backtrace();
         $className = get_class($backTrace[0]['object']);
-        throw new \Exception($className . '::$' . $key . ' is not defined');
+        throw new NotFoundException($className . '::$' . $key . ' is not defined');
     }
 
     /**
@@ -99,7 +99,7 @@ class View
         if (!is_callable($callback)) {
             $backTrace = debug_backtrace();
             $className = get_class($backTrace[0]['object']);
-            throw new \Exception($className . '::' . $name . '() is not callable');
+            throw new NotFoundException($className . '::' . $name . '() is not callable');
         }
 
         return call_user_func_array($callback, $arguments);
@@ -151,7 +151,7 @@ class View
 
         $this->_viewPath = $this->_tplDir . $tpl . '.html';
         if (!Helper::isFile($this->_viewPath)) {
-            throw new Exception('Template is not existed.');
+            throw new NotFoundException('Template is not existed.');
         }
 
         unset($tpl);

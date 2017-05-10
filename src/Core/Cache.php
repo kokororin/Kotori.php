@@ -33,6 +33,8 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
+use Kotori\Interfaces\SoulInterface;
+use Kotori\Traits\SoulTrait;
 
 class Cache implements SoulInterface
 {
@@ -188,7 +190,7 @@ class Cache implements SoulInterface
     /**
      * Is the requested driver supported in this environment?
      *
-     * @param string $key The driver to test
+     * @param string $driver The driver to test
      * @return array
      */
     public function isSupported($driver)
