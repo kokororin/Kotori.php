@@ -80,6 +80,7 @@ CREATE TABLE `table` (
         if ($dir == null) {
             $dir = __DIR__ . '/../src';
         }
+
         $result = [];
         $items = glob($dir . '/*.php', GLOB_BRACE);
         foreach ($items as $item) {
