@@ -43,10 +43,6 @@ $config = [
         ],
         'test/get' => 'Test/receiveGet',
         'test/post' => 'Test/receivePost',
-        'test/setAndGetCookie' => 'Test/setAndGetCookie',
-        'test/deleteCookie' => 'Test/deleteCookie',
-        'test/isSecure' => 'Test/isSecure',
-        'test/getBaseUrl' => 'Test/getBaseUrl',
     ],
 ];
 

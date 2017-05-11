@@ -7,7 +7,9 @@ use PHPUnit_Framework_TestCase;
 
 class DatabaseTest extends PHPUnit_Framework_TestCase
 {
-    protected function getDatabaseInstance()
+    protected static $db = null;
+
+    public static function setUpBeforeClass()
     {
         $config = Config::getSoul();
         $config->initialize([
@@ -23,13 +25,12 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
                 ],
             ],
         ]);
-        $database = Database::getSoul();
-        return $database;
+        self::$db = Database::getSoul();
     }
 
     public function testInsert()
     {
-        $insertId = $this->getDatabaseInstance()
+        $insertId = self::$db
             ->insert('table', [
                 'id' => 1,
                 'name' => 'kotori',
@@ -39,7 +40,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 
     public function testSelect()
     {
-        $datas = $this->getDatabaseInstance()
+        $datas = self::$db
             ->select('table', '*', [
                 'id' => 1,
             ]);
@@ -48,7 +49,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 
     public function testUpdate()
     {
-        $effectedRows = $this->getDatabaseInstance()
+        $effectedRows = self::$db
             ->update('table', [
                 'name' => 'honoka',
             ], [
@@ -59,7 +60,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 
     public function testDelete()
     {
-        $effectedRows = $this->getDatabaseInstance()
+        $effectedRows = self::$db
             ->delete('table', [
                 'id' => 1,
             ]);

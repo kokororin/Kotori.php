@@ -32,14 +32,4 @@ class Test extends Controller
         $this->request->cookie('name', null);
         $this->response->throwJSON($this->request->cookie('name'));
     }
-
-    public function isSecure()
-    {
-        $this->response->throwJSON($this->request->isSecure());
-    }
-
-    public function getBaseUrl()
-    {
-        $this->response->throwJSON($this->request->getBaseUrl());
-    }
 }
