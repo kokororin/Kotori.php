@@ -41,7 +41,7 @@
             "@phpcs"
         ],
         "pre-test-cmd": "Kotori\\Tests\\Util::convertArraysToSquareBrackets",
-        "phpunit": "php vendor/bin/phpunit --debug --coverage-text",
+        "phpunit": "php vendor/bin/phpunit --debug",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"
     },
