@@ -34,7 +34,6 @@
 namespace Kotori\Http;
 
 use Kotori\Core\Config;
-use Kotori\Core\Helper;
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
 use Kotori\Exception\NotFoundException;
@@ -136,14 +135,6 @@ class Route implements SoulInterface
         }
 
         define('URI', $this->_uri);
-
-        switch ($this->_uri) {
-            case 'favicon.ico':
-                Response::getSoul()->setHeader('Content-Type', 'image/x-icon');
-                Response::getSoul()->setCacheHeader();
-                echo base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', Helper::logo()));
-                exit;
-        }
 
         $parsedRoute = $this->parseRoutes($this->_uri);
 
