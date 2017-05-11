@@ -1,6 +1,7 @@
 <?php
 namespace Kotori\Tests;
 
+use Kotori\Http\Request;
 use PHPUnit_Framework_TestCase;
 
 class RequestTest extends PHPUnit_Framework_TestCase
@@ -42,25 +43,50 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     public function testSetAndGetCookie()
     {
-        $response = Util::get(self::$END_POINT . '/setAndGetCookie');
-        $this->assertEquals('honoka', $response);
+        $request = new Request();
+        // @codingStandardsIgnoreStart
+        @$request->cookie('name', 'honoka');
+        // @codingStandardsIgnoreEnd
+        $this->assertEquals('honoka', $request->cookie('name'));
     }
 
     public function testDeleteCookie()
     {
-        $response = Util::get(self::$END_POINT . '/deleteCookie');
-        $this->assertEquals('null', $response);
+        $request = new Request();
+        // @codingStandardsIgnoreStart
+        @$request->cookie('name', 'honoka');
+        @$request->cookie('name', null);
+        // @codingStandardsIgnoreEnd
+        $this->assertNull($request->cookie('name'));
     }
 
     public function testIsSecure()
     {
-        $response = Util::get(self::$END_POINT . '/isSecure');
-        $this->assertEquals(false, $response);
+        $request = new Request();
+        $this->assertFalse($request->isSecure());
     }
 
     public function testGetBaseUrl()
     {
-        $response = Util::get(self::$END_POINT . '/getBaseUrl');
-        $this->assertEquals('http://' . getenv('WEB_SERVER_HOST') . ':' . getenv('WEB_SERVER_PORT') . '/', $response);
+        $request = new Request();
+        $this->assertEquals('http://kotori.php.dev/', $request->getBaseUrl());
+    }
+
+    public function testGetClientIp()
+    {
+        $request = new Request();
+        $this->assertEquals('127.0.0.1', $request->getClientIp());
+    }
+
+    public function testGetHostName()
+    {
+        $request = new Request();
+        $this->assertEquals('kotori.php.dev', $request->getHostName());
+    }
+
+    public function testIsMobile()
+    {
+        $request = new Request();
+        $this->assertFalse($request->isMobile());
     }
 }

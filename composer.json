@@ -26,7 +26,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Kotori\\": "src/",
+            "Kotori\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Kotori\\Tests\\": "tests/"
         }
     },
