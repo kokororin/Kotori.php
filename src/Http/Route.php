@@ -181,6 +181,11 @@ class Route implements SoulInterface
             throw new NotFoundException('Request Action ' . $this->_action . ' is not Found.');
         }
 
+        $callback = [$class, $this->_action];
+        if (!is_callable($callback)) {
+            throw new NotFoundException($controllerClassName . '::' . $this->_action . '() is not callable');
+        }
+
         // Parse params from uri
         $this->_params = $this->getParams();
 
@@ -192,7 +197,7 @@ class Route implements SoulInterface
         Response::getSoul()->setHeader('Cache-control', 'private');
 
         // Call the requested method
-        call_user_func_array([$class, $this->_action], $this->_params);
+        call_user_func_array($callback, $this->_params);
     }
 
     /**
