@@ -57,7 +57,7 @@ abstract class Log
             sae_debug(trim($msg));
             sae_set_display_errors(true);
         } else {
-            $msg = date('[ Y-m-d H:i:s ]') . "[{$level}]" . $msg . "\r\n";
+            $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
             $logPath = Config::getSoul()->APP_FULL_PATH . '/logs';
             if (!file_exists($logPath)) {
                 Helper::mkdirs($logPath);

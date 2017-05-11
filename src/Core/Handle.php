@@ -158,7 +158,7 @@ abstract class Handle
     public static function exception($exception)
     {
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
-        $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine());
+        $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
         self::setDebugHeader($txt);
         self::halt($text, 500);
@@ -202,7 +202,7 @@ abstract class Handle
     protected static function setDebugHeader($txt)
     {
         if (Config::getSoul()->APP_DEBUG) {
-            Response::getSoul()->setHeader('Kotori-Debug', $txt);
+            Response::getSoul()->setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
         }
     }
 
@@ -350,7 +350,7 @@ abstract class Handle
      */
     protected static function renderLogBody($type, $message, $line, $file)
     {
-        return '[Type] ' . $type . ' [Info] ' . $message . ' [Line] ' . $line . ' [File] ' . $file;
+        return '[Type] ' . $type . "\r\n" . '[Info] ' . $message . "\r\n" . '[Line] ' . $line . "\r\n" . '[File] ' . $file;
     }
 
     /**
