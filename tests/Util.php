@@ -75,8 +75,11 @@ CREATE TABLE `table` (
         }
     }
 
-    protected static function getFileList($dir = __DIR__ . '/../src')
+    protected static function getFileList($dir = null)
     {
+        if ($dir == null) {
+            $dir = __DIR__ . '/../src';
+        }
         $result = [];
         $items = glob($dir . '/*.php', GLOB_BRACE);
         foreach ($items as $item) {
