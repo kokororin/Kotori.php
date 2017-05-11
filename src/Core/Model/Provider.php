@@ -45,7 +45,7 @@ class Provider implements SoulInterface
      *
      * @var array
      */
-    protected $_models = array();
+    protected $_models = [];
 
     /**
      * Class constructor

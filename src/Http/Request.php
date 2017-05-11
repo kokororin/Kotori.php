@@ -73,7 +73,7 @@ class Request implements SoulInterface
         }
 
         if (is_array($key)) {
-            $output = array();
+            $output = [];
             foreach ($key as $k) {
                 $output[$k] = $this->getRequestParams($source, $k);
             }

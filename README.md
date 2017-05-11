@@ -17,6 +17,14 @@ You need [Composer](https://getcomposer.org/) to install Kotori.php.
 $ composer require kokororin/kotori-php:dev-master
 ```
 
+## Quick Start
+```bash
+$ composer global require kasumi/kotori-php-cli:dev-master
+$ kotori init
+$ cd awesome-project
+$ kotori serve --port 2333
+```
+
 ## Usage
 
 ```php

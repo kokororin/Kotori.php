@@ -4,7 +4,7 @@
     "type": "framework",
     "keywords": ["framework", "micro", "api", "router"],
     "homepage": "https://kotori.love",
-    "license": "Apache",
+    "license": "Apache-2.0",
     "support": {
         "wiki": "https://github.com/kokororin/Kotori.php/wiki",
         "source": "https://github.com/kokororin/Kotori.php"
@@ -26,14 +26,17 @@
     },
     "autoload": {
         "psr-4": {
-            "Kotori\\": "src/"
+            "Kotori\\": "src/",
+            "Kotori\\Tests\\": "tests/"
         }
     },
     "scripts": {
         "test": [
+            "@pre-test-cmd",
             "@phpunit",
             "@phpcs"
         ],
+        "pre-test-cmd": "Kotori\\Tests\\Util::convertArraysToSquareBrackets",
         "phpunit": "php vendor/bin/phpunit --debug --coverage-text",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"

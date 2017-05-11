@@ -74,4 +74,60 @@ CREATE TABLE `table` (
             throw $e;
         }
     }
+
+    protected static function getFileList($dir = __DIR__ . '/../src')
+    {
+        $result = [];
+        $items = glob($dir . '/*.php', GLOB_BRACE);
+        foreach ($items as $item) {
+            if (is_file($item)) {
+                array_push($result, $item);
+            }
+        }
+
+        $items = glob($dir . '/*', GLOB_ONLYDIR);
+        foreach ($items as $item) {
+            if (is_dir($item)) {
+                $result = array_merge($result, self::getFileList($item));
+            }
+        }
+
+        return $result;
+    }
+
+    public static function convertArraysToSquareBrackets()
+    {
+        $fileList = self::getFileList();
+        foreach ($fileList as $file) {
+            $code = file_get_contents($file);
+            $out = '';
+            $brackets = [];
+            $tokens = token_get_all($code);
+            $l = count($tokens);
+            for ($i = 0; $i < $l; $i++) {
+                $token = $tokens[$i];
+                if ($token === '(') {
+                    $brackets[] = false;
+                } elseif ($token === ')') {
+                    $token = array_pop($brackets) ? ']' : ')';
+                } elseif (is_array($token) && $token[0] === T_ARRAY) {
+                    $a = $i + 1;
+                    if (isset($tokens[$a]) && $tokens[$a][0] === T_WHITESPACE) {
+                        $a++;
+                    }
+
+                    if (isset($tokens[$a]) && $tokens[$a] === '(') {
+                        $i = $a;
+                        $brackets[] = true;
+                        $token = '[';
+                    }
+                }
+
+                $out .= is_array($token) ? $token[1] : $token;
+            }
+
+            echo 'converting ' . $file . PHP_EOL;
+            file_put_contents($file, $out);
+        }
+    }
 }

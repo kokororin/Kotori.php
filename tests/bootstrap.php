@@ -5,8 +5,6 @@ error_reporting(E_ALL | E_STRICT);
 
 $autoloader = require dirname(__DIR__) . '/vendor/autoload.php';
 
-$autoloader->addPsr4('Kotori\Tests\\', __DIR__);
-
 // Command that starts the built-in web server
 $command = sprintf(
     'php -S %s:%d -t %s >/dev/null 2>&1 & echo $!',
