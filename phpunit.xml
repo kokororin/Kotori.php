@@ -53,7 +53,8 @@
     </php>
 
     <logging>
-        <log type="coverage-clover" target="coverage.clover"/>
+        <log type="coverage-clover" target="coverage/coverage.clover" />
+        <log type="coverage-html" target="coverage" />
     </logging>
 
 </phpunit>
