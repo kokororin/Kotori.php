@@ -13,7 +13,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
     {
         $config = Config::getSoul();
         $config->initialize([
-            'ENV' => 'test',
+            'ENV' => getenv('APP_ENV'),
             'APP_DEBUG' => false,
             'DB' => [
                 'db' => [

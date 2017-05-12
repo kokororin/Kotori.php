@@ -9,6 +9,7 @@ php:
 
 services:
   - mysql
+  - memcached
 
 cache:
   directories
