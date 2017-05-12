@@ -15,7 +15,7 @@ class Hello extends Controller
         $news_list = $this->model->News->getNewsList();
         $this->view->assign('news_list', $news_list)
             ->assign('title', 'Welcome to Kotori.php')
-            ->assign('logo', 'https://raw.githubusercontent.com/kokororin/Kotori.php/master/src/Kotori.gif')
+            ->assign('logo', 'https://cdn.rawgit.com/kokororin/Kotori.php/master/src/Kotori.gif')
             ->display();
     }
 
