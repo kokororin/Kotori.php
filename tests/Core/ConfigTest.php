@@ -1,5 +1,5 @@
 <?php
-namespace Kotori\Tests;
+namespace Kotori\Tests\Core;
 
 use Kotori\Core\Config;
 use PHPUnit_Framework_TestCase;

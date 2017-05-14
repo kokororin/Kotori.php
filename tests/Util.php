@@ -42,6 +42,47 @@ class Util
         return $curl->response;
     }
 
+    public static function startServer()
+    {
+        // Command that starts the built-in web server
+        exec('pid=$(lsof -i:' . getenv('WEB_SERVER_PORT') . ' -t); kill -TERM $pid || kill -KILL $pid 2> /dev/null');
+        $command = sprintf(
+            'php -S %s:%d -t %s >/dev/null 2>&1 & echo $!',
+            getenv('WEB_SERVER_HOST'),
+            getenv('WEB_SERVER_PORT'),
+            getenv('WEB_SERVER_DOCROOT')
+        );
+        echo sprintf('Running command "%s"', $command) . PHP_EOL;
+        // Execute the command and store the process ID
+        $output = [];
+        exec($command, $output);
+        return (int) $output[0];
+    }
+
+    public static function canConnectToServer()
+    {
+        // Disable error handler for now
+        set_error_handler(function () {
+            return true;
+        });
+        // Try to open a connection
+        $sp = fsockopen(getenv('WEB_SERVER_HOST'), getenv('WEB_SERVER_PORT'));
+        // Restore the handler
+        restore_error_handler();
+        if ($sp === false) {
+            return false;
+        }
+
+        fclose($sp);
+        return true;
+    }
+
+    public static function killProcess($pid)
+    {
+        echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
+        exec('kill ' . (int) $pid);
+    }
+
     public static function createTestDatabase()
     {
         try {
@@ -51,8 +92,8 @@ class Util
 CREATE DATABASE `' . getenv('MYSQL_DB') . '`;
 USE `' . getenv('MYSQL_DB') . '`;
 
-DROP TABLE IF EXISTS `table`;
-CREATE TABLE `table` (
+DROP TABLE IF EXISTS `' . getenv('MYSQL_TABLE') . '`;
+CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;');

@@ -1,34 +1,37 @@
 <?php
+use Kotori\Tests\Util;
+
 // Errors on full!
 ini_set('display_errors', 1);
 error_reporting(E_ALL | E_STRICT);
 
-$autoloader = require dirname(__DIR__) . '/vendor/autoload.php';
+// Start build-in server
+$pid = Util::startServer();
 
-// Command that starts the built-in web server
-$command = sprintf(
-    'php -S %s:%d -t %s >/dev/null 2>&1 & echo $!',
-    getenv('WEB_SERVER_HOST'),
-    getenv('WEB_SERVER_PORT'),
-    getenv('WEB_SERVER_DOCROOT')
-);
+if (!$pid) {
+    throw new RuntimeException('Could not start the web server');
+}
 
-echo sprintf('Running command "%s"', $command) . PHP_EOL;
+$start = microtime(true);
+$connected = false;
 
-// Execute the command and store the process ID
-$output = [];
-exec($command, $output);
-$pid = (int) $output[0];
+// Try to connect until the time spent exceeds the timeout specified in the configuration
+while (microtime(true) - $start <= (int) getenv('WEB_SERVER_TIMEOUT')) {
+    if (Util::canConnectToServer()) {
+        $connected = true;
+        break;
+    }
+}
 
-echo sprintf(
-    '%s - Web server started on %s:%d with PID %d',
-    date('r'),
-    getenv('WEB_SERVER_HOST'),
-    getenv('WEB_SERVER_PORT'),
-    $pid
-) . PHP_EOL;
-
-sleep(1);
+if (!$connected) {
+    Util::killProcess($pid);
+    throw new RuntimeException(
+        sprintf(
+            'Could not connect to the web server within the given timeframe (%d second(s))',
+            getenv('WEB_SERVER_TIMEOUT')
+        )
+    );
+}
 
 // Set env
 if (getenv('CI')) {
@@ -36,11 +39,10 @@ if (getenv('CI')) {
 }
 
 // Create test database
-\Kotori\Tests\Util::createTestDatabase();
+Util::createTestDatabase();
 
 // Kill the web server when the process ends
 register_shutdown_function(function () use ($pid) {
-    \Kotori\Tests\Util::dropTestDatabase();
-    echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
-    exec('kill ' . $pid);
+    Util::dropTestDatabase();
+    Util::killProcess($pid);
 });

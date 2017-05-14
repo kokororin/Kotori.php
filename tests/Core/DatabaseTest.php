@@ -1,5 +1,5 @@
 <?php
-namespace Kotori\Tests;
+namespace Kotori\Tests\Core;
 
 use Kotori\Core\Config;
 use Kotori\Core\Database;
@@ -31,7 +31,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
     public function testInsert()
     {
         $insertId = self::$db
-            ->insert('table', [
+            ->insert(getenv('MYSQL_TABLE'), [
                 'id' => 1,
                 'name' => 'kotori',
             ]);
@@ -41,7 +41,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
     public function testSelect()
     {
         $datas = self::$db
-            ->select('table', '*', [
+            ->select(getenv('MYSQL_TABLE'), '*', [
                 'id' => 1,
             ]);
         $this->assertEquals('kotori', $datas[0]['name']);
@@ -50,7 +50,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
     public function testUpdate()
     {
         $effectedRows = self::$db
-            ->update('table', [
+            ->update(getenv('MYSQL_TABLE'), [
                 'name' => 'honoka',
             ], [
                 'id' => 1,
@@ -61,7 +61,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
     public function testDelete()
     {
         $effectedRows = self::$db
-            ->delete('table', [
+            ->delete(getenv('MYSQL_TABLE'), [
                 'id' => 1,
             ]);
         $this->assertGreaterThan(0, $effectedRows);

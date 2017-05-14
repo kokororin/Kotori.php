@@ -1,5 +1,5 @@
 <?php
-namespace Kotori\Tests;
+namespace Kotori\Tests\Core;
 
 use Kotori\Core\Cache;
 use Kotori\Core\Config;

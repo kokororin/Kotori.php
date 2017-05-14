@@ -1,7 +1,8 @@
 <?php
-namespace Kotori\Tests;
+namespace Kotori\Tests\Http;
 
 use Kotori\Http\Request;
+use Kotori\Tests\Util;
 use PHPUnit_Framework_TestCase;
 
 class RequestTest extends PHPUnit_Framework_TestCase
