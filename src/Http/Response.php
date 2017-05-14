@@ -190,18 +190,13 @@ class Response implements SoulInterface
     /**
      * Thown JSON to output
      *
-     * @access public
      * @param mixed $data Original Data
      * @return void
      */
     public function throwJSON($data)
     {
-        if (function_exists('json_encode')) {
-            $this->setContentType('application/json');
-            exit(json_encode($data));
-        }
-
-        exit('json_encode function needs PHP > 5.2');
+        $this->setContentType('application/json');
+        exit(json_encode($data));
     }
 
     /**

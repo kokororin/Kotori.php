@@ -46,7 +46,7 @@ trait SoulTrait
     /**
      * Instance Handle
      *
-     * @var array
+     * @var object
      */
     protected static $_soul;
 

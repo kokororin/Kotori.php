@@ -68,7 +68,7 @@ class Route implements SoulInterface
     /**
      * Current URI string
      *
-     * @var string
+     * @var mixed
      */
     protected $_uri = '';
 

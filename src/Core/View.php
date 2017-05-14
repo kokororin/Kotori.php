@@ -34,9 +34,11 @@ namespace Kotori\Core;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Trace;
 use Kotori\Exception\NotFoundException;
+use Kotori\Traits\ControllerMethodsTrait;
 
 class View
 {
+    use ControllerMethodsTrait;
     /**
      * Template Direcory
      *
@@ -65,45 +67,6 @@ class View
      * @var array
      */
     protected $_needData;
-
-    /**
-     * __get magic
-     *
-     * Allows view to access loaded classes using the same
-     * syntax as controllers.
-     *
-     * @param string $key
-     */
-    public function __get($key)
-    {
-        if (property_exists(Controller::getSoul(), $key)) {
-            return Controller::getSoul()->$key;
-        }
-
-        $backTrace = debug_backtrace();
-        $className = get_class($backTrace[0]['object']);
-        throw new NotFoundException($className . '::$' . $key . ' is not defined');
-    }
-
-    /**
-     * __call magic
-     *
-     * Allows view to access controller methods
-     *
-     * @param  $name
-     * @param  $arguments
-     */
-    public function __call($name, $arguments)
-    {
-        $callback = [Controller::getSoul(), $name];
-        if (!is_callable($callback)) {
-            $backTrace = debug_backtrace();
-            $className = get_class($backTrace[0]['object']);
-            throw new NotFoundException($className . '::' . $name . '() is not callable');
-        }
-
-        return call_user_func_array($callback, $arguments);
-    }
 
     /**
      * Class constructor
