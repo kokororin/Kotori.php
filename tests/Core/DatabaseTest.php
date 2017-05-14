@@ -30,12 +30,12 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 
     public function testInsert()
     {
-        $insertId = self::$db
+        $query = self::$db
             ->insert(getenv('MYSQL_TABLE'), [
                 'id' => 1,
                 'name' => 'kotori',
             ]);
-        $this->assertNotEquals(0, $insertId);
+        $this->assertGreaterThan(0, $query->rowCount());
     }
 
     public function testSelect()
@@ -49,21 +49,21 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 
     public function testUpdate()
     {
-        $effectedRows = self::$db
+        $query = self::$db
             ->update(getenv('MYSQL_TABLE'), [
                 'name' => 'honoka',
             ], [
                 'id' => 1,
             ]);
-        $this->assertGreaterThan(0, $effectedRows);
+        $this->assertGreaterThan(0, $query->rowCount());
     }
 
     public function testDelete()
     {
-        $effectedRows = self::$db
+        $query = self::$db
             ->delete(getenv('MYSQL_TABLE'), [
                 'id' => 1,
             ]);
-        $this->assertGreaterThan(0, $effectedRows);
+        $this->assertGreaterThan(0, $query->rowCount());
     }
 }

@@ -46,7 +46,7 @@ class Database extends Medoo
      *
      * @var array
      */
-    public $queries = [];
+    public static $queries = [];
 
     /**
      * Instance Handle
@@ -119,20 +119,22 @@ class Database extends Medoo
         Hook::listen(__CLASS__);
     }
 
-    public function query($query)
+    public function query($query, $map = [])
     {
-        array_push($this->logs, $query);
-        Log::sql($this->last());
-        array_push($this->queries, $this->last());
-        return parent::query($query);
+        $statement = parent::exec($query, $map);
+        $lastSQL = parent::last();
+        Log::sql($lastSQL);
+        array_push(self::$queries, $lastSQL);
+        return $statement;
     }
 
-    public function exec($query)
+    public function exec($query, $map = [])
     {
-        array_push($this->logs, $query);
-        Log::sql($this->last());
-        array_push($this->queries, $this->last());
-        return parent::exec($query);
+        $statement = parent::exec($query, $map);
+        $lastSQL = parent::last();
+        Log::sql($lastSQL);
+        array_push(self::$queries, $lastSQL);
+        return $statement;
     }
 
 }

@@ -93,9 +93,8 @@ class Trace implements SoulInterface
         }
 
         $error = Handle::$errors;
-        $database = Database::getSoul(Config::getSoul()->SELECTED_DB_KEY);
 
-        $sql = $database == null ? [] : $database->queries;
+        $sql = Database::$queries;
 
         $base = [
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],

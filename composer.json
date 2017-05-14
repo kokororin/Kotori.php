@@ -15,7 +15,7 @@
     }],
     "require": {
         "php": ">=5.4.0",
-        "catfan/Medoo": "1.2.1",
+        "catfan/Medoo": "1.4.*",
         "scrivo/highlight.php": "8.*",
         "wyrihaximus/html-compress": "^1.2"
     },
