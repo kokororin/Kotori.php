@@ -136,6 +136,10 @@ class Route implements SoulInterface
 
         define('URI', $this->_uri);
 
+        if ($this->_uri == 'favicon.ico') {
+            return Response::getSoul()->setStatus(404);
+        }
+
         $parsedRoute = $this->parseRoutes($this->_uri);
 
         if ($parsedRoute) {
