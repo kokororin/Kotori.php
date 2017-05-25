@@ -110,7 +110,15 @@ class Config implements SoulInterface
                     $appName = $this->APP_NAME;
                 }
 
-                $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
+                if (Request::getSoul()->isCli()) {
+                    $stack = debug_backtrace();
+                    $firstFrame = $stack[count($stack) - 1];
+                    $initialFile = $firstFrame['file'];
+                    $appFullPath = realpath(dirname($initialFile) . '/../' . rtrim($appName, '/'));
+                } else {
+                    $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
+                }
+
                 if (!$appFullPath && $this->ENV == 'normal') {
                     throw new ConfigException('Cannot find your app directory (' . $appName . ').');
                 }
