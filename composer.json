@@ -17,10 +17,10 @@
         "php": ">=5.4.0",
         "catfan/Medoo": "1.4.*",
         "scrivo/highlight.php": "8.*",
-        "wyrihaximus/html-compress": "^1.2"
+        "wyrihaximus/html-compress": "1.2.*"
     },
     "require-dev": {
-        "php-curl-class/php-curl-class": "~7.0",
+        "php-curl-class/php-curl-class": "7.3.*",
         "phpunit/phpunit": "^4.0",
         "squizlabs/php_codesniffer": "^2.5"
     },
