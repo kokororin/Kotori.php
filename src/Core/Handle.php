@@ -142,7 +142,9 @@ abstract class Handle
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
         Log::normal($txt);
-        self::setDebugHeader($txt);
+        if (!Request::getSoul()->isCli()) {
+            self::setDebugHeader($txt);
+        }
     }
 
     /**
@@ -160,8 +162,13 @@ abstract class Handle
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
-        self::setDebugHeader($txt);
-        self::halt($text, 500);
+        if (Request::getSoul()->isCli()) {
+            exit($txt);
+        } else {
+            self::setDebugHeader($txt);
+            self::halt($text, Config::getSoul()->APP_DEBUG ? 500 : 404);
+        }
+
     }
 
     /**
@@ -187,8 +194,12 @@ abstract class Handle
             $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
 
             Log::normal($txt);
-            self::setDebugHeader($txt);
-            self::halt($text, 500);
+            if (Request::getSoul()->isCli()) {
+                exit($txt);
+            } else {
+                self::setDebugHeader($txt);
+                self::halt($text, Config::getSoul()->APP_DEBUG ? 500 : 404);
+            }
         }
 
     }
