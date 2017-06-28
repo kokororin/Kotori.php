@@ -61,6 +61,25 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->assertNull($request->cookie('name'));
     }
 
+    public function testSetAndGetSession()
+    {
+        $request = new Request();
+        // @codingStandardsIgnoreStart
+        @$request->session('name', 'honoka');
+        // @codingStandardsIgnoreEnd
+        $this->assertEquals('honoka', $request->session('name'));
+    }
+
+    public function testDeleteSession()
+    {
+        $request = new Request();
+        // @codingStandardsIgnoreStart
+        @$request->session('name', 'honoka');
+        @$request->session('name', null);
+        // @codingStandardsIgnoreEnd
+        $this->assertNull($request->session('name'));
+    }
+
     public function testIsSecure()
     {
         $request = new Request();

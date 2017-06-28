@@ -219,6 +219,39 @@ class Request implements SoulInterface
     }
 
     /**
+     * Set or Get session
+     *
+     * @param  mixed $key Index for item for session
+     * @param  string $value session value
+     * @return mixed
+     */
+    public function session($key = '', $value = '')
+    {
+        if (is_null($key)) {
+            if (empty($_SESSION)) {
+                return null;
+            }
+
+            unset($_SESSION);
+        } elseif ('' === $key) {
+            // Get All Session
+            return $_SESSION;
+        }
+
+        if ('' === $value) {
+            return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+        } else {
+            if (is_null($value)) {
+                unset($_SESSION[$key]);
+            } else {
+                $_SESSION[$key] = $value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Is HTTPS?
      *
      * Determines if the application is accessed via an encrypted
