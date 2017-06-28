@@ -163,12 +163,13 @@ abstract class Handle
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
         if (Request::getSoul()->isCli()) {
-            exit($txt);
+            echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
         } else {
             self::setDebugHeader($txt);
             self::halt($text, Config::getSoul()->APP_DEBUG ? 500 : 404);
         }
 
+        exit;
     }
 
     /**
@@ -195,11 +196,13 @@ abstract class Handle
 
             Log::normal($txt);
             if (Request::getSoul()->isCli()) {
-                exit($txt);
+                echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
             } else {
                 self::setDebugHeader($txt);
                 self::halt($text, Config::getSoul()->APP_DEBUG ? 500 : 404);
             }
+
+            exit;
         }
 
     }
