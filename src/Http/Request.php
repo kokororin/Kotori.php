@@ -63,9 +63,10 @@ class Request implements SoulInterface
      *
      * @param  array $source $_GET, $_POST, $_COOKIE, $_SERVER, etc.
      * @param  mixed $key Index for item to be fetched from $source
+     * @param  mixed $default Default value for item
      * @return mixed
      */
-    protected function getRequestParams(&$source, $key = null)
+    protected function getRequestParams(&$source, $key = null, $default = null)
     {
         // If $key is NULL, it means that the whole $source is requested
         if (!isset($key) || $key == null) {
@@ -84,7 +85,7 @@ class Request implements SoulInterface
         if (isset($source[$key])) {
             $value = $source[$key];
         } else {
-            return null;
+            return $default;
         }
 
         return $value;
@@ -97,18 +98,19 @@ class Request implements SoulInterface
      * @param  mixed $key Index for item to be fetched from $_GET
      * @return mixed
      */
-    public function get($key = null)
+    public function get($key = null, $default = null)
     {
-        return $this->getRequestParams($_GET, $key);
+        return $this->getRequestParams($_GET, $key, $default);
     }
 
     /**
      * Fetch an item from the POST array
      *
      * @param  mixed $key Index for item to be fetched from $_POST
+     * @param  mixed $default Default value for item
      * @return mixed
      */
-    public function post($key = null)
+    public function post($key = null, $default = null)
     {
         $rawPostData = file_get_contents('php://input');
         $source = json_decode($rawPostData, true);
@@ -116,18 +118,19 @@ class Request implements SoulInterface
             $source = $_POST;
         }
 
-        return $this->getRequestParams($source, $key);
+        return $this->getRequestParams($source, $key, $default);
     }
 
     /**
      * Fetch an item from the SERVER array
      *
      * @param  mixed $key Index for item to be fetched from $_SERVER
+     * @param  mixed $default Default value for item
      * @return mixed
      */
-    public function server($key = null)
+    public function server($key = null, $default = null)
     {
-        return $this->getRequestParams($_SERVER, $key);
+        return $this->getRequestParams($_SERVER, $key, $default);
     }
 
     /**

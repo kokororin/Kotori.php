@@ -164,7 +164,6 @@ class Route implements SoulInterface
         // Define some variables
         define('CONTROLLER_NAME', $this->_controller);
         define('ACTION_NAME', $this->_action);
-        define('PUBLIC_DIR', Request::getSoul()->getBaseUrl() . 'public');
 
         // If is already initialized
         $prefix = Config::getSoul()->NAMESPACE_PREFIX;
