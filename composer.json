@@ -45,6 +45,9 @@
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"
     },
+    "config": {
+        "sort-packages": true
+    },
     "suggest": {
         "kasumi/kotori-php-cli": "Scaffold CLI tool for the PHP framework Kotori.php"
     }

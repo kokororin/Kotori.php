@@ -34,6 +34,7 @@
 namespace Kotori\Http;
 
 use Kotori\Core\Config;
+use Kotori\Core\Helper;
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
 use Kotori\Exception\NotFoundException;
@@ -196,8 +197,24 @@ class Route implements SoulInterface
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
 
-        Response::getSoul()->setHeader('X-Powered-By', 'Kotori');
-        Response::getSoul()->setHeader('Cache-control', 'private');
+        if (Config::getSoul()->APP_DEBUG) {
+            Response::getSoul()->setHeader('X-Kotori-Hash', call_user_func(function () {
+                $lockFile = Helper::getComposerVendorPath() . '/../composer.lock';
+                if (!Helper::isFile($lockFile)) {
+                    return 'unknown';
+                } else {
+                    $lockData = file_get_contents($lockFile);
+                    $lockData = json_decode($lockData, true);
+                    foreach ($lockData['packages'] as $package) {
+                        if ($package['name'] == 'kokororin/kotori-php') {
+                            return substr($package['source']['reference'], 0, 6);
+                        }
+                    }
+                }
+
+                return 'unknown';
+            }));
+        }
 
         // Call the requested method
         call_user_func_array($callback, $this->_params);
