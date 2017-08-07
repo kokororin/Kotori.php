@@ -31,7 +31,7 @@
  */
 namespace Kotori\Traits;
 
-use Kotori\Core\Controller;
+use Kotori\Core\Container;
 use Kotori\Exception\NotFoundException;
 
 trait ControllerMethodsTrait
@@ -46,8 +46,9 @@ trait ControllerMethodsTrait
      */
     public function __get($key)
     {
-        if (property_exists(Controller::getSoul(), $key)) {
-            return Controller::getSoul()->$key;
+        $controller = Container::get('\\Kotori\\Core\\Controller');
+        if (property_exists($controller, $key)) {
+            return $controller->$key;
         }
 
         $backTrace = debug_backtrace();
@@ -60,12 +61,13 @@ trait ControllerMethodsTrait
      *
      * Allows models and views to access controller methods
      *
-     * @param  $name
-     * @param  $arguments
+     * @param  string $name
+     * @param  array  $arguments
      */
     public function __call($name, $arguments)
     {
-        $callback = [Controller::getSoul(), $name];
+        $controller = Container::get('\\Kotori\\Core\\Controller');
+        $callback = [$controller, $name];
         if (!is_callable($callback)) {
             $backTrace = debug_backtrace();
             $className = get_class($backTrace[0]['object']);

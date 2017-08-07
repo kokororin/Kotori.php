@@ -35,11 +35,13 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
+use Kotori\Facade\Config;
 
 abstract class Helper
 {
     /**
      * Require Array
+     *
      * @var array
      */
     protected static $_require = [];
@@ -47,13 +49,13 @@ abstract class Helper
     /**
      * Include One File
      *
-     * @param string $path File Path
+     * @param  string $path
      * @return boolean
      */
     public static function import($path)
     {
         $path = realpath($path);
-        Hook::listen(str_replace(Config::getSoul()->APP_FULL_PATH, '', $path));
+        Hook::listen(str_replace(Config::get('APP_FULL_PATH'), '', $path));
         if (!isset(self::$_require[$path])) {
             if (self::isFile($path)) {
                 require $path;
@@ -70,7 +72,7 @@ abstract class Helper
     /**
      * Detect whether file is existed
      *
-     * @param string $path File Path
+     * @param  string $path
      * @return boolean
      */
     public static function isFile($path)
@@ -91,14 +93,14 @@ abstract class Helper
     /**
      * Global autoload function
      *
-     * @param string $class Class name
+     * @param  string $class
      * @return void
      */
     public static function autoload($class)
     {
-        $baseRoot = Config::getSoul()->APP_FULL_PATH;
+        $baseRoot = Config::get('APP_FULL_PATH');
         // project-specific namespace prefix
-        $prefix = Config::getSoul()->NAMESPACE_PREFIX;
+        $prefix = Config::get('NAMESPACE_PREFIX');
 
         // does the class use the namespace prefix?
         $len = strlen($prefix);
@@ -121,8 +123,8 @@ abstract class Helper
     /**
      * recursively create a long directory path
      *
-     * @param  string $pathname directory path
-     * @param  int $mode
+     * @param  string   $pathname
+     * @param  int      $mode
      * @return boolean
      */
     public static function mkdirs($pathname, $mode = 0755)

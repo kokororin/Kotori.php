@@ -31,8 +31,8 @@
  */
 namespace Kotori\Debug;
 
-use Kotori\Core\Config;
 use Kotori\Core\Helper;
+use Kotori\Facade\Config;
 
 abstract class Log
 {
@@ -41,13 +41,13 @@ abstract class Log
      *
      * Support Sina App Engine
      *
-     * @param string $msg Message
-     * @param string $level Log level
+     * @param  string $msg
+     * @param  string $level
      * @return void
      */
     protected static function write($msg, $level = '')
     {
-        if (Config::getSoul()->APP_DEBUG == false) {
+        if (!Config::get('APP_DEBUG')) {
             return;
         }
 
@@ -58,7 +58,7 @@ abstract class Log
             sae_set_display_errors(true);
         } else {
             $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
-            $logPath = Config::getSoul()->APP_FULL_PATH . '/logs';
+            $logPath = Config::get('APP_FULL_PATH') . '/logs';
             if (!file_exists($logPath)) {
                 Helper::mkdirs($logPath);
             }
@@ -72,7 +72,7 @@ abstract class Log
     /**
      * Write Normal Log
      *
-     * @param string $msg Message
+     * @param string $msg
      */
     public static function normal($msg)
     {
@@ -82,7 +82,7 @@ abstract class Log
     /**
      * Write SQL Log
      *
-     * @param string $msg Message
+     * @param string $msg
      */
     public static function sql($msg)
     {

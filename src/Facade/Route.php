@@ -22,46 +22,26 @@
  */
 
 /**
- * Soul trait
+ * Route Facade Class
  *
  * @package     Kotori
- * @subpackage  Traits
+ * @subpackage  Facade
  * @author      Kokororin
  * @link        https://kotori.love
  */
-namespace Kotori\Traits;
+namespace Kotori\Facade;
 
-trait SoulTrait
+use Kotori\Core\Facade;
+
+class Route extends Facade
 {
     /**
-     * Disable Clone
+     * Get the registered name of the component.
      *
-     * @return boolean
+     * @return string
      */
-    public function __clone()
+    protected static function getFacadeAccessor()
     {
-        return false;
+        return '\\Kotori\\Http\\Route';
     }
-
-    /**
-     * Instance Handle
-     *
-     * @var object
-     */
-    protected static $_soul;
-
-    /**
-     * get singleton
-     *
-     * @return object
-     */
-    public static function getSoul()
-    {
-        if (self::$_soul === null) {
-            self::$_soul = new self();
-        }
-
-        return self::$_soul;
-    }
-
 }

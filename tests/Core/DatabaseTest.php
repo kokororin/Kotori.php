@@ -1,8 +1,8 @@
 <?php
 namespace Kotori\Tests\Core;
 
-use Kotori\Core\Config;
 use Kotori\Core\Database;
+use Kotori\Facade\Config;
 use PHPUnit_Framework_TestCase;
 
 class DatabaseTest extends PHPUnit_Framework_TestCase
@@ -11,8 +11,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 
     public static function setUpBeforeClass()
     {
-        $config = Config::getSoul();
-        $config->initialize([
+        Config::initialize([
             'ENV' => getenv('APP_ENV'),
             'APP_DEBUG' => false,
             'DB' => [
@@ -25,7 +24,7 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
                 ],
             ],
         ]);
-        self::$db = Database::getSoul();
+        self::$db = Database::getInstance();
     }
 
     public function testInsert()

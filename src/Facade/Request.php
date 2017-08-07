@@ -22,47 +22,26 @@
  */
 
 /**
- * Hook Class
+ * Request Facade Class
  *
  * @package     Kotori
- * @subpackage  Debug
+ * @subpackage  Facade
  * @author      Kokororin
  * @link        https://kotori.love
  */
-namespace Kotori\Debug;
+namespace Kotori\Facade;
 
-abstract class Hook
+use Kotori\Core\Facade;
+
+class Request extends Facade
 {
     /**
-     * Hook tags
+     * Get the registered name of the component.
      *
-     * @var array
+     * @return string
      */
-    protected static $tags = [];
-
-    /**
-     * get the tags
-     *
-     * @return array
-     */
-    public static function getTags()
+    protected static function getFacadeAccessor()
     {
-        return self::$tags;
+        return '\\Kotori\\Http\\Request';
     }
-
-    /**
-     * Start Hook listen
-     *
-     * @param  string $name
-     * @return int
-     */
-    public static function listen($name)
-    {
-        if (!isset(self::$tags[$name])) {
-            self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
-        }
-
-        return self::$tags[$name];
-    }
-
 }

@@ -33,12 +33,9 @@ namespace Kotori\Http;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\ResponseException;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
 
-class Response implements SoulInterface
+class Response
 {
-    use SoulTrait;
     /**
      * Status array
      *
@@ -130,8 +127,8 @@ class Response implements SoulInterface
     /**
      * Set HTTP Status Header
      *
-     * @param int $code Status code
-     * @param string $text Custom text
+     * @param  int    $code
+     * @param  string $text
      * @return void
      */
     public function setStatus($code = 200, $text = '')
@@ -165,8 +162,8 @@ class Response implements SoulInterface
      *
      * Lets you set a server header which will be sent with the final output.
      *
-     * @param string $name Header
-     * @param string $value Value
+     * @param  string $name
+     * @param  string $value
      * @return void
      */
     public function setHeader($name, $value)
@@ -179,7 +176,7 @@ class Response implements SoulInterface
      *
      * Let you set a Content-Type header
      *
-     * @param string $contentType
+     * @param  string $contentType
      * @return void
      */
     public function setContentType($contentType = 'text/html')
@@ -190,7 +187,7 @@ class Response implements SoulInterface
     /**
      * Thown JSON to output
      *
-     * @param mixed $data Original Data
+     * @param  mixed $data
      * @return void
      */
     public function throwJSON($data)
@@ -202,8 +199,8 @@ class Response implements SoulInterface
     /**
      * Header Redirect
      *
-     * @param string $location Redirect url
-     * @param boolean $isPermanently 301 or 302
+     * @param  string $location
+     * @param  boolean $isPermanently
      * @return void
      */
     public function redirect($location, $isPermanently = false)

@@ -33,9 +33,9 @@
  */
 namespace Kotori;
 
-use Kotori\Core\Config;
 use Kotori\Core\Helper;
-use Kotori\Http\Route;
+use Kotori\Facade\Config;
+use Kotori\Facade\Route;
 
 class App
 {
@@ -59,7 +59,7 @@ class App
             exit('Kotori.php requires PHP >= 5.4.0 !');
         }
 
-        ini_set('display_errors', 'off');
+        // ini_set('display_errors', 'off');
         define('START_TIME', microtime(true));
         define('START_MEMORY', memory_get_usage());
         if (!empty($config)) {
@@ -79,16 +79,16 @@ class App
         set_exception_handler(['\\Kotori\Core\Handle', 'exception']);
         register_shutdown_function(['\\Kotori\Core\Handle', 'end']);
 
-        Config::getSoul()->initialize($this->_config);
+        Config::initialize($this->_config);
 
-        ini_set('date.timezone', Config::getSoul()->TIME_ZONE);
+        ini_set('date.timezone', Config::get('TIME_ZONE'));
 
-        if (Config::getSoul()->USE_SESSION) {
+        if (Config::get('USE_SESSION')) {
             !session_id() && session_start();
         }
 
         // Load application's common functions
-        Helper::import(Config::getSoul()->APP_FULL_PATH . '/common.php');
+        Helper::import(Config::get('APP_FULL_PATH') . '/common.php');
 
         // @codingStandardsIgnoreStart
         if (function_exists('spl_autoload_register')) {
@@ -102,7 +102,7 @@ class App
         // @codingStandardsIgnoreEnd
 
         // Load route class
-        Route::getSoul()->dispatch();
+        Route::dispatch();
     }
 
 }

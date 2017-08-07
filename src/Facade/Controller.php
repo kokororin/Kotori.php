@@ -22,22 +22,26 @@
  */
 
 /**
- * Soul interface
+ * Controller Facade Class
  *
  * @package     Kotori
- * @subpackage  Interfaces
+ * @subpackage  Facade
  * @author      Kokororin
  * @link        https://kotori.love
  */
+namespace Kotori\Facade;
 
-namespace Kotori\Interfaces;
+use Kotori\Core\Facade;
 
-interface SoulInterface
+class Controller extends Facade
 {
     /**
-     * Returns instance
+     * Get the registered name of the component.
      *
-     * @return $this
+     * @return string
      */
-    public static function getSoul();
+    protected static function getFacadeAccessor()
+    {
+        return '\\Kotori\\Core\\Controller';
+    }
 }

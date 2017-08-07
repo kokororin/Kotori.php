@@ -34,8 +34,9 @@ namespace Kotori\Core;
 use Exception;
 use Highlight\Highlighter;
 use Kotori\Debug\Log;
-use Kotori\Http\Request;
-use Kotori\Http\Response;
+use Kotori\Facade\Config;
+use Kotori\Facade\Request;
+use Kotori\Facade\Response;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 abstract class Handle
@@ -53,21 +54,21 @@ abstract class Handle
      * Takes an error message as input
      * and displays it using the specified template.
      *
-     * @param string $message Error Message
-     * @param int $code HTTP Header code
-     *
+     * @param  string $message
+     * @param  int    $code
      * @return void
      */
     public static function halt($message, $code = 404)
     {
-        Response::getSoul()->setStatus($code);
-        if (Config::getSoul()->APP_DEBUG == false) {
+        Response::setStatus($code);
+
+        if (!Config::get('APP_DEBUG')) {
             $message = '404 Not Found.';
         }
 
-        $tplPath = Config::getSoul()->ERROR_TPL;
+        $tplPath = Config::get('ERROR_TPL');
 
-        if ($tplPath == null || !Helper::isFile(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html')) {
+        if ($tplPath == null || !Helper::isFile(Config::get('APP_FULL_PATH') . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,7 +99,7 @@ abstract class Handle
   </div>
   <div id="info">
     <p><strong>Request Method: </strong>' . strtoupper($_SERVER['REQUEST_METHOD']) . '</p>
-    <p><strong>Request URL: </strong>' . Request::getSoul()->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</p>
+    <p><strong>Request URL: </strong>' . Request::getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</p>
       ' . $message . '
   </div>
 
@@ -112,7 +113,7 @@ abstract class Handle
 </body>
 </html>';
         } else {
-            $tpl = file_get_contents(Config::getSoul()->APP_FULL_PATH . '/views/' . $tplPath . '.html');
+            $tpl = file_get_contents(Config::get('APP_FULL_PATH') . '/views/' . $tplPath . '.html');
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
@@ -129,10 +130,10 @@ abstract class Handle
      * This function will send the error page directly to the
      * browser and exit.
      *
-     * @param string $errno Error number
-     * @param int $errstr Error string
-     * @param string $errfile Error filepath
-     * @param int $errline Error line
+     * @param string $errno
+     * @param int    $errstr
+     * @param string $errfile
+     * @param int    $errline
      * @return void
      */
     public static function error($errno, $errstr, $errfile, $errline)
@@ -142,7 +143,7 @@ abstract class Handle
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
         Log::normal($txt);
-        if (!Request::getSoul()->isCli()) {
+        if (!Request::isCli()) {
             self::setDebugHeader($txt);
         }
     }
@@ -154,7 +155,7 @@ abstract class Handle
      * only if display_errors is On so that they don't show up in
      * production environments.
      *
-     * @param Exception $exception The exception
+     * @param  Exception $exception
      * @return void
      */
     public static function exception($exception)
@@ -162,11 +163,11 @@ abstract class Handle
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
-        if (Request::getSoul()->isCli()) {
+        if (Request::isCli()) {
             echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
         } else {
             self::setDebugHeader($txt);
-            self::halt($text, Config::getSoul()->APP_DEBUG ? 500 : 404);
+            self::halt($text, Config::get('APP_DEBUG') ? 500 : 404);
         }
 
         exit;
@@ -195,11 +196,11 @@ abstract class Handle
             $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
 
             Log::normal($txt);
-            if (Request::getSoul()->isCli()) {
+            if (Request::isCli()) {
                 echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
             } else {
                 self::setDebugHeader($txt);
-                self::halt($text, Config::getSoul()->APP_DEBUG ? 500 : 404);
+                self::halt($text, Config::get('APP_DEBUG') ? 500 : 404);
             }
 
             exit;
@@ -210,13 +211,13 @@ abstract class Handle
     /**
      * output debug info to header
      *
-     * @param string $txt debug detail
+     * @param  string $txt
      * @return void
      */
     protected static function setDebugHeader($txt)
     {
-        if (Config::getSoul()->APP_DEBUG) {
-            Response::getSoul()->setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
+        if (Config::get('APP_DEBUG')) {
+            Response::setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
         }
     }
 
@@ -279,10 +280,10 @@ abstract class Handle
     /**
      * render Halt Body
      *
-     * @param string $type Error type
-     * @param int $message Error string
-     * @param int $line Error line
-     * @param string $file Error filepath
+     * @param  string $type
+     * @param  int    $message
+     * @param  int    $line
+     * @param  string $file
      * @return string
      */
     protected static function renderHaltBody($type, $message, $line, $file)
@@ -356,10 +357,10 @@ abstract class Handle
     /**
      * render log body
      *
-     * @param string $type Error type
-     * @param int $message Error string
-     * @param string $file Error filepath
-     * @param int $line Error line
+     * @param  string $type
+     * @param  int    $message
+     * @param  string $file
+     * @param  int    $line
      * @return string
      */
     protected static function renderLogBody($type, $message, $line, $file)
@@ -370,10 +371,10 @@ abstract class Handle
     /**
      * render errors display in trace
      *
-     * @param string $type Error type
-     * @param int $message Error string
-     * @param string $file Error filepath
-     * @param int $line Error line
+     * @param  string $type
+     * @param  int $message
+     * @param  string $file
+     * @param  int $line
      * @return string
      */
     // @codingStandardsIgnoreStart
@@ -386,8 +387,8 @@ abstract class Handle
     /**
      * get source code from file
      *
-     * @param  string $file Error filepath
-     * @param  int $line Error line
+     * @param  string $file
+     * @param  int    $line
      * @return array
      */
     protected static function getSourceCode($file, $line)

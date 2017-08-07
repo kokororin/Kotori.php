@@ -32,13 +32,9 @@
 namespace Kotori\Http;
 
 use Kotori\Debug\Hook;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
 
-class Request implements SoulInterface
+class Request
 {
-    use SoulTrait;
-
     /**
      * Ip address
      *
@@ -61,9 +57,9 @@ class Request implements SoulInterface
     /**
      * Internal method used to retrieve values from given arrays.
      *
-     * @param  array $source $_GET, $_POST, $_COOKIE, $_SERVER, etc.
-     * @param  mixed $key Index for item to be fetched from $source
-     * @param  mixed $default Default value for item
+     * @param  array $source
+     * @param  mixed $key
+     * @param  mixed $default
      * @return mixed
      */
     protected function getRequestParams(&$source, $key = null, $default = null)
@@ -95,7 +91,7 @@ class Request implements SoulInterface
     /**
      * Fetch an item from the GET array
      *
-     * @param  mixed $key Index for item to be fetched from $_GET
+     * @param  mixed $key
      * @return mixed
      */
     public function get($key = null, $default = null)
@@ -106,8 +102,8 @@ class Request implements SoulInterface
     /**
      * Fetch an item from the POST array
      *
-     * @param  mixed $key Index for item to be fetched from $_POST
-     * @param  mixed $default Default value for item
+     * @param  mixed $key
+     * @param  mixed $default
      * @return mixed
      */
     public function post($key = null, $default = null)
@@ -124,8 +120,8 @@ class Request implements SoulInterface
     /**
      * Fetch an item from the SERVER array
      *
-     * @param  mixed $key Index for item to be fetched from $_SERVER
-     * @param  mixed $default Default value for item
+     * @param  mixed $key
+     * @param  mixed $default
      * @return mixed
      */
     public function server($key = null, $default = null)
@@ -136,9 +132,9 @@ class Request implements SoulInterface
     /**
      * Set or Get cookie
      *
-     * @param  mixed $key Index for item for cookie
-     * @param  string $value cookie value
-     * @param  mixed  options for cookie setting
+     * @param  mixed  $key
+     * @param  string $value
+     * @param  mixed  $options
      * @return mixed
      */
     public function cookie($key = '', $value = '', $options = null)
@@ -221,8 +217,8 @@ class Request implements SoulInterface
     /**
      * Set or Get session
      *
-     * @param  mixed $key Index for item for session
-     * @param  string $value session value
+     * @param  mixed  $key
+     * @param  string $value
      * @return mixed
      */
     public function session($key = '', $value = '')
@@ -282,7 +278,7 @@ class Request implements SoulInterface
     public function getBaseUrl()
     {
         if (isset($_SERVER['HTTP_HOST']) && preg_match('/^((\[[0-9a-f:]+\])|(\d{1,3}(\.\d{1,3}){3})|[a-z0-9\-\.]+)(:\d+)?$/i', $_SERVER['HTTP_HOST'])) {
-            $base_url = (Request::getSoul()->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
+            $base_url = ($this->isSecure() ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']
             . substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
         } else {
             $base_url = 'http://localhost/';
@@ -294,7 +290,7 @@ class Request implements SoulInterface
     /**
      * Returns Client Ip Address
      *
-     * @param  integer $type Ip address or ipv4 address
+     * @param  int     $type
      * @return string
      */
     public function getClientIp($type = 0)

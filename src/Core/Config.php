@@ -35,13 +35,10 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
-use Kotori\Http\Request;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
+use Kotori\Facade\Request;
 
-class Config implements SoulInterface
+class Config
 {
-    use SoulTrait;
     /**
      * Config Array
      *
@@ -78,7 +75,7 @@ class Config implements SoulInterface
     /**
      * Initialize Config
      *
-     * @param $config Config Array
+     * @param  array   $config
      * @return boolean
      */
     public function initialize($config = [])
@@ -99,18 +96,18 @@ class Config implements SoulInterface
                 }
 
                 $this->_config = array_merge($this->_defaults, $this->_config);
-                if (is_array($this->APP_NAME)) {
-                    $hostName = Request::getSoul()->getHostName();
-                    if (array_key_exists($hostName, $this->APP_NAME)) {
-                        $appName = $this->APP_NAME[$hostName];
+                if (is_array($this->get('APP_NAME'))) {
+                    $hostName = Request::getHostName();
+                    if (array_key_exists($hostName, $this->get('APP_NAME'))) {
+                        $appName = $this->get('APP_NAME')[$hostName];
                     } else {
                         throw new ConfigException('Cannot find any app paths.');
                     }
                 } else {
-                    $appName = $this->APP_NAME;
+                    $appName = $this->get('APP_NAME');
                 }
 
-                if (Request::getSoul()->isCli()) {
+                if (Request::isCli()) {
                     $stack = debug_backtrace();
                     $firstFrame = $stack[count($stack) - 1];
                     $initialFile = $firstFrame['file'];
@@ -119,14 +116,14 @@ class Config implements SoulInterface
                     $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
                 }
 
-                if (!$appFullPath && $this->ENV == 'normal') {
+                if (!$appFullPath && $this->get('ENV') == 'normal') {
                     throw new ConfigException('Cannot find your app directory (' . $appName . ').');
                 }
 
                 $this->_config = array_merge([
                     'APP_FULL_PATH' => $appFullPath,
                 ], $this->_config);
-                $this->NAMESPACE_PREFIX = basename($this->APP_FULL_PATH) . '\\';
+                $this->set('NAMESPACE_PREFIX', basename($this->get('APP_FULL_PATH')) . '\\');
             }
         }
 
@@ -134,15 +131,13 @@ class Config implements SoulInterface
     }
 
     /**
-     * __set magic
-     *
      * Set the specified config item
      *
-     * @param string $key Config item name
-     * @param mixed $value Config item value
+     * @param  string $key
+     * @param  mixed  $value
      * @return void
      */
-    public function __set($key, $value)
+    public function set($key, $value)
     {
         if (is_string($key)) {
             $this->_config[$key] = $value;
@@ -152,14 +147,12 @@ class Config implements SoulInterface
     }
 
     /**
-     * __get magic
-     *
      * Returns the specified config item
      *
-     * @param string $key Config item name
+     * @param  string $key
      * @return mixed
      */
-    public function __get($key)
+    public function get($key)
     {
         if (is_string($key)) {
             return isset($this->_config[$key]) ? $this->_config[$key] : null;

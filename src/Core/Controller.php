@@ -33,26 +33,19 @@
  */
 namespace Kotori\Core;
 
-use Kotori\Core\Model\Provider as ModelProvider;
 use Kotori\Debug\Hook;
-use Kotori\Http\Request;
-use Kotori\Http\Response;
-use Kotori\Http\Route;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
 
-class Controller implements SoulInterface
+class Controller
 {
-    use SoulTrait;
     /**
      * DB selector
      *
-     * @param  string $key database key in config
+     * @param  string   $key
      * @return Database
      */
-    public function db($key = null)
+    protected function db($key = null)
     {
-        return Database::getSoul($key);
+        return Database::getInstance($key);
     }
 
     /**
@@ -65,13 +58,13 @@ class Controller implements SoulInterface
     public function __construct()
     {
         $this->view = new View();
-        $this->response = Response::getSoul();
-        $this->request = Request::getSoul();
-        $this->route = Route::getSoul();
+        $this->response = Container::get('\\Kotori\\Http\\Response');
+        $this->request = Container::get('\\Kotori\\Http\\Request');
+        $this->route = Container::get('\\Kotori\\Http\\Route');
         $this->db = $this->db();
-        $this->model = ModelProvider::getSoul();
-        $this->config = Config::getSoul();
-        $this->cache = Cache::getSoul();
+        $this->model = Container::get('\\Kotori\\Core\\Model\\Provider');
+        $this->config = Container::get('\\Kotori\\Core\\Config');
+        $this->cache = Container::get('\\Kotori\\Core\\Cache');
         Hook::listen(__CLASS__);
     }
 

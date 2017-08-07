@@ -54,8 +54,8 @@ class Dummy
      *
      * Since this is the dummy class, it's always going to return FALSE.
      *
-     * @param string $id Cache ID
-     * @return bool false
+     * @param   string  $id
+     * @return  boolean
      */
     public function get($id)
     {
@@ -65,11 +65,11 @@ class Dummy
     /**
      * Cache Set
      *
-     * @param string $id Cache ID
-     * @param mixed $data Data being cached
-     * @param int $ttl Time to live
-     * @param bool $raw Whether to store the raw value
-     * @return bool TRUE, Simulating success
+     * @param   string  $id
+     * @param   mixed   $data
+     * @param   int     $ttl
+     * @param   boolean $raw
+     * @return  boolean
      */
     public function set($id, $data, $ttl = 60, $raw = false)
     {
@@ -79,8 +79,8 @@ class Dummy
     /**
      * Delete from Cache
      *
-     * @param mixed $id key to be deleted.
-     * @return bool RUE, simulating success
+     * @param   mixed   $id
+     * @return  boolean
      */
     public function delete($id)
     {
@@ -90,9 +90,9 @@ class Dummy
     /**
      * Increment a raw value
      *
-     * @param string $id Cache ID
-     * @param int $offset Step/value to add
-     * @return mixed New value on success or FALSE on failure
+     * @param   string  $id
+     * @param   int     $offset
+     * @return  mixed
      */
     public function increment($id, $offset = 1)
     {
@@ -102,9 +102,9 @@ class Dummy
     /**
      * Decrement a raw value
      *
-     * @param string $id Cache ID
-     * @param int $offset Step/value to reduce by
-     * @return mixed New value on success or FALSE on failure
+     * @param   string $id
+     * @param   int    $offset
+     * @return  mixed
      */
     public function decrement($id, $offset = 1)
     {
@@ -114,7 +114,7 @@ class Dummy
     /**
      * Clean the cache
      *
-     * @return bool TRUE, simulating success
+     * @return boolean
      */
     public function clean()
     {
@@ -124,8 +124,8 @@ class Dummy
     /**
      * Cache Info
      *
-     * @param string $type user/filehits
-     * @return bool FALSE
+     * @param   string $type
+     * @return  boolean
      */
     public function cacheInfo($type = null)
     {
@@ -135,8 +135,8 @@ class Dummy
     /**
      * Get Cache Metadata
      *
-     * @param mixed $id key to get cache metadata on
-     * @return bool FALSE
+     * @param   mixed $id
+     * @return  boolean
      */
     public function getMetadata($id)
     {
@@ -147,7 +147,7 @@ class Dummy
      * Is this caching driver supported on the system?
      * Of course this one is.
      *
-     * @return bool TRUE
+     * @return boolean
      */
     public function isSupported()
     {

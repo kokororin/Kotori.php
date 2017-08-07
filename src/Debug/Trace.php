@@ -31,17 +31,14 @@
  */
 namespace Kotori\Debug;
 
-use Kotori\Core\Config;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
 use Kotori\Core\Helper;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
+use Kotori\Facade\Config;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
-class Trace implements SoulInterface
+class Trace
 {
-    use SoulTrait;
     /**
      * traceTab
      *
@@ -79,7 +76,7 @@ class Trace implements SoulInterface
     protected function getTrace()
     {
         $files = get_included_files();
-        $config = Config::getSoul()->getArray();
+        $config = Config::getArray();
         $server = $_SERVER;
         $cookie = $_COOKIE;
         $info = [];
@@ -154,7 +151,7 @@ class Trace implements SoulInterface
      */
     public function showTrace()
     {
-        if (Config::getSoul()->APP_DEBUG == false) {
+        if (!Config::get('APP_DEBUG')) {
             return;
         }
 

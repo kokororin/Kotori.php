@@ -32,8 +32,9 @@
 namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
-use Kotori\Debug\Trace;
 use Kotori\Exception\NotFoundException;
+use Kotori\Facade\Config;
+use Kotori\Facade\Trace;
 use Kotori\Traits\ControllerMethodsTrait;
 
 class View
@@ -71,13 +72,13 @@ class View
     /**
      * Class constructor
      *
-     * @param string $tplDir Template Directory
+     * @param  string $tplDir
      * @return void
      */
     public function __construct($tplDir = null)
     {
         if (null == $tplDir) {
-            $this->_tplDir = Config::getSoul()->APP_FULL_PATH . '/views/';
+            $this->_tplDir = Config::get('APP_FULL_PATH') . '/views/';
         } else {
             $this->_tplDir = $tplDir;
         }
@@ -88,9 +89,9 @@ class View
     /**
      * Set variables for Template
      *
-     * @param string $key key
-     * @param mixed $value value
-     * @return View
+     * @param  string $key
+     * @param  mixed  $value
+     * @return \Kotori\Core\View
      */
     public function assign($key, $value)
     {
@@ -103,7 +104,7 @@ class View
      *
      * Processes and sends finalized output data to the browser along
      *
-     * @param string $tpl Template Path
+     * @param  string $tpl
      * @return void
      */
     public function display($tpl = '')
@@ -123,7 +124,7 @@ class View
         include $this->_viewPath;
         $buffer = ob_get_contents();
         ob_get_clean();
-        $output = Helper::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Trace::getSoul()->showTrace();
+        $output = Helper::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Trace::showTrace();
         if ($count > 0) {
             $output .= '</body></html>';
         }
@@ -134,14 +135,14 @@ class View
     /**
      * Include Template
      *
-     * @param string $path Template Path
-     * @param array $data Data Array
+     * @param  string $path
+     * @param  array  $data
      * @return void
      */
     public function need($path, $data = [])
     {
         $this->_needData = [
-            'path' => Config::getSoul()->APP_FULL_PATH . '/views/' . $path . '.html',
+            'path' => Config::get('APP_FULL_PATH') . '/views/' . $path . '.html',
             'data' => $data,
         ];
         unset($path);

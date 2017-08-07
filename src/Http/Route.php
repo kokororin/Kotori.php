@@ -33,18 +33,17 @@
  */
 namespace Kotori\Http;
 
-use Kotori\Core\Config;
 use Kotori\Core\Helper;
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
 use Kotori\Exception\NotFoundException;
 use Kotori\Exception\RouteNotFoundException;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
+use Kotori\Facade\Config;
+use Kotori\Facade\Request;
+use Kotori\Facade\Response;
 
-class Route implements SoulInterface
+class Route
 {
-    use SoulTrait;
     /**
      * Controllers Array
      *
@@ -96,7 +95,7 @@ class Route implements SoulInterface
      */
     public function __construct()
     {
-        if (Request::getSoul()->isCli()) {
+        if (Request::isCli()) {
             $this->_uri = $this->parseArgv();
         } else {
             if (isset($_GET['_i'])) {
@@ -128,7 +127,7 @@ class Route implements SoulInterface
      */
     public function dispatch()
     {
-        if (Config::getSoul()->URL_MODE == 'QUERY_STRING') {
+        if (Config::get('URL_MODE') == 'QUERY_STRING') {
             $this->_uri = explode('?', $this->_uri, 2);
             $_SERVER['QUERY_STRING'] = isset($this->_uri[1]) ? $this->_uri[1] : '';
             $this->_uri = $this->_uri[0];
@@ -138,7 +137,7 @@ class Route implements SoulInterface
         define('URI', $this->_uri);
 
         if ($this->_uri == 'favicon.ico') {
-            return Response::getSoul()->setStatus(404);
+            return Response::setStatus(404);
         }
 
         $parsedRoute = $this->parseRoutes($this->_uri);
@@ -167,7 +166,7 @@ class Route implements SoulInterface
         define('ACTION_NAME', $this->_action);
 
         // If is already initialized
-        $prefix = Config::getSoul()->NAMESPACE_PREFIX;
+        $prefix = Config::get('NAMESPACE_PREFIX');
 
         $controllerClassName = $prefix . 'controllers\\' . $this->_controller;
         if (isset($this->_controllers[$this->_controller])) {
@@ -197,8 +196,8 @@ class Route implements SoulInterface
         $_GET = array_merge($this->_params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
 
-        if (Config::getSoul()->APP_DEBUG) {
-            Response::getSoul()->setHeader('X-Kotori-Hash', call_user_func(function () {
+        if (Config::get('APP_DEBUG')) {
+            Response::setHeader('X-Kotori-Hash', call_user_func(function () {
                 $lockFile = Helper::getComposerVendorPath() . '/../composer.lock';
                 if (!Helper::isFile($lockFile)) {
                     return 'unknown';
@@ -223,8 +222,8 @@ class Route implements SoulInterface
     /**
      * Returns the controller name
      *
-     * @deprecated since v20160718-1444
-     * @return string
+     * @deprecated  since v20160718-1444
+     * @return      string
      */
     protected function getController()
     {
@@ -240,8 +239,8 @@ class Route implements SoulInterface
     /**
      * Returns the action name
      *
-     * @deprecated since v20160718-1444
-     * @return string
+     * @deprecated  since v20160718-1444
+     * @return      string
      */
     protected function getAction()
     {
@@ -272,15 +271,14 @@ class Route implements SoulInterface
      * Matches any routes that may exist in URL_ROUTE array
      * against the URI to determine if the class/method need to be remapped.
      *
-     * @param string $uri URI
-     *
+     * @param  string $uri
      * @return string
      */
     protected function parseRoutes($uri)
     {
-        $routes = Config::getSoul()->URL_ROUTE;
+        $routes = Config::get('URL_ROUTE');
 
-        $hostName = Request::getSoul()->getHostName();
+        $hostName = Request::getHostName();
 
         if (isset($routes[$hostName])) {
             $routes = $routes[$hostName];
@@ -339,14 +337,14 @@ class Route implements SoulInterface
     /**
      * Build Full URL
      *
-     * @param string $uri URI
-     * @param string $module module name
+     * @param  string $uri
+     * @param  string $module
      * @return string
      */
     public function url($uri = '', $module = null)
     {
         if ($module != null) {
-            $appNames = Config::getSoul()->APP_NAME;
+            $appNames = Config::get('APP_NAME');
             if (is_array($appNames)) {
                 foreach ($appNames as &$appName) {
                     $appName = str_replace('./', '', $appName);
@@ -357,13 +355,13 @@ class Route implements SoulInterface
                 $baseUrl = '//' . $baseUrl . '/';
             }
         } else {
-            $baseUrl = Request::getSoul()->getBaseUrl();
+            $baseUrl = Request::getBaseUrl();
         }
 
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
         $prefix = $baseUrl . 'index.php?_i=';
 
-        switch (Config::getSoul()->URL_MODE) {
+        switch (Config::get('URL_MODE')) {
             case 'PATH_INFO':
                 return $uri == '' ? rtrim($baseUrl, '/') : $baseUrl . $uri;
             case 'QUERY_STRING':

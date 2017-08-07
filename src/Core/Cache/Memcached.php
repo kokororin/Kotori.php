@@ -31,9 +31,9 @@
  */
 namespace Kotori\Core\Cache;
 
-use Kotori\Core\Config;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
+use Kotori\Facade\Config;
 
 class Memcached
 {
@@ -68,7 +68,7 @@ class Memcached
     {
         // Try to load memcached server info from the config file.
         $defaults = $this->_memcacheConf['default'];
-        $config = Config::getSoul()->CACHE;
+        $config = Config::get('CACHE');
         $memcacheConf = isset($config['MEMCACHED']) ? $config['MEMCACHED'] : null;
 
         if (is_array($memcacheConf)) {
@@ -123,8 +123,8 @@ class Memcached
     /**
      * Fetch from cache
      *
-     * @param string $id Cache ID
-     * @return mixed Data on success, FALSE on failure
+     * @param  string $id
+     * @return mixed
      */
     public function get($id)
     {
@@ -136,11 +136,11 @@ class Memcached
     /**
      * Set
      *
-     * @param string $id Cache ID
-     * @param mixed $data Data being cached
-     * @param int $ttl Time to live
-     * @param bool $raw Whether to store the raw value
-     * @return bool TRUE on success, FALSE on failure
+     * @param  string   $id
+     * @param  mixed    $data
+     * @param  int      $ttl
+     * @param  boolean  $raw
+     * @return boolean
      */
     public function set($id, $data, $ttl = 60, $raw = false)
     {
@@ -160,8 +160,8 @@ class Memcached
     /**
      * Delete from Cache
      *
-     * @param mixed $id key to be deleted.
-     * @return bool true on success, false on failure
+     * @param  mixed    $id
+     * @return boolean
      */
     public function delete($id)
     {
@@ -171,9 +171,9 @@ class Memcached
     /**
      * Increment a raw value
      *
-     * @param string $id Cache ID
-     * @param int  $offset Step/value to add
-     * @return mixed New value on success or FALSE on failure
+     * @param  string   $id
+     * @param  int      $offset
+     * @return mixed
      */
     public function increment($id, $offset = 1)
     {
@@ -183,9 +183,9 @@ class Memcached
     /**
      * Decrement a raw value
      *
-     * @param string $id Cache ID
-     * @param int $offset Step/value to reduce by
-     * @return mixed New value on success or FALSE on failure
+     * @param  string $id
+     * @param  int    $offset
+     * @return mixed
      */
     public function decrement($id, $offset = 1)
     {
@@ -195,7 +195,7 @@ class Memcached
     /**
      * Clean the Cache
      *
-     * @return bool false on failure/true on success
+     * @return boolean
      */
     public function clean()
     {
@@ -205,7 +205,7 @@ class Memcached
     /**
      * Cache Info
      *
-     * @return mixed array on success, false on failure
+     * @return mixed
      */
     public function cacheInfo()
     {
@@ -215,8 +215,8 @@ class Memcached
     /**
      * Get Cache Metadata
      *
-     * @param mixed $id key to get cache metadata on
-     * @return mixed FALSE on failure, array on success.
+     * @param  mixed  $id
+     * @return mixed
      */
     public function getMetadata($id)
     {
@@ -241,7 +241,7 @@ class Memcached
      * Returns FALSE if memcached is not supported on the system.
      * If it is, we setup the memcached object & return TRUE
      *
-     * @return bool
+     * @return boolean
      */
     public function isSupported()
     {

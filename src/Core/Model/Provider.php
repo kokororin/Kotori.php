@@ -31,15 +31,12 @@
  */
 namespace Kotori\Core\Model;
 
-use Kotori\Core\Config;
 use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
+use Kotori\Facade\Config;
 
-class Provider implements SoulInterface
+class Provider
 {
-    use SoulTrait;
     /**
      * Initialized Models
      *
@@ -64,7 +61,8 @@ class Provider implements SoulInterface
      *
      * Allows controllers to access model
      *
-     * @param string $key
+     * @param   string $key
+     * @return  \Kotori\Core\Model
      */
     public function __get($key)
     {
@@ -72,7 +70,7 @@ class Provider implements SoulInterface
             return $this->_models[$key];
         }
 
-        $modelClassName = Config::getSoul()->NAMESPACE_PREFIX . 'models\\' . $key;
+        $modelClassName = Config::get('NAMESPACE_PREFIX') . 'models\\' . $key;
 
         if (!class_exists($modelClassName)) {
             throw new NotFoundException('Request Model ' . $key . ' is not Found');

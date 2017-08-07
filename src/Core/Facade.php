@@ -22,47 +22,27 @@
  */
 
 /**
- * Hook Class
+ * Facade Class
  *
  * @package     Kotori
- * @subpackage  Debug
+ * @subpackage  Core
  * @author      Kokororin
  * @link        https://kotori.love
  */
-namespace Kotori\Debug;
+namespace Kotori\Core;
 
-abstract class Hook
+abstract class Facade
 {
     /**
-     * Hook tags
+     * Handle dynamic, static calls to the object.
      *
-     * @var array
+     * @param  string $method
+     * @param  array  $params
+     * @return mixed
      */
-    protected static $tags = [];
-
-    /**
-     * get the tags
-     *
-     * @return array
-     */
-    public static function getTags()
+    public static function __callStatic($method, $params)
     {
-        return self::$tags;
+        $className = static::getFacadeAccessor();
+        return call_user_func_array([Container::get($className), $method], $params);
     }
-
-    /**
-     * Start Hook listen
-     *
-     * @param  string $name
-     * @return int
-     */
-    public static function listen($name)
-    {
-        if (!isset(self::$tags[$name])) {
-            self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
-        }
-
-        return self::$tags[$name];
-    }
-
 }

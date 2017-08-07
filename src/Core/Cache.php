@@ -33,12 +33,10 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
-use Kotori\Interfaces\SoulInterface;
-use Kotori\Traits\SoulTrait;
+use Kotori\Facade\Config;
 
-class Cache implements SoulInterface
+class Cache
 {
-    use SoulTrait;
     /**
      * Valid cache drivers
      *
@@ -72,7 +70,7 @@ class Cache implements SoulInterface
      */
     public function __construct()
     {
-        $config = Config::getSoul()->CACHE;
+        $config = Config::get('CACHE');
         if (isset($config['ADAPTER'])) {
             $this->_adapter = $config['ADAPTER'];
         }
