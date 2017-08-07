@@ -97,7 +97,7 @@ class Cache
      * if not, return FALSE
      *
      * @param string $id
-     * @return mixed value matching $id or FALSE on failure
+     * @return mixed
      */
     public function get($id)
     {
@@ -107,11 +107,11 @@ class Cache
     /**
      * Cache Set
      *
-     * @param string $id Cache ID
-     * @param mixed $data Data to store
-     * @param int $ttl Cache TTL (in seconds)
-     * @param bool $raw Whether to store the raw value
-     * @return bool TRUE on success, FALSE on failure
+     * @param  string   $id
+     * @param  mixed    $data
+     * @param  int      $ttl
+     * @param  boolean  $raw
+     * @return boolean
      */
     public function set($id, $data, $ttl = 60, $raw = false)
     {
@@ -121,8 +121,8 @@ class Cache
     /**
      * Delete from Cache
      *
-     * @param string Cache ID
-     * @return bool TRUE on success, FALSE on failure
+     * @param  string  $id
+     * @return boolean
      */
     public function delete($id)
     {
@@ -132,9 +132,9 @@ class Cache
     /**
      * Increment a raw value
      *
-     * @param string Cache ID
-     * @param int Step/value to add
-     * @return mixed New value on success or FALSE on failure
+     * @param  string  $id
+     * @param  int     $offset
+     * @return mixed
      */
     public function increment($id, $offset = 1)
     {
@@ -144,9 +144,9 @@ class Cache
     /**
      * Decrement a raw value
      *
-     * @param string $id Cache ID
-     * @param int $offset Step/value to reduce by
-     * @return mixed New value on success or FALSE on failure
+     * @param  string  $id
+     * @param  int     $offset
+     * @return mixed
      */
     public function decrement($id, $offset = 1)
     {
@@ -156,7 +156,7 @@ class Cache
     /**
      * Clean the cache
      *
-     * @return bool TRUE on success, FALSE on failure
+     * @return boolean
      */
     public function clean()
     {
@@ -166,8 +166,8 @@ class Cache
     /**
      * Cache Info
      *
-     * @param string $type user/filehits
-     * @return mixed array containing cache info on success OR FALSE on failure
+     * @param  string $type
+     * @return mixed
      */
     public function cacheInfo($type = 'user')
     {
@@ -177,8 +177,8 @@ class Cache
     /**
      * Get Cache Metadata
      *
-     * @param string $id key to get cache metadata on
-     * @return mixed cache item metadata
+     * @param  string $id
+     * @return mixed
      */
     public function getMetadata($id)
     {
@@ -188,7 +188,7 @@ class Cache
     /**
      * Is the requested driver supported in this environment?
      *
-     * @param string $driver The driver to test
+     * @param  string $driver
      * @return array
      */
     public function isSupported($driver)
