@@ -59,7 +59,7 @@ class App
             exit('Kotori.php requires PHP >= 7.0.0 !');
         }
 
-        // ini_set('display_errors', 'off');
+        ini_set('display_errors', 'off');
         define('START_TIME', microtime(true));
         define('START_MEMORY', memory_get_usage());
         if (!empty($config)) {
