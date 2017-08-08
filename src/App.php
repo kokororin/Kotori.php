@@ -85,9 +85,9 @@ class App
     public function run()
     {
         // Define a custom error handler so we can log PHP errors
-        set_error_handler(['\\Kotori\Core\Handle', 'error']);
-        set_exception_handler(['\\Kotori\Core\Handle', 'exception']);
-        register_shutdown_function(['\\Kotori\Core\Handle', 'end']);
+        set_error_handler([\Kotori\Core\Handle::class, 'error']);
+        set_exception_handler([\Kotori\Core\Handle::class, 'exception']);
+        register_shutdown_function([\Kotori\Core\Handle::class, 'end']);
 
         Container::get('config')->initialize($this->config);
 

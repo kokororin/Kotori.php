@@ -6,7 +6,7 @@ use ReflectionClass;
 class Container
 {
     /**
-     * facade containers
+     * container instances
      *
      * @var array
      */

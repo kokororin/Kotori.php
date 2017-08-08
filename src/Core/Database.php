@@ -120,6 +120,13 @@ class Database extends Medoo
         Hook::listen(__CLASS__);
     }
 
+    /**
+     * medoo::query()
+     *
+     * @param  string $query
+     * @param  array  $map
+     * @return \PDOStatement
+     */
     public function query($query, $map = [])
     {
         $statement = parent::exec($query, $map);
@@ -129,6 +136,13 @@ class Database extends Medoo
         return $statement;
     }
 
+    /**
+     * medoo:exec()
+     *
+     * @param  string $query
+     * @param  array  $map
+     * @return \PDOStatement
+     */
     public function exec($query, $map = [])
     {
         $statement = parent::exec($query, $map);
