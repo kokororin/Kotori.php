@@ -32,8 +32,8 @@
 namespace Kotori\Core\Model;
 
 use Kotori\Debug\Hook;
+use Kotori\Core\Container;
 use Kotori\Exception\NotFoundException;
-use Kotori\Facade\Config;
 
 class Provider
 {
@@ -42,7 +42,7 @@ class Provider
      *
      * @var array
      */
-    protected $_models = [];
+    protected $models = [];
 
     /**
      * Class constructor
@@ -63,20 +63,22 @@ class Provider
      *
      * @param   string $key
      * @return  \Kotori\Core\Model
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
     public function __get($key)
     {
-        if (isset($this->_models[$key])) {
-            return $this->_models[$key];
+        if (isset($this->models[$key])) {
+            return $this->models[$key];
         }
 
-        $modelClassName = Config::get('NAMESPACE_PREFIX') . 'models\\' . $key;
+        $modelClassName = Container::get('config')->get('NAMESPACE_PREFIX') . 'models\\' . $key;
 
         if (!class_exists($modelClassName)) {
             throw new NotFoundException('Request Model ' . $key . ' is not Found');
         } else {
             $model = new $modelClassName();
-            $this->_models[$key] = $model;
+            $this->models[$key] = $model;
             return $model;
         }
     }

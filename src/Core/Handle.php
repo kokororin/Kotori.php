@@ -34,9 +34,6 @@ namespace Kotori\Core;
 use Exception;
 use Highlight\Highlighter;
 use Kotori\Debug\Log;
-use Kotori\Facade\Config;
-use Kotori\Facade\Request;
-use Kotori\Facade\Response;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 abstract class Handle
@@ -60,15 +57,15 @@ abstract class Handle
      */
     public static function halt($message, $code = 404)
     {
-        Response::setStatus($code);
+        Container::get('response')->setStatus($code);
 
-        if (!Config::get('APP_DEBUG')) {
+        if (!Container::get('config')->get('APP_DEBUG')) {
             $message = '404 Not Found.';
         }
 
-        $tplPath = Config::get('ERROR_TPL');
+        $tplPath = Container::get('config')->get('ERROR_TPL');
 
-        if ($tplPath == null || !Helper::isFile(Config::get('APP_FULL_PATH') . '/views/' . $tplPath . '.html')) {
+        if ($tplPath == null || !Helper::isFile(Container::get('config')->get('APP_FULL_PATH') . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +96,7 @@ abstract class Handle
   </div>
   <div id="info">
     <p><strong>Request Method: </strong>' . strtoupper($_SERVER['REQUEST_METHOD']) . '</p>
-    <p><strong>Request URL: </strong>' . Request::getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</p>
+    <p><strong>Request URL: </strong>' . Container::get('request')->getBaseUrl() . ltrim($_SERVER['REQUEST_URI'], '/') . '</p>
       ' . $message . '
   </div>
 
@@ -113,7 +110,7 @@ abstract class Handle
 </body>
 </html>';
         } else {
-            $tpl = file_get_contents(Config::get('APP_FULL_PATH') . '/views/' . $tplPath . '.html');
+            $tpl = file_get_contents(Container::get('config')->get('APP_FULL_PATH') . '/views/' . $tplPath . '.html');
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
@@ -143,7 +140,7 @@ abstract class Handle
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
         Log::normal($txt);
-        if (!Request::isCli()) {
+        if (!Container::get('request')->isCli()) {
             self::setDebugHeader($txt);
         }
     }
@@ -163,11 +160,11 @@ abstract class Handle
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
-        if (Request::isCli()) {
+        if (Container::get('request')->isCli()) {
             echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
         } else {
             self::setDebugHeader($txt);
-            self::halt($text, Config::get('APP_DEBUG') ? 500 : 404);
+            self::halt($text, Container::get('config')->get('APP_DEBUG') ? 500 : 404);
         }
 
         exit;
@@ -196,11 +193,11 @@ abstract class Handle
             $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
 
             Log::normal($txt);
-            if (Request::isCli()) {
+            if (Container::get('request')->isCli()) {
                 echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
             } else {
                 self::setDebugHeader($txt);
-                self::halt($text, Config::get('APP_DEBUG') ? 500 : 404);
+                self::halt($text, Container::get('config')->get('APP_DEBUG') ? 500 : 404);
             }
 
             exit;
@@ -216,8 +213,8 @@ abstract class Handle
      */
     protected static function setDebugHeader($txt)
     {
-        if (Config::get('APP_DEBUG')) {
-            Response::setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
+        if (Container::get('config')->get('APP_DEBUG')) {
+            Container::get('response')->setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
         }
     }
 
@@ -385,7 +382,7 @@ abstract class Handle
     // @codingStandardsIgnoreEnd
 
     /**
-     * get source code from file
+     * Get source code from file
      *
      * @param  string $file
      * @param  int    $line

@@ -31,9 +31,9 @@
  */
 namespace Kotori\Core\Cache;
 
+use Kotori\Core\Container;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
-use Kotori\Facade\Config;
 
 class Memcached
 {
@@ -42,14 +42,14 @@ class Memcached
      *
      * @var object
      */
-    protected $_memcached;
+    protected $memcached;
 
     /**
      * Memcached configuration
      *
      * @var array
      */
-    protected $_memcacheConf = [
+    protected $memcacheConf = [
         'default' => [
             'HOST' => '127.0.0.1',
             'PORT' => 11211,
@@ -67,27 +67,27 @@ class Memcached
     public function __construct()
     {
         // Try to load memcached server info from the config file.
-        $defaults = $this->_memcacheConf['default'];
-        $config = Config::get('CACHE');
+        $defaults = $this->memcacheConf['default'];
+        $config = Container::get('config')->get('CACHE');
         $memcacheConf = isset($config['MEMCACHED']) ? $config['MEMCACHED'] : null;
 
         if (is_array($memcacheConf)) {
-            $this->_memcacheConf = [];
+            $this->memcacheConf = [];
 
             foreach ($memcacheConf as $name => $conf) {
-                $this->_memcacheConf[$name] = $conf;
+                $this->memcacheConf[$name] = $conf;
             }
         }
 
         if (class_exists('Memcached', false)) {
-            $this->_memcached = new \Memcached();
+            $this->memcached = new \Memcached();
         } elseif (class_exists('Memcache', false)) {
-            $this->_memcached = new \Memcache();
+            $this->memcached = new \Memcache();
         } else {
             Log::normal('[Error] Failed to create Memcache(d) object; extension not loaded?');
         }
 
-        foreach ($this->_memcacheConf as $cacheServer) {
+        foreach ($this->memcacheConf as $cacheServer) {
             if (!isset($cacheServer['HOST'])) {
                 $cacheServer['HOST'] = $defaults['HOST'];
             }
@@ -100,16 +100,16 @@ class Memcached
                 $cacheServer['WEIGHT'] = $defaults['WEIGHT'];
             }
 
-            if (get_class($this->_memcached) === 'Memcache') {
+            if (get_class($this->memcached) === 'Memcache') {
                 // Third parameter is persistance and defaults to TRUE.
-                $this->_memcached->addServer(
+                $this->memcached->addServer(
                     $cacheServer['HOST'],
                     $cacheServer['PORT'],
                     true,
                     $cacheServer['WEIGHT']
                 );
             } else {
-                $this->_memcached->addServer(
+                $this->memcached->addServer(
                     $cacheServer['HOST'],
                     $cacheServer['PORT'],
                     $cacheServer['WEIGHT']
@@ -128,7 +128,7 @@ class Memcached
      */
     public function get($id)
     {
-        $data = $this->_memcached->get($id);
+        $data = $this->memcached->get($id);
 
         return is_array($data) ? $data[0] : $data;
     }
@@ -148,10 +148,10 @@ class Memcached
             $data = [$data, time(), $ttl];
         }
 
-        if (get_class($this->_memcached) === 'Memcached') {
-            return $this->_memcached->set($id, $data, $ttl);
-        } elseif (get_class($this->_memcached) === 'Memcache') {
-            return $this->_memcached->set($id, $data, 0, $ttl);
+        if (get_class($this->memcached) === 'Memcached') {
+            return $this->memcached->set($id, $data, $ttl);
+        } elseif (get_class($this->memcached) === 'Memcache') {
+            return $this->memcached->set($id, $data, 0, $ttl);
         }
 
         return false;
@@ -165,7 +165,7 @@ class Memcached
      */
     public function delete($id)
     {
-        return $this->_memcached->delete($id);
+        return $this->memcached->delete($id);
     }
 
     /**
@@ -177,7 +177,7 @@ class Memcached
      */
     public function increment($id, $offset = 1)
     {
-        return $this->_memcached->increment($id, $offset);
+        return $this->memcached->increment($id, $offset);
     }
 
     /**
@@ -189,7 +189,7 @@ class Memcached
      */
     public function decrement($id, $offset = 1)
     {
-        return $this->_memcached->decrement($id, $offset);
+        return $this->memcached->decrement($id, $offset);
     }
 
     /**
@@ -199,7 +199,7 @@ class Memcached
      */
     public function clean()
     {
-        return $this->_memcached->flush();
+        return $this->memcached->flush();
     }
 
     /**
@@ -209,7 +209,7 @@ class Memcached
      */
     public function cacheInfo()
     {
-        return $this->_memcached->getStats();
+        return $this->memcached->getStats();
     }
 
     /**
@@ -220,7 +220,7 @@ class Memcached
      */
     public function getMetadata($id)
     {
-        $stored = $this->_memcached->get($id);
+        $stored = $this->memcached->get($id);
 
         if (count($stored) !== 3) {
             return false;

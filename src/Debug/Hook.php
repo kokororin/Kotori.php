@@ -41,7 +41,7 @@ abstract class Hook
     protected static $tags = [];
 
     /**
-     * get the tags
+     * Get the tags
      *
      * @return array
      */
@@ -59,7 +59,7 @@ abstract class Hook
     public static function listen($name)
     {
         if (!isset(self::$tags[$name])) {
-            self::$tags[$name] = round((microtime(true) - START_TIME) * pow(10, 6));
+            self::$tags[$name] = round((microtime(true) - KOTORI_START_TIME) * pow(10, 6));
         }
 
         return self::$tags[$name];

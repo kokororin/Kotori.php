@@ -35,7 +35,6 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
-use Kotori\Facade\Config;
 
 abstract class Helper
 {
@@ -44,7 +43,7 @@ abstract class Helper
      *
      * @var array
      */
-    protected static $_require = [];
+    protected static $require = [];
 
     /**
      * Include One File
@@ -55,17 +54,17 @@ abstract class Helper
     public static function import($path)
     {
         $path = realpath($path);
-        Hook::listen(str_replace(Config::get('APP_FULL_PATH'), '', $path));
-        if (!isset(self::$_require[$path])) {
+        Hook::listen(str_replace(Container::get('config')->get('APP_FULL_PATH'), '', $path));
+        if (!isset(self::$require[$path])) {
             if (self::isFile($path)) {
                 require $path;
-                self::$_require[$path] = true;
+                self::$require[$path] = true;
             } else {
-                self::$_require[$path] = false;
+                self::$require[$path] = false;
             }
         }
 
-        return self::$_require[$path];
+        return self::$require[$path];
 
     }
 
@@ -98,9 +97,9 @@ abstract class Helper
      */
     public static function autoload($class)
     {
-        $baseRoot = Config::get('APP_FULL_PATH');
+        $baseRoot = Container::get('config')->get('APP_FULL_PATH');
         // project-specific namespace prefix
-        $prefix = Config::get('NAMESPACE_PREFIX');
+        $prefix = Container::get('config')->get('NAMESPACE_PREFIX');
 
         // does the class use the namespace prefix?
         $len = strlen($prefix);
@@ -134,9 +133,11 @@ abstract class Helper
     }
 
     /**
-     * get vendor absolute path
+     * Get vendor absolute path
      *
      * @return string
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
     public static function getComposerVendorPath()
     {

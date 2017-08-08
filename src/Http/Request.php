@@ -40,7 +40,7 @@ class Request
      *
      * @var mixed
      */
-    protected $_ip = null;
+    protected $ip = null;
 
     /**
      * Class constructor
@@ -297,12 +297,12 @@ class Request
     {
         $type = $type ? 1 : 0;
 
-        if ($this->_ip !== null) {
-            return $this->_ip[$type];
+        if ($this->ip !== null) {
+            return $this->ip[$type];
         }
 
         if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            $this->_ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+            $this->ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
         } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
             $pos = array_search('unknown', $arr);
@@ -310,17 +310,17 @@ class Request
                 unset($arr[$pos]);
             }
 
-            $this->_ip = trim($arr[0]);
+            $this->ip = trim($arr[0]);
         } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-            $this->_ip = $_SERVER['HTTP_CLIENT_IP'];
+            $this->ip = $_SERVER['HTTP_CLIENT_IP'];
         } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-            $this->_ip = $_SERVER['REMOTE_ADDR'];
+            $this->ip = $_SERVER['REMOTE_ADDR'];
         }
 
         // Check ip
-        $long = sprintf("%u", ip2long($this->_ip));
-        $this->_ip = $long ? [$this->_ip, $long] : ['0.0.0.0', 0];
-        return $this->_ip[$type];
+        $long = sprintf("%u", ip2long($this->ip));
+        $this->ip = $long ? [$this->ip, $long] : ['0.0.0.0', 0];
+        return $this->ip[$type];
     }
 
     /**

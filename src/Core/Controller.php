@@ -41,7 +41,7 @@ class Controller
      * DB selector
      *
      * @param  string   $key
-     * @return Database
+     * @return \Kotori\Core\Database
      */
     protected function db($key = null)
     {
@@ -58,13 +58,13 @@ class Controller
     public function __construct()
     {
         $this->view = new View();
-        $this->response = Container::get('\\Kotori\\Http\\Response');
-        $this->request = Container::get('\\Kotori\\Http\\Request');
-        $this->route = Container::get('\\Kotori\\Http\\Route');
+        $this->response = Container::get('response');
+        $this->request = Container::get('request');
+        $this->route = Container::get('route');
         $this->db = $this->db();
-        $this->model = Container::get('\\Kotori\\Core\\Model\\Provider');
-        $this->config = Container::get('\\Kotori\\Core\\Config');
-        $this->cache = Container::get('\\Kotori\\Core\\Cache');
+        $this->model = Container::get('model/provider');
+        $this->config = Container::get('config');
+        $this->cache = Container::get('cache');
         Hook::listen(__CLASS__);
     }
 

@@ -33,14 +33,12 @@
  */
 namespace Kotori\Http;
 
+use Kotori\Core\Container;
 use Kotori\Core\Helper;
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
 use Kotori\Exception\NotFoundException;
 use Kotori\Exception\RouteNotFoundException;
-use Kotori\Facade\Config;
-use Kotori\Facade\Request;
-use Kotori\Facade\Response;
 
 class Route
 {
@@ -49,42 +47,42 @@ class Route
      *
      * @var array
      */
-    protected $_controllers = [];
+    protected $controllers = [];
 
     /**
      * Current controller
      *
      * @var string
      */
-    protected $_controller;
+    protected $controller;
 
     /**
      * Current action
      *
      * @var string
      */
-    protected $_action;
+    protected $action;
 
     /**
      * Current URI string
      *
      * @var mixed
      */
-    protected $_uri = '';
+    protected $uri = '';
 
     /**
      * Parsed URI Array
      *
      * @var array
      */
-    protected $_uris = [];
+    protected $uris = [];
 
     /**
      * Parsed params
      *
      * @var array
      */
-    protected $_params = [];
+    protected $params = [];
 
     /**
      * Class constructor
@@ -95,8 +93,8 @@ class Route
      */
     public function __construct()
     {
-        if (Request::isCli()) {
-            $this->_uri = $this->parseArgv();
+        if (Container::get('request')->isCli()) {
+            $this->uri = $this->parseArgv();
         } else {
             if (isset($_GET['_i'])) {
                 $_SERVER['PATH_INFO'] = $_GET['_i'];
@@ -106,15 +104,15 @@ class Route
             : (isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO']
                 : (isset($_SERVER['REDIRECT_PATH_INFO']) ? $_SERVER['REDIRECT_PATH_INFO'] : ''));
 
-            $this->_uri = $_SERVER['PATH_INFO'];
+            $this->uri = $_SERVER['PATH_INFO'];
         }
 
-        if (substr($this->_uri, 0, 1) == '/') {
-            $this->_uri = ltrim($this->_uri, '/');
+        if (substr($this->uri, 0, 1) == '/') {
+            $this->uri = ltrim($this->uri, '/');
         }
 
-        if (trim($this->_uri, '/') == '') {
-            $this->_uri = '/';
+        if (trim($this->uri, '/') == '') {
+            $this->uri = '/';
         }
 
         Hook::listen(__CLASS__);
@@ -124,80 +122,78 @@ class Route
      * Map URL to controller and action
      *
      * @return void
+     *
+     * @throws \Kotori\Exception\RouteNotFoundException
+     * @throws \Kotori\Exception\NotFoundException
      */
     public function dispatch()
     {
-        if (Config::get('URL_MODE') == 'QUERY_STRING') {
-            $this->_uri = explode('?', $this->_uri, 2);
-            $_SERVER['QUERY_STRING'] = isset($this->_uri[1]) ? $this->_uri[1] : '';
-            $this->_uri = $this->_uri[0];
+        if (Container::get('config')->get('URL_MODE') == 'QUERY_STRING') {
+            $this->uri = explode('?', $this->uri, 2);
+            $_SERVER['QUERY_STRING'] = isset($this->uri[1]) ? $this->uri[1] : '';
+            $this->uri = $this->uri[0];
             parse_str($_SERVER['QUERY_STRING'], $_GET);
         }
 
-        define('URI', $this->_uri);
-
-        if ($this->_uri == 'favicon.ico') {
-            return Response::setStatus(404);
+        if ($this->uri == 'favicon.ico') {
+            return Container::get('response')->setStatus(404);
         }
 
-        $parsedRoute = $this->parseRoutes($this->_uri);
+        $parsedRoute = $this->parseRoutes($this->uri);
 
         if ($parsedRoute) {
-            $this->_uri = $parsedRoute;
+            $this->uri = $parsedRoute;
         } else {
-            throw new RouteNotFoundException('Request URI ' . $this->_uri . ' is not Matched by any route.');
+            throw new RouteNotFoundException('Request URI ' . $this->uri . ' is not Matched by any route.');
         }
 
-        $this->_uris = ($this->_uri != '') ? explode('/', trim($this->_uri, '/')) : [];
+        $this->uris = ($this->uri != '') ? explode('/', trim($this->uri, '/')) : [];
 
         // Clean uris
-        foreach ($this->_uris as $key => $value) {
+        foreach ($this->uris as $key => $value) {
             if ($value == '') {
-                unset($this->_uris[$key]);
+                unset($this->uris[$key]);
             }
         }
 
-        $this->_uris = array_merge($this->_uris);
+        $this->uris = array_merge($this->uris);
 
-        $this->_controller = $this->getController();
-        $this->_action = $this->getAction();
-        // Define some variables
-        define('CONTROLLER_NAME', $this->_controller);
-        define('ACTION_NAME', $this->_action);
+        $this->controller = $this->getController();
+        $this->action = $this->getAction();
 
         // If is already initialized
-        $prefix = Config::get('NAMESPACE_PREFIX');
+        $prefix = Container::get('config')->get('NAMESPACE_PREFIX');
 
-        $controllerClassName = $prefix . 'controllers\\' . $this->_controller;
-        if (isset($this->_controllers[$this->_controller])) {
-            $class = $this->_controllers[$this->_controller];
+        $controllerClassName = $prefix . 'controllers\\' . $this->controller;
+        if (isset($this->controllers[$this->controller])) {
+            $class = $this->controllers[$this->controller];
         } else {
             $class = new $controllerClassName();
-            $this->_controllers[$this->_controller] = $class;
+            $this->controllers[$this->controller] = $class;
         }
 
         if (!class_exists($controllerClassName)) {
-            throw new NotFoundException('Request Controller ' . $this->_controller . ' is not Found.');
+            throw new NotFoundException('Request Controller ' . $this->controller . ' is not Found.');
         }
 
-        if (!method_exists($class, $this->_action)) {
-            throw new NotFoundException('Request Action ' . $this->_action . ' is not Found.');
+        if (!method_exists($class, $this->action)) {
+            throw new NotFoundException('Request Action ' . $this->action . ' is not Found.');
         }
 
-        $callback = [$class, $this->_action];
+        $callback = [$class, $this->action];
         if (!is_callable($callback)) {
-            throw new NotFoundException($controllerClassName . '::' . $this->_action . '() is not callable');
+            throw new NotFoundException($controllerClassName . '::' . $this->action . '() is not callable');
         }
 
         // Parse params from uri
-        $this->_params = $this->getParams();
+        $this->params = $this->getParams();
 
         // Do some final cleaning of the params
-        $_GET = array_merge($this->_params, $_GET);
+        $_GET = array_merge($this->params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
 
-        if (Config::get('APP_DEBUG')) {
-            Response::setHeader('X-Kotori-Hash', call_user_func(function () {
+        if (Container::get('config')->get('APP_DEBUG')) {
+            Container::get('response')->setHeader('X-Kotori-Hash', call_user_func(function () {
                 $lockFile = Helper::getComposerVendorPath() . '/../composer.lock';
                 if (!Helper::isFile($lockFile)) {
                     return 'unknown';
@@ -216,19 +212,20 @@ class Route
         }
 
         // Call the requested method
-        call_user_func_array($callback, $this->_params);
+        call_user_func_array($callback, $this->params);
     }
 
     /**
      * Returns the controller name
      *
-     * @deprecated  since v20160718-1444
      * @return      string
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
-    protected function getController()
+    public function getController()
     {
-        if (isset($this->_uris[0]) && '' !== $this->_uris[0]) {
-            $_controller = $this->_uris[0];
+        if (isset($this->uris[0]) && '' !== $this->uris[0]) {
+            $_controller = $this->uris[0];
         } else {
             throw new NotFoundException('Cannot dispatch controller name.');
         }
@@ -239,13 +236,14 @@ class Route
     /**
      * Returns the action name
      *
-     * @deprecated  since v20160718-1444
      * @return      string
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
-    protected function getAction()
+    public function getAction()
     {
-        if (isset($this->_uris[1])) {
-            $_action = $this->_uris[1];
+        if (isset($this->uris[1])) {
+            $_action = $this->uris[1];
         } else {
             throw new NotFoundException('Cannot dispatch action name.');
         }
@@ -258,9 +256,9 @@ class Route
      *
      * @return array
      */
-    protected function getParams()
+    public function getParams()
     {
-        $params = $this->_uris;
+        $params = $this->uris;
         unset($params[0], $params[1]);
         return array_merge($params);
     }
@@ -276,9 +274,9 @@ class Route
      */
     protected function parseRoutes($uri)
     {
-        $routes = Config::get('URL_ROUTE');
+        $routes = Container::get('config')->get('URL_ROUTE');
 
-        $hostName = Request::getHostName();
+        $hostName = Container::get('request')->getHostName();
 
         if (isset($routes[$hostName])) {
             $routes = $routes[$hostName];
@@ -340,11 +338,13 @@ class Route
      * @param  string $uri
      * @param  string $module
      * @return string
+     *
+     * @throws \Kotori\Exception\ConfigException
      */
     public function url($uri = '', $module = null)
     {
         if ($module != null) {
-            $appNames = Config::get('APP_NAME');
+            $appNames = Container::get('config')->get('APP_NAME');
             if (is_array($appNames)) {
                 foreach ($appNames as &$appName) {
                     $appName = str_replace('./', '', $appName);
@@ -355,13 +355,13 @@ class Route
                 $baseUrl = '//' . $baseUrl . '/';
             }
         } else {
-            $baseUrl = Request::getBaseUrl();
+            $baseUrl = Container::get('request')->getBaseUrl();
         }
 
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
         $prefix = $baseUrl . 'index.php?_i=';
 
-        switch (Config::get('URL_MODE')) {
+        switch (Container::get('config')->get('URL_MODE')) {
             case 'PATH_INFO':
                 return $uri == '' ? rtrim($baseUrl, '/') : $baseUrl . $uri;
             case 'QUERY_STRING':

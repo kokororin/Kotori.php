@@ -41,7 +41,7 @@ class Response
      *
      * @var array
      */
-    protected $_httpCode = [
+    protected $httpCode = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -89,7 +89,7 @@ class Response
      *
      * @var string
      */
-    protected $_charset = null;
+    protected $charset = null;
 
     /**
      * Class constructor
@@ -111,7 +111,7 @@ class Response
      */
     public function getCharset()
     {
-        return $this->_charset;
+        return $this->charset;
     }
 
     /**
@@ -121,7 +121,7 @@ class Response
      */
     public function setCharset($charset = null)
     {
-        $this->_charset = empty($charset) ? 'UTF-8' : $charset;
+        $this->charset = empty($charset) ? 'UTF-8' : $charset;
     }
 
     /**
@@ -130,6 +130,8 @@ class Response
      * @param  int    $code
      * @param  string $text
      * @return void
+     *
+     * @throws \Kotori\Exception\ResponseException
      */
     public function setStatus($code = 200, $text = '')
     {
@@ -142,8 +144,8 @@ class Response
                 $code = (int) $code;
             }
 
-            if (isset($this->_httpCode[$code])) {
-                $text = $this->_httpCode[$code];
+            if (isset($this->httpCode[$code])) {
+                $text = $this->httpCode[$code];
             } else {
                 throw new ResponseException('No status text available. Please check your status code number or supply your own message text.');
             }

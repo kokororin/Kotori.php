@@ -33,9 +33,8 @@
  */
 namespace Kotori;
 
+use Kotori\Core\Container;
 use Kotori\Core\Helper;
-use Kotori\Facade\Config;
-use Kotori\Facade\Route;
 
 class App
 {
@@ -44,7 +43,7 @@ class App
      *
      * @var array
      */
-    protected $_config = [];
+    protected $config = [];
 
     /**
      * Class constructor
@@ -55,16 +54,27 @@ class App
      */
     public function __construct($config = [])
     {
-        if (version_compare(PHP_VERSION, '7.0.0', '<')) {
-            exit('Kotori.php requires PHP >= 7.0.0 !');
+        if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+            exit('Kotori.php requires PHP >= 5.5.0 !');
         }
 
         ini_set('display_errors', 'off');
-        define('START_TIME', microtime(true));
-        define('START_MEMORY', memory_get_usage());
+        define('KOTORI_START_TIME', microtime(true));
+        define('KOTORI_START_MEMORY', memory_get_usage());
         if (!empty($config)) {
-            $this->_config = $config;
+            $this->config = $config;
         }
+
+        Container::getInstance()->bind([
+            'cache' => \Kotori\Core\Cache::class,
+            'config' => \Kotori\Core\Config::class,
+            'controller' => \Kotori\Core\Controller::class,
+            'request' => \Kotori\Http\Request::class,
+            'response' => \Kotori\Http\Response::class,
+            'route' => \Kotori\Http\Route::class,
+            'trace' => \Kotori\Debug\Trace::class,
+            'model/provider' => \Kotori\Core\Model\Provider::class,
+        ]);
     }
 
     /**
@@ -79,16 +89,16 @@ class App
         set_exception_handler(['\\Kotori\Core\Handle', 'exception']);
         register_shutdown_function(['\\Kotori\Core\Handle', 'end']);
 
-        Config::initialize($this->_config);
+        Container::get('config')->initialize($this->config);
 
-        ini_set('date.timezone', Config::get('TIME_ZONE'));
+        ini_set('date.timezone', Container::get('config')->get('TIME_ZONE'));
 
-        if (Config::get('USE_SESSION')) {
+        if (Container::get('config')->get('USE_SESSION')) {
             !session_id() && session_start();
         }
 
         // Load application's common functions
-        Helper::import(Config::get('APP_FULL_PATH') . '/common.php');
+        Helper::import(Container::get('config')->get('APP_FULL_PATH') . '/common.php');
 
         // @codingStandardsIgnoreStart
         if (function_exists('spl_autoload_register')) {
@@ -102,7 +112,7 @@ class App
         // @codingStandardsIgnoreEnd
 
         // Load route class
-        Route::dispatch();
+        Container::get('route')->dispatch();
     }
 
 }

@@ -42,6 +42,6 @@ class Cache extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Core\\Cache';
+        return 'cache';
     }
 }

@@ -42,6 +42,6 @@ class Controller extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Core\\Controller';
+        return 'controller';
     }
 }

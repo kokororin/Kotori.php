@@ -1,37 +1,87 @@
 <?php
 namespace Kotori\Core;
 
-abstract class Container
+use ReflectionClass;
+
+class Container
 {
     /**
      * facade containers
      *
      * @var array
      */
-    protected static $_containers = [];
+    protected $containers = [];
 
     /**
-     * Set facade instances
+     * bind maps
      *
-     * @param string $name
+     * @var array
      */
-    protected static function set($name)
+    protected $bind = [];
+
+    /**
+     * instance handle
+     *
+     * @var object
+     */
+    protected static $instance;
+
+    /**
+     * Get singleton
+     *
+     * @return \Kotori\Core\Container
+     */
+    public static function getInstance()
     {
-        self::$_containers[$name] = new $name;
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**
-     * get facade instances
+     * Set the object instance in the container
      *
-     * @param  string $name
+     * @param string $abstract
+     * @param string $concrete
+     */
+    public static function set($abstract, $concrete)
+    {
+        self::getInstance()->containers[$abstract] = $concrete;
+    }
+
+    /**
+     * Get the object instance in the container
+     *
+     * @param  string $abstract
      * @return \Kotori\Core\Facade
      */
-    public static function get($name)
+    public static function get($abstract)
     {
-        if (!isset(self::$_containers[$name])) {
-            self::set($name);
+        if (!isset(self::getInstance()->containers[$abstract])) {
+            $reflect = new ReflectionClass(self::getInstance()->bind[$abstract]);
+            self::set($abstract, $reflect->newInstanceArgs([]));
         }
 
-        return self::$_containers[$name];
+        return self::getInstance()->containers[$abstract];
+    }
+
+    /**
+     * bind object maps for the container
+     *
+     * @param  mixed $abstract
+     * @param  object $concrete
+     * @return \Kotori\Core\Container
+     */
+    public function bind($abstract, $concrete = null)
+    {
+        if (is_array($abstract)) {
+            $this->bind = array_merge($this->bind, $abstract);
+        } else {
+            $this->bind[$abstract] = $concrete;
+        }
+
+        return $this;
     }
 }

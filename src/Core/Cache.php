@@ -31,9 +31,9 @@
  */
 namespace Kotori\Core;
 
+use Kotori\Core\Container;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
-use Kotori\Facade\Config;
 
 class Cache
 {
@@ -52,7 +52,7 @@ class Cache
      *
      * @var mixed
      */
-    protected $_adapter = 'dummy';
+    protected $adapter = 'dummy';
 
     /**
      * Cache key prefix
@@ -70,21 +70,21 @@ class Cache
      */
     public function __construct()
     {
-        $config = Config::get('CACHE');
+        $config = Container::get('config')->get('CACHE');
         if (isset($config['ADAPTER'])) {
-            $this->_adapter = $config['ADAPTER'];
+            $this->adapter = $config['ADAPTER'];
         }
 
         if (isset($config['PREFIX'])) {
             $this->keyPrefix = $config['PREFIX'];
         }
 
-        $className = '\\Kotori\\Core\\Cache\\' . ucfirst($this->_adapter);
-        $this->{$this->_adapter} = new $className();
+        $className = '\\Kotori\\Core\\Cache\\' . ucfirst($this->adapter);
+        $this->{$this->adapter} = new $className();
 
-        if (!$this->isSupported($this->_adapter)) {
-            Log::normal('[Error] Cache adapter "' . $this->_adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
-            $this->_adapter = 'dummy';
+        if (!$this->isSupported($this->adapter)) {
+            Log::normal('[Error] Cache adapter "' . $this->adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
+            $this->adapter = 'dummy';
         }
 
         Hook::listen(__CLASS__);
@@ -101,7 +101,7 @@ class Cache
      */
     public function get($id)
     {
-        return $this->{$this->_adapter}->get($this->keyPrefix . $id);
+        return $this->{$this->adapter}->get($this->keyPrefix . $id);
     }
 
     /**
@@ -115,7 +115,7 @@ class Cache
      */
     public function set($id, $data, $ttl = 60, $raw = false)
     {
-        return $this->{$this->_adapter}->set($this->keyPrefix . $id, $data, $ttl, $raw);
+        return $this->{$this->adapter}->set($this->keyPrefix . $id, $data, $ttl, $raw);
     }
 
     /**
@@ -126,7 +126,7 @@ class Cache
      */
     public function delete($id)
     {
-        return $this->{$this->_adapter}->delete($this->keyPrefix . $id);
+        return $this->{$this->adapter}->delete($this->keyPrefix . $id);
     }
 
     /**
@@ -138,7 +138,7 @@ class Cache
      */
     public function increment($id, $offset = 1)
     {
-        return $this->{$this->_adapter}->increment($this->keyPrefix . $id, $offset);
+        return $this->{$this->adapter}->increment($this->keyPrefix . $id, $offset);
     }
 
     /**
@@ -150,7 +150,7 @@ class Cache
      */
     public function decrement($id, $offset = 1)
     {
-        return $this->{$this->_adapter}->decrement($this->keyPrefix . $id, $offset);
+        return $this->{$this->adapter}->decrement($this->keyPrefix . $id, $offset);
     }
 
     /**
@@ -160,7 +160,7 @@ class Cache
      */
     public function clean()
     {
-        return $this->{$this->_adapter}->clean();
+        return $this->{$this->adapter}->clean();
     }
 
     /**
@@ -171,7 +171,7 @@ class Cache
      */
     public function cacheInfo($type = 'user')
     {
-        return $this->{$this->_adapter}->cacheInfo($type);
+        return $this->{$this->adapter}->cacheInfo($type);
     }
 
     /**
@@ -182,7 +182,7 @@ class Cache
      */
     public function getMetadata($id)
     {
-        return $this->{$this->_adapter}->getMetadata($this->keyPrefix . $id);
+        return $this->{$this->adapter}->getMetadata($this->keyPrefix . $id);
     }
 
     /**

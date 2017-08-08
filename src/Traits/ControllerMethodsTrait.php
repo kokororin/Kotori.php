@@ -43,10 +43,12 @@ trait ControllerMethodsTrait
      * syntax as controllers.
      *
      * @param string $key
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
     public function __get($key)
     {
-        $controller = Container::get('\\Kotori\\Core\\Controller');
+        $controller = Container::get('controller');
         if (property_exists($controller, $key)) {
             return $controller->$key;
         }
@@ -63,10 +65,12 @@ trait ControllerMethodsTrait
      *
      * @param  string $name
      * @param  array  $arguments
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
     public function __call($name, $arguments)
     {
-        $controller = Container::get('\\Kotori\\Core\\Controller');
+        $controller = Container::get('controller');
         $callback = [$controller, $name];
         if (!is_callable($callback)) {
             $backTrace = debug_backtrace();

@@ -31,10 +31,10 @@
  */
 namespace Kotori\Debug;
 
+use Kotori\Core\Container;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
 use Kotori\Core\Helper;
-use Kotori\Facade\Config;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 class Trace
@@ -76,7 +76,7 @@ class Trace
     protected function getTrace()
     {
         $files = get_included_files();
-        $config = Config::getArray();
+        $config = Container::get('config')->getArray();
         $server = $_SERVER;
         $cookie = $_COOKIE;
         $info = [];
@@ -97,7 +97,7 @@ class Trace
             'Request Info' => date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']) . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['REQUEST_METHOD'] . ' : ' . $_SERVER['PHP_SELF'],
             'Run Time' => Hook::listen('\\Kotori\\App') . 'μs',
             'TPR' => Hook::listen('\\Kotori\\App') != 0 ? pow(10, 6) / Hook::listen('\\Kotori\\App') . ' req/s' : '+inf',
-            'Memory Uses' => number_format((memory_get_usage() - START_MEMORY) / 1024, 2) . ' kb',
+            'Memory Uses' => number_format((memory_get_usage() - KOTORI_START_MEMORY) / 1024, 2) . ' kb',
             'SQL Queries' => count($sql) . ' queries ',
             'File Loaded' => count(get_included_files()),
             'Session Info' => 'SESSION_ID=' . session_id(),
@@ -151,7 +151,7 @@ class Trace
      */
     public function showTrace()
     {
-        if (!Config::get('APP_DEBUG')) {
+        if (!Container::get('config')->get('APP_DEBUG')) {
             return;
         }
 

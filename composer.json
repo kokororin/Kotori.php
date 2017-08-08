@@ -14,7 +14,7 @@
         "email": "ritsuka.sunny@gmail.com"
     }],
     "require": {
-        "php": ">=7.0.0",
+        "php": ">=5.5.0",
         "catfan/Medoo": "1.4.*",
         "scrivo/highlight.php": "8.*",
         "wyrihaximus/html-compress": "1.2.*"

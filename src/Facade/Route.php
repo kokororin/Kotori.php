@@ -42,6 +42,6 @@ class Route extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Http\\Route';
+        return 'route';
     }
 }

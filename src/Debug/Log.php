@@ -31,8 +31,8 @@
  */
 namespace Kotori\Debug;
 
+use Kotori\Core\Container;
 use Kotori\Core\Helper;
-use Kotori\Facade\Config;
 
 abstract class Log
 {
@@ -47,7 +47,7 @@ abstract class Log
      */
     protected static function write($msg, $level = '')
     {
-        if (!Config::get('APP_DEBUG')) {
+        if (!Container::get('config')->get('APP_DEBUG')) {
             return;
         }
 
@@ -58,7 +58,7 @@ abstract class Log
             sae_set_display_errors(true);
         } else {
             $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
-            $logPath = Config::get('APP_FULL_PATH') . '/logs';
+            $logPath = Container::get('config')->get('APP_FULL_PATH') . '/logs';
             if (!file_exists($logPath)) {
                 Helper::mkdirs($logPath);
             }

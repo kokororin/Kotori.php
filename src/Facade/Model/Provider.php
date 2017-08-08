@@ -42,6 +42,6 @@ class Provider extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Core\\Model\\Provider';
+        return 'model/provider';
     }
 }

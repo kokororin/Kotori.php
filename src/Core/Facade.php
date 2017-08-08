@@ -42,7 +42,6 @@ abstract class Facade
      */
     public static function __callStatic($method, $params)
     {
-        $className = static::getFacadeAccessor();
-        return call_user_func_array([Container::get($className), $method], $params);
+        return call_user_func_array([Container::get(static::getFacadeAccessor()), $method], $params);
     }
 }

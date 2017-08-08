@@ -42,6 +42,6 @@ class Trace extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Debug\\Trace';
+        return 'trace';
     }
 }

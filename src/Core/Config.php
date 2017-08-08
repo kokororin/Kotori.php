@@ -35,7 +35,6 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
-use Kotori\Facade\Request;
 
 class Config
 {
@@ -44,14 +43,14 @@ class Config
      *
      * @var array
      */
-    protected $_config = [];
+    protected $config = [];
 
     /**
      * Default Config Array
      *
      * @var array
      */
-    protected $_defaults = [
+    protected $defaults = [
         'APP_DEBUG' => true,
         'APP_NAME' => 'app',
         'URL_MODE' => 'QUERY_STRING',
@@ -77,14 +76,16 @@ class Config
      *
      * @param  array   $config
      * @return boolean
+     *
+     * @throws \Kotori\Exception\ConfigException
      */
     public function initialize($config = [])
     {
-        $this->_config = $config;
-        if (is_array($this->_config)) {
-            if (array_keys($this->_config) !== range(0, count($this->_config) - 1)) {
-                if (isset($this->_config['DB']) && is_array($this->_config['DB'])) {
-                    foreach ($this->_config['DB'] as $key => &$value) {
+        $this->config = $config;
+        if (is_array($this->config)) {
+            if (array_keys($this->config) !== range(0, count($this->config) - 1)) {
+                if (isset($this->config['DB']) && is_array($this->config['DB'])) {
+                    foreach ($this->config['DB'] as $key => &$value) {
                         if (!isset($value['PORT'])) {
                             $value['PORT'] = 3306;
                         }
@@ -95,9 +96,9 @@ class Config
                     }
                 }
 
-                $this->_config = array_merge($this->_defaults, $this->_config);
+                $this->config = array_merge($this->defaults, $this->config);
                 if (is_array($this->get('APP_NAME'))) {
-                    $hostName = Request::getHostName();
+                    $hostName = Container::get('request')->getHostName();
                     if (array_key_exists($hostName, $this->get('APP_NAME'))) {
                         $appName = $this->get('APP_NAME')[$hostName];
                     } else {
@@ -107,7 +108,7 @@ class Config
                     $appName = $this->get('APP_NAME');
                 }
 
-                if (Request::isCli()) {
+                if (Container::get('request')->isCli()) {
                     $stack = debug_backtrace();
                     $firstFrame = $stack[count($stack) - 1];
                     $initialFile = $firstFrame['file'];
@@ -120,9 +121,9 @@ class Config
                     throw new ConfigException('Cannot find your app directory (' . $appName . ').');
                 }
 
-                $this->_config = array_merge([
+                $this->config = array_merge([
                     'APP_FULL_PATH' => $appFullPath,
-                ], $this->_config);
+                ], $this->config);
                 $this->set('NAMESPACE_PREFIX', basename($this->get('APP_FULL_PATH')) . '\\');
             }
         }
@@ -136,11 +137,13 @@ class Config
      * @param  string $key
      * @param  mixed  $value
      * @return void
+     *
+     * @throws \Kotori\Exception\ConfigException
      */
     public function set($key, $value)
     {
         if (is_string($key)) {
-            $this->_config[$key] = $value;
+            $this->config[$key] = $value;
         } else {
             throw new ConfigException('Config Error.');
         }
@@ -155,7 +158,7 @@ class Config
     public function get($key)
     {
         if (is_string($key)) {
-            return isset($this->_config[$key]) ? $this->_config[$key] : null;
+            return isset($this->config[$key]) ? $this->config[$key] : null;
         }
 
         return null;
@@ -168,6 +171,6 @@ class Config
      */
     public function getArray()
     {
-        return $this->_config;
+        return $this->config;
     }
 }

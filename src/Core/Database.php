@@ -35,7 +35,6 @@ use Exception;
 use Kotori\Debug\Hook;
 use Kotori\Debug\Log;
 use Kotori\Exception\DatabaseException;
-use Kotori\Facade\Config;
 use Medoo\Medoo;
 use PDOException;
 
@@ -53,7 +52,7 @@ class Database extends Medoo
      *
      * @var array
      */
-    protected static $_instance;
+    protected static $instance;
 
     /**
      * Disable Clone
@@ -66,16 +65,18 @@ class Database extends Medoo
     }
 
     /**
-     * get singleton
+     * Get singleton
      *
      * @return object
+     *
+     * @throws \Kotori\Exception\DatabaseException
      */
     public static function getInstance($key = null)
     {
-        if (count(Config::get('DB')) == 0) {
+        if (count(Container::get('config')->get('DB')) == 0) {
             return null;
         } elseif ($key == null) {
-            $dbKeys = array_keys(Config::get('DB'));
+            $dbKeys = array_keys(Container::get('config')->get('DB'));
             if (isset($dbKeys[0])) {
                 $key = $dbKeys[0];
             } else {
@@ -83,11 +84,11 @@ class Database extends Medoo
             }
         }
 
-        Config::set('SELECTED_DB_KEY', $key);
+        Container::get('config')->set('SELECTED_DB_KEY', $key);
 
-        if (!isset(self::$_instance[$key])) {
+        if (!isset(self::$instance[$key])) {
             try {
-                self::$_instance[$key] = new self(Config::get('DB')[$key]);
+                self::$instance[$key] = new self(Container::get('config')->get('DB')[$key]);
             } catch (PDOException $e) {
                 throw new DatabaseException($e);
             } catch (Exception $e) {
@@ -95,7 +96,7 @@ class Database extends Medoo
             }
         }
 
-        return self::$_instance[$key];
+        return self::$instance[$key];
     }
 
     /**

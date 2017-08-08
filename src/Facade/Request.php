@@ -42,6 +42,6 @@ class Request extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Http\\Request';
+        return 'request';
     }
 }

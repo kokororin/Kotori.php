@@ -33,8 +33,6 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
-use Kotori\Facade\Config;
-use Kotori\Facade\Trace;
 use Kotori\Traits\ControllerMethodsTrait;
 
 class View
@@ -45,7 +43,7 @@ class View
      *
      * @var string
      */
-    protected $_tplDir;
+    protected $tplDir;
 
     /**
      *
@@ -53,21 +51,21 @@ class View
      *
      * @var string
      */
-    protected $_viewPath;
+    protected $viewPath;
 
     /**
      * Variable List
      *
      * @var array
      */
-    protected $_data = [];
+    protected $data = [];
 
     /**
      * Variable List for TplInclude
      *
      * @var array
      */
-    protected $_needData;
+    protected $needData;
 
     /**
      * Class constructor
@@ -78,9 +76,9 @@ class View
     public function __construct($tplDir = null)
     {
         if (null == $tplDir) {
-            $this->_tplDir = Config::get('APP_FULL_PATH') . '/views/';
+            $this->tplDir = Container::get('config')->get('APP_FULL_PATH') . '/views/';
         } else {
-            $this->_tplDir = $tplDir;
+            $this->tplDir = $tplDir;
         }
 
         Hook::listen(__CLASS__);
@@ -95,7 +93,7 @@ class View
      */
     public function assign($key, $value)
     {
-        $this->_data[$key] = $value;
+        $this->data[$key] = $value;
         return $this;
     }
 
@@ -106,25 +104,28 @@ class View
      *
      * @param  string $tpl
      * @return void
+     *
+     * @throws \Kotori\Exception\NotFoundException
      */
     public function display($tpl = '')
     {
         if ('' === $tpl) {
-            $tpl = CONTROLLER_NAME . '/' . ACTION_NAME;
+            $tpl = Container::get('route')->getController() . '/'
+            . Container::get('route')->getAction();
         }
 
-        $this->_viewPath = $this->_tplDir . $tpl . '.html';
-        if (!Helper::isFile($this->_viewPath)) {
+        $this->viewPath = $this->tplDir . $tpl . '.html';
+        if (!Helper::isFile($this->viewPath)) {
             throw new NotFoundException('Template is not existed.');
         }
 
         unset($tpl);
         ob_start();
-        extract($this->_data, EXTR_OVERWRITE);
-        include $this->_viewPath;
+        extract($this->data, EXTR_OVERWRITE);
+        include $this->viewPath;
         $buffer = ob_get_contents();
         ob_get_clean();
-        $output = Helper::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Trace::showTrace();
+        $output = Helper::comment() . preg_replace('|</body>.*?</html>|is', '', $buffer, -1, $count) . Container::get('trace')->showTrace();
         if ($count > 0) {
             $output .= '</body></html>';
         }
@@ -141,14 +142,13 @@ class View
      */
     public function need($path, $data = [])
     {
-        $this->_needData = [
-            'path' => Config::get('APP_FULL_PATH') . '/views/' . $path . '.html',
+        $this->needData = [
+            'path' => Container::get('config')->get('APP_FULL_PATH') . '/views/' . $path . '.html',
             'data' => $data,
         ];
-        unset($path);
-        unset($data);
-        extract($this->_needData['data']);
-        include $this->_needData['path'];
+        unset($path, $data);
+        extract($this->needData['data']);
+        include $this->needData['path'];
     }
 
 }

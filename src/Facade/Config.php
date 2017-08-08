@@ -42,6 +42,6 @@ class Config extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return '\\Kotori\\Core\\Config';
+        return 'config';
     }
 }
