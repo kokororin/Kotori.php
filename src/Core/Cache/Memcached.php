@@ -33,7 +33,7 @@ namespace Kotori\Core\Cache;
 
 use Kotori\Core\Container;
 use Kotori\Debug\Hook;
-use Kotori\Exception\NotFoundException;
+use Kotori\Exception\CacheException;
 
 class Memcached
 {
@@ -63,6 +63,8 @@ class Memcached
      * Setup Memcache(d)
      *
      * @return void
+     *
+     * @throws \Kotori\Exception\CacheException
      */
     public function __construct()
     {
@@ -84,7 +86,7 @@ class Memcached
         } elseif (class_exists('Memcache', false)) {
             $this->memcached = new \Memcache();
         } else {
-            throw new NotFoundException('Failed to create Memcache(d) object; extension not loaded?');
+            throw new CacheException('Failed to create Memcache(d) object; extension not loaded?');
         }
 
         foreach ($this->memcacheConf as $cacheServer) {

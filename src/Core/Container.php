@@ -70,7 +70,7 @@ class Container
     /**
      * bind object maps for the container
      *
-     * @param  mixed $abstract
+     * @param  mixed  $abstract
      * @param  object $concrete
      * @return \Kotori\Core\Container
      */

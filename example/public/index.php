@@ -24,9 +24,9 @@ $config = [
             'type' => 'mysql',
         ],
     ],
-    'cache' => [
-        'adapter' => 'memcached',
-    ],
+    // 'cache' => [
+    //     'adapter' => 'memcached',
+    // ],
     'url_mode' => 'path_info',
     'url_route' => [
         '/' => 'Hello/index',

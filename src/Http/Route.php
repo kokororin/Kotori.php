@@ -264,6 +264,16 @@ class Route
     }
 
     /**
+     * Returns the URI
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
      * Parse Routes
      *
      * Matches any routes that may exist in URL_ROUTE array
