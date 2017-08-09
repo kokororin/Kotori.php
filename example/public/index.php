@@ -10,25 +10,25 @@
 require __DIR__ . '/../../vendor/autoload.php';
 
 $config = [
-    'APP_NAME' => 'app',
-    // 'APP_NAME' => [
+    'app_name' => 'app',
+    // 'app_name' => [
     //     '1.kotori.php' => 'app',
     //     '2.kotori.php' => 'module2'
     // ],
-    'DB' => [
+    'db' => [
         'test' => [
-            'HOST' => getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : '127.0.0.1',
-            'USER' => getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root',
-            'PWD' => getenv('MYSQL_PWD') ? (getenv('CI') ? '' : getenv('MYSQL_PWD')) : '123456',
-            'NAME' => getenv('MYSQL_DB') ? getenv('MYSQL_DB') : 'test',
-            'TYPE' => 'mysql',
+            'host' => getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : '127.0.0.1',
+            'user' => getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root',
+            'pwd' => getenv('MYSQL_PWD') ? (getenv('CI') ? '' : getenv('MYSQL_PWD')) : '123456',
+            'name' => getenv('MYSQL_DB') ? getenv('MYSQL_DB') : 'test',
+            'type' => 'mysql',
         ],
     ],
-    // 'CACHE' => [
-    //     'ADAPTER' => 'memcached',
-    // ],
-    'URL_MODE' => 'PATH_INFO',
-    'URL_ROUTE' => [
+    'cache' => [
+        'adapter' => 'memcached',
+    ],
+    'url_mode' => 'path_info',
+    'url_route' => [
         '/' => 'Hello/index',
         'news/([0-9])' => 'Hello/showNews/$1',
         'add' => [

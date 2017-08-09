@@ -70,13 +70,13 @@ class Cache
      */
     public function __construct()
     {
-        $config = Container::get('config')->get('CACHE');
-        if (isset($config['ADAPTER'])) {
-            $this->adapter = $config['ADAPTER'];
+        $config = Container::get('config')->get('cache');
+        if (isset($config['adapter'])) {
+            $this->adapter = $config['adapter'];
         }
 
-        if (isset($config['PREFIX'])) {
-            $this->keyPrefix = $config['PREFIX'];
+        if (isset($config['prefix'])) {
+            $this->keyPrefix = $config['prefix'];
         }
 
         $className = '\\Kotori\\Core\\Cache\\' . ucfirst($this->adapter);

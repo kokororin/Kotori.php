@@ -72,7 +72,7 @@ class Provider
             return $this->models[$key];
         }
 
-        $modelClassName = Container::get('config')->get('NAMESPACE_PREFIX') . 'models\\' . $key;
+        $modelClassName = Container::get('config')->get('namespace_prefix') . 'models\\' . $key;
 
         if (!class_exists($modelClassName)) {
             throw new NotFoundException('Request Model ' . $key . ' is not Found');

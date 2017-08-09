@@ -10,26 +10,26 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config();
         $config->initialize([
-            'ENV' => getenv('APP_ENV'),
+            'in_test_env' => true,
         ]);
-        $this->assertEquals(true, $config->get('APP_DEBUG'));
+        $this->assertEquals(true, $config->get('app_debug'));
     }
 
     public function testSetConfig()
     {
         $config = new Config();
         $config->initialize([
-            'ENV' => getenv('APP_ENV'),
-            'MY_ENV' => 'MY_ENV',
+            'in_test_env' => true,
+            'my_env' => 'my_env',
         ]);
-        $this->assertEquals('MY_ENV', $config->get('MY_ENV'));
+        $this->assertEquals('my_env', $config->get('my_env'));
     }
 
     public function testGetConfigArray()
     {
         $config = new Config();
         $config->initialize([
-            'ENV' => getenv('APP_ENV'),
+            'in_test_env' => true,
         ]);
         $this->assertTrue(is_array($config->getArray()));
     }

@@ -76,7 +76,7 @@ class View
     public function __construct($tplDir = null)
     {
         if (null == $tplDir) {
-            $this->tplDir = Container::get('config')->get('APP_FULL_PATH') . '/views/';
+            $this->tplDir = Container::get('config')->get('app_full_path') . '/views/';
         } else {
             $this->tplDir = $tplDir;
         }
@@ -143,7 +143,7 @@ class View
     public function need($path, $data = [])
     {
         $this->needData = [
-            'path' => Container::get('config')->get('APP_FULL_PATH') . '/views/' . $path . '.html',
+            'path' => Container::get('config')->get('app_full_path') . '/views/' . $path . '.html',
             'data' => $data,
         ];
         unset($path, $data);

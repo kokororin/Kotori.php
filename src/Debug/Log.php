@@ -47,7 +47,7 @@ abstract class Log
      */
     protected static function write($msg, $level = '')
     {
-        if (!Container::get('config')->get('APP_DEBUG')) {
+        if (!Container::get('config')->get('app_debug')) {
             return;
         }
 
@@ -58,7 +58,7 @@ abstract class Log
             sae_set_display_errors(true);
         } else {
             $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
-            $logPath = Container::get('config')->get('APP_FULL_PATH') . '/logs';
+            $logPath = Container::get('config')->get('app_full_path') . '/logs';
             if (!file_exists($logPath)) {
                 Helper::mkdirs($logPath);
             }

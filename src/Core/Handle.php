@@ -59,13 +59,13 @@ abstract class Handle
     {
         Container::get('response')->setStatus($code);
 
-        if (!Container::get('config')->get('APP_DEBUG')) {
+        if (!Container::get('config')->get('app_debug')) {
             $message = '404 Not Found.';
         }
 
-        $tplPath = Container::get('config')->get('ERROR_TPL');
+        $tplPath = Container::get('config')->get('error_tpl');
 
-        if ($tplPath == null || !Helper::isFile(Container::get('config')->get('APP_FULL_PATH') . '/views/' . $tplPath . '.html')) {
+        if ($tplPath == null || !Helper::isFile(Container::get('config')->get('app_full_path') . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,7 +102,7 @@ abstract class Handle
 
   <div id="explanation">
     <p>
-      You\'re seeing this error because you have <code>APP_DEBUG = True</code> in
+      You\'re seeing this error because you have <code>app_debug = True</code> in
       your index.php file. Change that to <code>False</code>, and Kotori.php
       will display a standard 404 page.
     </p>
@@ -110,7 +110,7 @@ abstract class Handle
 </body>
 </html>';
         } else {
-            $tpl = file_get_contents(Container::get('config')->get('APP_FULL_PATH') . '/views/' . $tplPath . '.html');
+            $tpl = file_get_contents(Container::get('config')->get('app_full_path') . '/views/' . $tplPath . '.html');
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
@@ -164,7 +164,7 @@ abstract class Handle
             echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
         } else {
             self::setDebugHeader($txt);
-            self::halt($text, Container::get('config')->get('APP_DEBUG') ? 500 : 404);
+            self::halt($text, Container::get('config')->get('app_debug') ? 500 : 404);
         }
 
         exit;
@@ -197,7 +197,7 @@ abstract class Handle
                 echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
             } else {
                 self::setDebugHeader($txt);
-                self::halt($text, Container::get('config')->get('APP_DEBUG') ? 500 : 404);
+                self::halt($text, Container::get('config')->get('app_debug') ? 500 : 404);
             }
 
             exit;
@@ -213,7 +213,7 @@ abstract class Handle
      */
     protected static function setDebugHeader($txt)
     {
-        if (Container::get('config')->get('APP_DEBUG')) {
+        if (Container::get('config')->get('app_debug')) {
             Container::get('response')->setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
         }
     }

@@ -151,7 +151,7 @@ class Trace
      */
     public function showTrace()
     {
-        if (!Container::get('config')->get('APP_DEBUG')) {
+        if (!Container::get('config')->get('app_debug')) {
             return;
         }
 

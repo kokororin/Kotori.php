@@ -13,14 +13,14 @@ class CacheTest extends PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         Config::initialize([
-            'ENV' => 'test',
-            'APP_DEBUG' => false,
-            'CACHE' => [
-                'ADAPTER' => 'memcached',
-                'PREFIX' => '',
-                'HOST' => '127.0.0.1',
-                'PORT' => 11211,
-                'WEIGHT' => 1,
+            'in_test_env' => true,
+            'app_debug' => false,
+            'cache' => [
+                'adapter' => 'memcached',
+                'prefix' => '',
+                'host' => '127.0.0.1',
+                'port' => 11211,
+                'weight' => 1,
             ],
         ]);
         // You must have php-memcached installed

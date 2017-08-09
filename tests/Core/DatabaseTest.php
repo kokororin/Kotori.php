@@ -12,15 +12,15 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         Config::initialize([
-            'ENV' => getenv('APP_ENV'),
-            'APP_DEBUG' => false,
-            'DB' => [
-                'db' => [
-                    'TYPE' => 'mysql',
-                    'NAME' => getenv('MYSQL_DB'),
-                    'HOST' => getenv('MYSQL_HOST'),
-                    'USER' => getenv('MYSQL_USER'),
-                    'PWD' => getenv('MYSQL_PWD'),
+            'in_test_env' => true,
+            'app_debug' => false,
+            'db' => [
+                'default' => [
+                    'type' => 'mysql',
+                    'name' => getenv('MYSQL_DB'),
+                    'host' => getenv('MYSQL_HOST'),
+                    'user' => getenv('MYSQL_USER'),
+                    'pwd' => getenv('MYSQL_PWD'),
                 ],
             ],
         ]);

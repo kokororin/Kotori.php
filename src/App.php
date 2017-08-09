@@ -91,14 +91,14 @@ class App
 
         Container::get('config')->initialize($this->config);
 
-        ini_set('date.timezone', Container::get('config')->get('TIME_ZONE'));
+        ini_set('date.timezone', Container::get('config')->get('time_zone'));
 
-        if (Container::get('config')->get('USE_SESSION')) {
+        if (Container::get('config')->get('use_session')) {
             !session_id() && session_start();
         }
 
         // Load application's common functions
-        Helper::import(Container::get('config')->get('APP_FULL_PATH') . '/common.php');
+        Helper::import(Container::get('config')->get('app_full_path') . '/common.php');
 
         // @codingStandardsIgnoreStart
         if (function_exists('spl_autoload_register')) {

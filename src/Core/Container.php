@@ -55,7 +55,7 @@ class Container
      * Get the object instance in the container
      *
      * @param  string $abstract
-     * @return \Kotori\Core\Facade
+     * @return object
      */
     public static function get($abstract)
     {

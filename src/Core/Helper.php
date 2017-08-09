@@ -54,7 +54,7 @@ abstract class Helper
     public static function import($path)
     {
         $path = realpath($path);
-        Hook::listen(str_replace(Container::get('config')->get('APP_FULL_PATH'), '', $path));
+        Hook::listen(str_replace(Container::get('config')->get('app_full_path'), '', $path));
         if (!isset(self::$require[$path])) {
             if (self::isFile($path)) {
                 require $path;
@@ -97,9 +97,9 @@ abstract class Helper
      */
     public static function autoload($class)
     {
-        $baseRoot = Container::get('config')->get('APP_FULL_PATH');
+        $baseRoot = Container::get('config')->get('app_full_path');
         // project-specific namespace prefix
-        $prefix = Container::get('config')->get('NAMESPACE_PREFIX');
+        $prefix = Container::get('config')->get('namespace_prefix');
 
         // does the class use the namespace prefix?
         $len = strlen($prefix);

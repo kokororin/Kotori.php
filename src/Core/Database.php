@@ -73,10 +73,10 @@ class Database extends Medoo
      */
     public static function getInstance($key = null)
     {
-        if (count(Container::get('config')->get('DB')) == 0) {
+        if (count(Container::get('config')->get('db')) == 0) {
             return null;
         } elseif ($key == null) {
-            $dbKeys = array_keys(Container::get('config')->get('DB'));
+            $dbKeys = array_keys(Container::get('config')->get('db'));
             if (isset($dbKeys[0])) {
                 $key = $dbKeys[0];
             } else {
@@ -84,11 +84,11 @@ class Database extends Medoo
             }
         }
 
-        Container::get('config')->set('SELECTED_DB_KEY', $key);
+        Container::get('config')->set('selected_db_key', $key);
 
         if (!isset(self::$instance[$key])) {
             try {
-                self::$instance[$key] = new self(Container::get('config')->get('DB')[$key]);
+                self::$instance[$key] = new self(Container::get('config')->get('db')[$key]);
             } catch (PDOException $e) {
                 throw new DatabaseException($e);
             } catch (Exception $e) {
@@ -109,13 +109,13 @@ class Database extends Medoo
     public function __construct($options = null)
     {
         parent::__construct([
-            'database_type' => $options['TYPE'],
-            'database_name' => $options['NAME'],
-            'server' => $options['HOST'],
-            'username' => $options['USER'],
-            'password' => $options['PWD'],
-            'charset' => $options['CHARSET'],
-            'port' => $options['PORT'],
+            'database_type' => $options['type'],
+            'database_name' => $options['name'],
+            'server' => $options['host'],
+            'username' => $options['user'],
+            'password' => $options['pwd'],
+            'charset' => $options['charset'],
+            'port' => $options['port'],
         ]);
         Hook::listen(__CLASS__);
     }

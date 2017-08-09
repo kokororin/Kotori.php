@@ -128,7 +128,7 @@ class Route
      */
     public function dispatch()
     {
-        if (Container::get('config')->get('URL_MODE') == 'QUERY_STRING') {
+        if (strtolower(Container::get('config')->get('url_mode')) == 'query_string') {
             $this->uri = explode('?', $this->uri, 2);
             $_SERVER['QUERY_STRING'] = isset($this->uri[1]) ? $this->uri[1] : '';
             $this->uri = $this->uri[0];
@@ -162,7 +162,7 @@ class Route
         $this->action = $this->getAction();
 
         // If is already initialized
-        $prefix = Container::get('config')->get('NAMESPACE_PREFIX');
+        $prefix = Container::get('config')->get('namespace_prefix');
 
         $controllerClassName = $prefix . 'controllers\\' . $this->controller;
         if (isset($this->controllers[$this->controller])) {
@@ -192,7 +192,7 @@ class Route
         $_GET = array_merge($this->params, $_GET);
         $_REQUEST = array_merge($_POST, $_GET, $_COOKIE);
 
-        if (Container::get('config')->get('APP_DEBUG')) {
+        if (Container::get('config')->get('app_debug')) {
             Container::get('response')->setHeader('X-Kotori-Hash', call_user_func(function () {
                 $lockFile = Helper::getComposerVendorPath() . '/../composer.lock';
                 if (!Helper::isFile($lockFile)) {
@@ -274,7 +274,7 @@ class Route
      */
     protected function parseRoutes($uri)
     {
-        $routes = Container::get('config')->get('URL_ROUTE');
+        $routes = Container::get('config')->get('url_route');
 
         $hostName = Container::get('request')->getHostName();
 
@@ -344,7 +344,7 @@ class Route
     public function url($uri = '', $module = null)
     {
         if ($module != null) {
-            $appNames = Container::get('config')->get('APP_NAME');
+            $appNames = Container::get('config')->get('app_name');
             if (is_array($appNames)) {
                 foreach ($appNames as &$appName) {
                     $appName = str_replace('./', '', $appName);
@@ -361,13 +361,13 @@ class Route
         $uri = is_array($uri) ? implode('/', $uri) : trim($uri, '/');
         $prefix = $baseUrl . 'index.php?_i=';
 
-        switch (Container::get('config')->get('URL_MODE')) {
-            case 'PATH_INFO':
+        switch (strtolower(Container::get('config')->get('url_mode'))) {
+            case 'path_info':
                 return $uri == '' ? rtrim($baseUrl, '/') : $baseUrl . $uri;
-            case 'QUERY_STRING':
+            case 'query_string':
                 return $uri == '' ? rtrim($baseUrl, '/') : $prefix . $uri;
             default:
-                throw new ConfigException('URL_MODE Config ERROR');
+                throw new ConfigException('`url_mode` Config ERROR');
         }
 
     }

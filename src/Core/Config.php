@@ -51,12 +51,12 @@ class Config
      * @var array
      */
     protected $defaults = [
-        'APP_DEBUG' => true,
-        'APP_NAME' => 'app',
-        'URL_MODE' => 'QUERY_STRING',
-        'TIME_ZONE' => 'Asia/Shanghai',
-        'USE_SESSION' => true,
-        'ENV' => 'normal',
+        'app_debug' => true,
+        'app_name' => 'app',
+        'url_mode' => 'query_string',
+        'time_zone' => 'Asia/Shanghai',
+        'use_session' => true,
+        'in_test_env' => false,
     ];
 
     /**
@@ -84,28 +84,28 @@ class Config
         $this->config = $config;
         if (is_array($this->config)) {
             if (array_keys($this->config) !== range(0, count($this->config) - 1)) {
-                if (isset($this->config['DB']) && is_array($this->config['DB'])) {
-                    foreach ($this->config['DB'] as $key => &$value) {
-                        if (!isset($value['PORT'])) {
-                            $value['PORT'] = 3306;
+                if (isset($this->config['db']) && is_array($this->config['db'])) {
+                    foreach ($this->config['db'] as $key => &$value) {
+                        if (!isset($value['port'])) {
+                            $value['port'] = 3306;
                         }
 
-                        if (!isset($value['CHARSET'])) {
-                            $value['CHARSET'] = 'utf8';
+                        if (!isset($value['charset'])) {
+                            $value['charset'] = 'utf8';
                         }
                     }
                 }
 
                 $this->config = array_merge($this->defaults, $this->config);
-                if (is_array($this->get('APP_NAME'))) {
+                if (is_array($this->get('app_name'))) {
                     $hostName = Container::get('request')->getHostName();
-                    if (array_key_exists($hostName, $this->get('APP_NAME'))) {
-                        $appName = $this->get('APP_NAME')[$hostName];
+                    if (array_key_exists($hostName, $this->get('app_name'))) {
+                        $appName = $this->get('app_name')[$hostName];
                     } else {
                         throw new ConfigException('Cannot find any app paths.');
                     }
                 } else {
-                    $appName = $this->get('APP_NAME');
+                    $appName = $this->get('app_name');
                 }
 
                 if (Container::get('request')->isCli()) {
@@ -117,14 +117,14 @@ class Config
                     $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
                 }
 
-                if (!$appFullPath && $this->get('ENV') == 'normal') {
+                if (!$appFullPath && !$this->get('in_test_env')) {
                     throw new ConfigException('Cannot find your app directory (' . $appName . ').');
                 }
 
                 $this->config = array_merge([
-                    'APP_FULL_PATH' => $appFullPath,
+                    'app_full_path' => $appFullPath,
                 ], $this->config);
-                $this->set('NAMESPACE_PREFIX', basename($this->get('APP_FULL_PATH')) . '\\');
+                $this->set('namespace_prefix', basename($this->get('app_full_path')) . '\\');
             }
         }
 
