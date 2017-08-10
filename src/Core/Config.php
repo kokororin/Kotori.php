@@ -55,7 +55,6 @@ class Config
         'app_name' => 'app',
         'url_mode' => 'query_string',
         'time_zone' => 'Asia/Shanghai',
-        'use_session' => true,
         'in_test_env' => false,
     ];
 

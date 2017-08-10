@@ -27,6 +27,9 @@ $config = [
     // 'cache' => [
     //     'adapter' => 'memcached',
     // ],
+    // 'session' => [
+    //     'adapter' => 'memcached',
+    // ],
     'url_mode' => 'path_info',
     'url_route' => [
         '/' => 'Hello/index',

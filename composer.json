@@ -40,12 +40,14 @@
             "@phpunit",
             "@phpcs"
         ],
+        "dev": "php -S localhost:3000 -t example/public",
         "pre-test-cmd": "Kotori\\Tests\\Util::convertArraysToSquareBrackets",
         "phpunit": "php vendor/bin/phpunit --debug",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"
     },
     "config": {
+        "process-timeout": 0,
         "sort-packages": true
     },
     "suggest": {

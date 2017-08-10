@@ -40,7 +40,6 @@ class Redis
     /**
      * Default config
      *
-     * @static
      * @var array
      */
     protected $redisConf = [
@@ -66,20 +65,20 @@ class Redis
      * Loads Redis config file if present. Will halt execution
      * if a Redis connection can't be established.
      *
+     * @param   array $config
      * @return  void
      *
      * @throws \Kotori\Exception\CacheException
      */
-    public function __construct()
+    public function __construct($config = [])
     {
         if (!$this->isSupported()) {
             throw new CacheException('Failed to create Redis object; extension not loaded?');
         }
 
-        if (Container::get('config')->get('cache')) {
-            $config = array_merge($this->redisConf, Container::get('config')->get('cache'));
-        } else {
-            $config = $this->redisConf;
+        if (empty($config)) {
+            $config = Container::get('config')->get('cache');
+            $config = array_merge($this->redisConf, $config);
         }
 
         $this->redis = new \Redis();

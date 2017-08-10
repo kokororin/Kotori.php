@@ -62,15 +62,19 @@ class Memcached
      *
      * Setup Memcache(d)
      *
+     * @param  array $config
      * @return void
      *
      * @throws \Kotori\Exception\CacheException
      */
-    public function __construct()
+    public function __construct($config = [])
     {
         // Try to load memcached server info from the config file.
         $defaults = $this->memcacheConf['default'];
-        $config = Container::get('config')->get('cache');
+        if (empty($config)) {
+            $config = Container::get('config')->get('cache');
+        }
+
         $memcacheConf = isset($config['memcached']) ? $config['memcached'] : null;
 
         if (is_array($memcacheConf)) {

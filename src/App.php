@@ -50,6 +50,7 @@ class App
      *
      * Initialize Framework.
      *
+     * @param  array $config
      * @return void
      */
     public function __construct($config = [])
@@ -93,10 +94,6 @@ class App
 
         ini_set('date.timezone', Container::get('config')->get('time_zone'));
 
-        if (Container::get('config')->get('use_session')) {
-            !session_id() && session_start();
-        }
-
         // Load application's common functions
         Helper::import(Container::get('config')->get('app_full_path') . '/common.php');
 
@@ -110,6 +107,9 @@ class App
             }
         }
         // @codingStandardsIgnoreEnd
+
+        // Init session
+        Container::get('request')->sessionStart();
 
         // Load route class
         Container::get('route')->dispatch();

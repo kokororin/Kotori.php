@@ -1,7 +1,8 @@
 <?php
 namespace Kotori\Tests\Http;
 
-use Kotori\Http\Request;
+use Kotori\Facade\Config;
+use Kotori\Facade\Request;
 use Kotori\Tests\Util;
 use PHPUnit_Framework_TestCase;
 
@@ -13,6 +14,12 @@ class RequestTest extends PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         self::$END_POINT = 'http://' . getenv('WEB_SERVER_HOST') . ':' . getenv('WEB_SERVER_PORT') . '/test';
+        Config::initialize([
+            'in_test_env' => true,
+            'session' => [
+                'adapter' => 'memcached',
+            ],
+        ]);
     }
 
     public function testPost()
@@ -44,69 +51,60 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     public function testSetAndGetCookie()
     {
-        $request = new Request();
         // @codingStandardsIgnoreStart
-        @$request->cookie('name', 'honoka');
+        @Request::cookie('name', 'honoka');
         // @codingStandardsIgnoreEnd
-        $this->assertEquals('honoka', $request->cookie('name'));
+        $this->assertEquals('honoka', Request::cookie('name'));
     }
 
     public function testDeleteCookie()
     {
-        $request = new Request();
         // @codingStandardsIgnoreStart
-        @$request->cookie('name', 'honoka');
-        @$request->cookie('name', null);
+        @Request::cookie('name', 'honoka');
+        @Request::cookie('name', null);
         // @codingStandardsIgnoreEnd
-        $this->assertNull($request->cookie('name'));
+        $this->assertNull(Request::cookie('name'));
     }
 
     public function testSetAndGetSession()
     {
-        $request = new Request();
         // @codingStandardsIgnoreStart
-        @$request->session('name', 'honoka');
+        @Request::session('name', 'honoka');
         // @codingStandardsIgnoreEnd
-        $this->assertEquals('honoka', $request->session('name'));
+        $this->assertEquals('honoka', Request::session('name'));
     }
 
     public function testDeleteSession()
     {
-        $request = new Request();
         // @codingStandardsIgnoreStart
-        @$request->session('name', 'honoka');
-        @$request->session('name', null);
+        @Request::session('name', 'honoka');
+        @Request::session('name', null);
         // @codingStandardsIgnoreEnd
-        $this->assertNull($request->session('name'));
+        $this->assertNull(Request::session('name'));
     }
 
     public function testIsSecure()
     {
-        $request = new Request();
-        $this->assertFalse($request->isSecure());
+        $this->assertFalse(Request::isSecure());
     }
 
     public function testGetBaseUrl()
     {
-        $request = new Request();
-        $this->assertEquals('http://kotori.php.dev/', $request->getBaseUrl());
+        $this->assertEquals('http://kotori.php.dev/', Request::getBaseUrl());
     }
 
     public function testGetClientIp()
     {
-        $request = new Request();
-        $this->assertEquals('127.0.0.1', $request->getClientIp());
+        $this->assertEquals('127.0.0.1', Request::getClientIp());
     }
 
     public function testGetHostName()
     {
-        $request = new Request();
-        $this->assertEquals('kotori.php.dev', $request->getHostName());
+        $this->assertEquals('kotori.php.dev', Request::getHostName());
     }
 
     public function testIsMobile()
     {
-        $request = new Request();
-        $this->assertFalse($request->isMobile());
+        $this->assertFalse(Request::isMobile());
     }
 }

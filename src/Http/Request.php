@@ -31,7 +31,9 @@
  */
 namespace Kotori\Http;
 
+use Kotori\Core\Container;
 use Kotori\Debug\Hook;
+use Kotori\Exception\NotFoundException;
 
 class Request
 {
@@ -212,6 +214,28 @@ class Request
         }
 
         return null;
+    }
+
+    /**
+     * Session Initialize
+     *
+     * @return void
+     */
+    public function sessionStart()
+    {
+        if (PHP_SESSION_ACTIVE != session_status()) {
+            ini_set('session.auto_start', 0);
+            $config = Container::get('config')->get('session');
+            if ($config['adapter'] != '') {
+                $class = '\\Kotori\\Http\\Session\\' . ucfirst($config['adapter']);
+                if (!class_exists($class) || !session_set_save_handler(new $class($config))) {
+                    throw new NotFoundException('error session handler:' . $class);
+                }
+            }
+
+            session_name('KOTORI_SESSID');
+            session_start();
+        }
     }
 
     /**
