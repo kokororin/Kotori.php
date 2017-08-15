@@ -47,6 +47,18 @@ $config = [
         'test/get' => 'Test/receiveGet',
         'test/post' => 'Test/receivePost',
     ],
+    'middleware' => [
+        'before_app' => [],
+        'after_app' => [],
+        'before_route' => [],
+        'after_route' => [],
+        'before_controller' => [
+            '\\app\\middlewares\\BeforeController',
+        ],
+        'after_controller' => [],
+        'before_action' => [],
+        'after_action' => [],
+    ],
 ];
 
 $app = new \Kotori\App($config);
