@@ -70,6 +70,7 @@ class App
             'cache' => \Kotori\Core\Cache::class,
             'config' => \Kotori\Core\Config::class,
             'controller' => \Kotori\Core\Controller::class,
+            'middleware' => \Kotori\Core\Middleware::class,
             'request' => \Kotori\Http\Request::class,
             'response' => \Kotori\Http\Response::class,
             'route' => \Kotori\Http\Route::class,
@@ -91,6 +92,7 @@ class App
         register_shutdown_function([\Kotori\Core\Handle::class, 'end']);
 
         Container::get('config')->initialize($this->config);
+        Container::get('middleware')->register('before_app');
 
         ini_set('date.timezone', Container::get('config')->get('time_zone'));
 
@@ -111,6 +113,7 @@ class App
         // Init session
         Container::get('request')->sessionStart();
 
+        Container::get('middleware')->register('after_app');
         // Load route class
         Container::get('route')->dispatch();
     }

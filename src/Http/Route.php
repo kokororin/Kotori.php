@@ -139,7 +139,9 @@ class Route
             return Container::get('response')->setStatus(404);
         }
 
+        Container::get('middleware')->register('before_route');
         $parsedRoute = $this->parseRoutes($this->uri);
+        Container::get('middleware')->register('after_route');
 
         if ($parsedRoute) {
             $this->uri = $parsedRoute;
@@ -165,12 +167,17 @@ class Route
         $prefix = Container::get('config')->get('namespace_prefix');
 
         $controllerClassName = $prefix . 'controllers\\' . $this->controller;
+
+        Container::get('middleware')->register('before_controller');
+
         if (isset($this->controllers[$this->controller])) {
             $class = $this->controllers[$this->controller];
         } else {
             $class = new $controllerClassName();
             $this->controllers[$this->controller] = $class;
         }
+
+        Container::get('middleware')->register('after_controller');
 
         if (!class_exists($controllerClassName)) {
             throw new NotFoundException('Request Controller ' . $this->controller . ' is not Found.');
@@ -211,8 +218,10 @@ class Route
             }));
         }
 
+        Container::get('middleware')->register('before_action');
         // Call the requested method
         call_user_func_array($callback, $this->params);
+        Container::get('middleware')->register('after_action');
     }
 
     /**

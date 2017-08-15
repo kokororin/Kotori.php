@@ -56,6 +56,16 @@ class Config
         'url_mode' => 'query_string',
         'time_zone' => 'Asia/Shanghai',
         'in_test_env' => false,
+        'middleware' => [
+            'before_app' => [],
+            'after_app' => [],
+            'before_route' => [],
+            'after_route' => [],
+            'before_controller' => [],
+            'after_controller' => [],
+            'before_action' => [],
+            'after_action' => [],
+        ],
     ];
 
     /**
