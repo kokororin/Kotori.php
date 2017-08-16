@@ -103,6 +103,15 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('kotori.php.dev', Request::getHostName());
     }
 
+    public function testGetHeader()
+    {
+        $userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
+        $this->assertEquals($userAgent, Request::getHeader('user_agent'));
+        $this->assertEquals($userAgent, Request::getHeader('user-agent'));
+        $this->assertEquals($userAgent, Request::getHeader('User_Agent'));
+        $this->assertEquals($userAgent, Request::getHeader('User-Agent'));
+    }
+
     public function testIsMobile()
     {
         $this->assertFalse(Request::isMobile());

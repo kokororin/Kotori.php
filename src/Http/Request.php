@@ -45,6 +45,13 @@ class Request
     protected $ip = null;
 
     /**
+     * Http headers
+     *
+     * @var array
+     */
+    protected $headers = [];
+
+    /**
      * Class constructor
      *
      * Initialize Request.
@@ -381,6 +388,42 @@ class Request
         $host = preg_replace('/:\d+$/', '', $host);
 
         return trim($host);
+    }
+
+    /**
+     * Return specified header
+     *
+     * @param  string $name
+     * @return string
+     */
+    public function getHeader($name)
+    {
+        if (empty($this->headers)) {
+            if (function_exists('apache_request_headers')) {
+                $this->headers = apache_request_headers();
+            } else {
+                $server = $_SERVER;
+                foreach ($server as $key => $value) {
+                    if (0 === strpos($key, 'HTTP_')) {
+                        $key = str_replace('_', '-', strtolower(substr($key, 5)));
+                        $this->headers[$key] = $value;
+                    }
+                }
+
+                if (isset($server['CONTENT_TYPE'])) {
+                    $this->headers['content-type'] = $server['CONTENT_TYPE'];
+                }
+
+                if (isset($server['CONTENT_LENGTH'])) {
+                    $this->headers['content-length'] = $server['CONTENT_LENGTH'];
+                }
+            }
+
+            $this->headers = array_change_key_case($this->headers);
+        }
+
+        $name = str_replace('_', '-', strtolower($name));
+        return isset($this->headers[$name]) ? $this->headers[$name] : null;
     }
 
     /**
