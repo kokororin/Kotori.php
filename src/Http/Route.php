@@ -146,6 +146,11 @@ class Route
         if ($parsedRoute) {
             $this->uri = $parsedRoute;
         } else {
+            if (Container::get('request')->isOptions()) {
+                Container::get('response')->setStatus(204);
+                exit;
+            }
+
             throw new RouteNotFoundException('Request URI ' . $this->uri . ' is not Matched by any route.');
         }
 

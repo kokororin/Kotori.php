@@ -390,7 +390,7 @@ class Request
      */
     public function isGet()
     {
-        return 'GET' == $_SERVER['REQUEST_METHOD'];
+        return 'get' == strtolower($_SERVER['REQUEST_METHOD']);
     }
 
     /**
@@ -400,7 +400,7 @@ class Request
      */
     public function isPost()
     {
-        return 'POST' == $_SERVER['REQUEST_METHOD'];
+        return 'post' == strtolower($_SERVER['REQUEST_METHOD']);
     }
 
     /**
@@ -410,7 +410,37 @@ class Request
      */
     public function isPut()
     {
-        return 'PUT' == $_SERVER['REQUEST_METHOD'];
+        return 'put' == strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
+     * Detect whether request method is PATCH
+     *
+     * @return boolean
+     */
+    public function isPatch()
+    {
+        return 'patch' == strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
+     * Detect whether request method is DELETE
+     *
+     * @return boolean
+     */
+    public function isDelete()
+    {
+        return 'delete' == strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
+    /**
+     * Detect whether request method is OPTIONS
+     *
+     * @return boolean
+     */
+    public function isOptions()
+    {
+        return 'options' == strtolower($_SERVER['REQUEST_METHOD']);
     }
 
     /**
