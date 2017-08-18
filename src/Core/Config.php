@@ -55,7 +55,6 @@ class Config
         'app_name' => 'app',
         'url_mode' => 'query_string',
         'time_zone' => 'Asia/Shanghai',
-        'in_test_env' => false,
         'middleware' => [
             'before_app' => [],
             'after_app' => [],
@@ -84,7 +83,7 @@ class Config
      * Initialize Config
      *
      * @param  array   $config
-     * @return boolean
+     * @return \Kotori\Core\Config
      *
      * @throws \Kotori\Exception\ConfigException
      */
@@ -126,7 +125,7 @@ class Config
                     $appFullPath = realpath(realpath('.') . '/../' . rtrim($appName, '/'));
                 }
 
-                if (!$appFullPath && !$this->get('in_test_env')) {
+                if (!$appFullPath && !defined('KOTORI_PHP_TEST_ENV')) {
                     throw new ConfigException('Cannot find your app directory (' . $appName . ').');
                 }
 
@@ -135,9 +134,11 @@ class Config
                 ], $this->config);
                 $this->set('namespace_prefix', basename($this->get('app_full_path')) . '\\');
             }
+        } else {
+            throw new ConfigException('config is not an array');
         }
 
-        return false;
+        return $this;
     }
 
     /**
@@ -154,7 +155,7 @@ class Config
         if (is_string($key)) {
             $this->config[$key] = $value;
         } else {
-            throw new ConfigException('Config Error.');
+            throw new ConfigException('config key must be a string');
         }
     }
 

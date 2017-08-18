@@ -13,7 +13,6 @@ class CacheTest extends PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         Config::initialize([
-            'in_test_env' => true,
             'app_debug' => false,
             'cache' => [
                 'adapter' => 'memcached',

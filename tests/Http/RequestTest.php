@@ -15,7 +15,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     {
         self::$END_POINT = 'http://' . getenv('WEB_SERVER_HOST') . ':' . getenv('WEB_SERVER_PORT') . '/test';
         Config::initialize([
-            'in_test_env' => true,
             'session' => [
                 'adapter' => 'memcached',
             ],

@@ -28,6 +28,7 @@
     </filter>
 
     <php>
+        <const name ="KOTORI_PHP_TEST_ENV" value="1" />
         <env name="WEB_SERVER_HOST" value="127.0.0.1" />
         <env name="WEB_SERVER_PORT" value="2333" />
         <env name="WEB_SERVER_DOCROOT" value="./example/public" />

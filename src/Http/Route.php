@@ -35,6 +35,7 @@ namespace Kotori\Http;
 
 use Kotori\Core\Container;
 use Kotori\Core\Helper;
+use Kotori\Core\Middleware;
 use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
 use Kotori\Exception\NotFoundException;
@@ -139,9 +140,9 @@ class Route
             return Container::get('response')->setStatus(404);
         }
 
-        Container::get('middleware')->register('before_route');
+        Middleware::register('before_route');
         $parsedRoute = $this->parseRoutes($this->uri);
-        Container::get('middleware')->register('after_route');
+        Middleware::register('after_route');
 
         if ($parsedRoute) {
             $this->uri = $parsedRoute;
@@ -173,7 +174,7 @@ class Route
 
         $controllerClassName = $prefix . 'controllers\\' . $this->controller;
 
-        Container::get('middleware')->register('before_controller');
+        Middleware::register('before_controller');
 
         if (isset($this->controllers[$this->controller])) {
             $class = $this->controllers[$this->controller];
@@ -182,7 +183,7 @@ class Route
             $this->controllers[$this->controller] = $class;
         }
 
-        Container::get('middleware')->register('after_controller');
+        Middleware::register('after_controller');
 
         if (!class_exists($controllerClassName)) {
             throw new NotFoundException('Request Controller ' . $this->controller . ' is not Found.');
@@ -223,10 +224,10 @@ class Route
             }));
         }
 
-        Container::get('middleware')->register('before_action');
+        Middleware::register('before_action');
         // Call the requested method
         call_user_func_array($callback, $this->params);
-        Container::get('middleware')->register('after_action');
+        Middleware::register('after_action');
     }
 
     /**

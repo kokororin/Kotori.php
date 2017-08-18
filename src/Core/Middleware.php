@@ -36,16 +36,28 @@ use Kotori\Exception\ConfigException;
 class Middleware
 {
     /**
+     * Registered middlewares
+     *
+     * @var array
+     */
+    protected static $middlewares = [];
+
+    /**
      * Register a middleware
      *
      * @param  string $middleware
      * @return void
      */
-    public function register($middleware)
+    public static function register($middleware)
     {
         $config = Container::get('config')->get('middleware');
 
         if (isset($config[$middleware])) {
+            if (in_array($middleware, array_values(self::$middlewares))) {
+                throw new ConfigException('middleware has already registered');
+            }
+
+            array_push(self::$middlewares, $middleware);
             $middlewares = $config[$middleware];
 
             if (!is_array($middlewares)) {
