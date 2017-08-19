@@ -32,6 +32,7 @@
 namespace Kotori\Core;
 
 use Kotori\Exception\ConfigException;
+use Kotori\Exception\NotFoundException;
 
 class Middleware
 {
@@ -65,7 +66,15 @@ class Middleware
             }
 
             foreach ($middlewares as $className) {
+                if (!class_exists($className)) {
+                    throw new NotFoundException('middleware class ' . $className . ' is not found');
+                }
+
                 $class = new $className;
+                if (!method_exists($class, 'handle')) {
+                    throw new NotFoundException('middleware class should implement a handle() method');
+                }
+
                 $class->handle(Container::get('request'), Container::get('response'));
             }
         }
