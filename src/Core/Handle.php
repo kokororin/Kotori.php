@@ -228,7 +228,7 @@ abstract class Handle
      */
     protected static function outputCliError($txt)
     {
-        echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
+        echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL . PHP_EOL;
     }
 
     /**

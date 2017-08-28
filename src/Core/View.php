@@ -33,6 +33,7 @@ namespace Kotori\Core;
 
 use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
+use Kotori\Exception\ResponseException;
 use Kotori\Traits\ControllerMethodsTrait;
 
 class View
@@ -106,9 +107,14 @@ class View
      * @return void
      *
      * @throws \Kotori\Exception\NotFoundException
+     * @throws \Kotori\Exception\ResponseException
      */
     public function display($tpl = '')
     {
+        if (Container::get('request')->isCli()) {
+            throw new ResponseException('cannot render template in CLI mode');
+        }
+
         if ('' === $tpl) {
             $tpl = Container::get('route')->getController() . '/'
             . Container::get('route')->getAction();
