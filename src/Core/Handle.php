@@ -34,6 +34,9 @@ namespace Kotori\Core;
 use Exception;
 use Highlight\Highlighter;
 use Kotori\Debug\Log;
+use Kotori\Exception\ResponseException;
+use Symfony\Component\Console\Application as ConsoleApp;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
 
 abstract class Handle
@@ -141,7 +144,7 @@ abstract class Handle
         array_push(self::$errors, $text);
         Log::normal($txt);
         if (Container::get('request')->isCli()) {
-            self::outputCliError($txt);
+            self::outputCliError($errstr);
         } else {
             self::setDebugHeader($txt);
         }
@@ -163,7 +166,7 @@ abstract class Handle
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
         if (Container::get('request')->isCli()) {
-            self::outputCliError($txt);
+            self::outputCliError($exception->getMessage());
         } else {
             self::setDebugHeader($txt);
             self::halt($text, Container::get('config')->get('app_debug') ? 500 : 404);
@@ -196,7 +199,7 @@ abstract class Handle
 
             Log::normal($txt);
             if (Container::get('request')->isCli()) {
-                self::outputCliError($txt);
+                self::outputCliError($last_error['message']);
             } else {
                 self::setDebugHeader($txt);
                 self::halt($text, Container::get('config')->get('app_debug') ? 500 : 404);
@@ -223,12 +226,14 @@ abstract class Handle
     /**
      * output error info to cli
      *
-     * @param  string $txt
+     * @param  string $message
      * @return void
      */
-    protected static function outputCliError($txt)
+    protected static function outputCliError($message)
     {
-        echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL . PHP_EOL;
+        $application = new ConsoleApp();
+        $output = new ConsoleOutput();
+        $application->renderException(new ResponseException($message), $output);
     }
 
     /**

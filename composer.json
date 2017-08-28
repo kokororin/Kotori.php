@@ -17,6 +17,7 @@
         "php": ">=5.5.0",
         "catfan/Medoo": "1.4.*",
         "scrivo/highlight.php": "8.*",
+        "symfony/console": "~2.8 | ~3.3",
         "wyrihaximus/html-compress": "1.2.*"
     },
     "require-dev": {
