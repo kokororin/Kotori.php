@@ -140,7 +140,9 @@ abstract class Handle
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
         Log::normal($txt);
-        if (!Container::get('request')->isCli()) {
+        if (Container::get('request')->isCli()) {
+            self::outputCliError($txt);
+        } else {
             self::setDebugHeader($txt);
         }
     }
@@ -161,7 +163,7 @@ abstract class Handle
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         Log::normal($txt);
         if (Container::get('request')->isCli()) {
-            echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
+            self::outputCliError($txt);
         } else {
             self::setDebugHeader($txt);
             self::halt($text, Container::get('config')->get('app_debug') ? 500 : 404);
@@ -194,7 +196,7 @@ abstract class Handle
 
             Log::normal($txt);
             if (Container::get('request')->isCli()) {
-                echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
+                self::outputCliError($txt);
             } else {
                 self::setDebugHeader($txt);
                 self::halt($text, Container::get('config')->get('app_debug') ? 500 : 404);
@@ -216,6 +218,17 @@ abstract class Handle
         if (Container::get('config')->get('app_debug')) {
             Container::get('response')->setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
         }
+    }
+
+    /**
+     * output error info to cli
+     *
+     * @param  string $txt
+     * @return void
+     */
+    protected static function outputCliError($txt)
+    {
+        echo "\033[1;37m" . "\033[41m" . $txt . PHP_EOL;
     }
 
     /**
