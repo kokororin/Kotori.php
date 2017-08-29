@@ -33,8 +33,10 @@
  */
 namespace Kotori\Core;
 
+use Composer\Autoload\ClassLoader;
 use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
+use ReflectionClass;
 
 abstract class Helper
 {
@@ -141,38 +143,13 @@ abstract class Helper
      */
     public static function getComposerVendorPath()
     {
-        $root = null;
-
-        // Set the current directory.
-        // Make sure you set this up so
-        // that you get out of your own root.
-        // Assuming this php file is at the root
-        // of this composer package, this should suffice.
-        $directory = dirname(__FILE__);
-
-        // Go up until you find a composer.json file
-        // which should exist in the ancestors
-        // because its a composer package.
-        do {
-            $directory = dirname($directory);
-            $composer = $directory . '/composer.json';
-            if (file_exists($composer)) {
-                $root = $directory;
-            }
-        } while (is_null($root) && $directory != '/');
-
-        // We either are at the root or we got lost.
-        // i.e. a composer.json was nowhere to be found.
-        if (!is_null($root)) {
-            // Yay! we are at the root.
-            // and $root contains the path.
-            // Do whatever you seem fit!
-            return rtrim($root, '/') . '/vendor';
-        } else {
-            // Oh no! Can we default to something?
-            // Or just bail out?
-            throw new NotFoundException('Oops, did you require this package via composer?');
+        $reflection = new ReflectionClass(ClassLoader::class);
+        $vendorDir = dirname(dirname($reflection->getFileName()));
+        if (!$vendorDir) {
+            throw new NotFoundException('cannot find composer vendor path');
         }
+
+        return $vendorDir;
     }
 
     /**

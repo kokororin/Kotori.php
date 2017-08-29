@@ -37,7 +37,7 @@ use Kotori\Debug\Log;
 use Kotori\Exception\ResponseException;
 use Symfony\Component\Console\Application as ConsoleApp;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use WyriHaximus\HtmlCompress\Factory as htmlParserFactory;
+use WyriHaximus\HtmlCompress\Factory as HtmlCompress;
 
 abstract class Handle
 {
@@ -117,7 +117,7 @@ abstract class Handle
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
-        $tpl = htmlParserFactory::construct()->compress($tpl);
+        $tpl = HtmlCompress::construct()->compress($tpl);
         exit($tpl);
     }
 
