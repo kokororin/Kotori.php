@@ -52,6 +52,13 @@ class Request
     protected $headers = [];
 
     /**
+     * Session has been started or not
+     *
+     * @var boolean
+     */
+    protected $hasSessionStarted = false;
+
+    /**
      * Class constructor
      *
      * Initialize Request.
@@ -228,20 +235,37 @@ class Request
      *
      * @return void
      */
+    public function sessionInit()
+    {
+        ini_set('session.auto_start', 0);
+        $config = Container::get('config')->get('session');
+        if ($config['adapter'] != '') {
+            $class = '\\Kotori\\Http\\Session\\' . ucfirst($config['adapter']);
+            if (!class_exists($class) || !session_set_save_handler(new $class($config))) {
+                throw new NotFoundException('error session handler:' . $class);
+            }
+        }
+
+        session_name('KOTORI_SESSID');
+        if ($config['auto_start']) {
+            session_start();
+            $this->hasSessionStarted = true;
+        }
+    }
+
+    /**
+     * Start a Session
+     *
+     * @return void
+     */
     public function sessionStart()
     {
-        if (PHP_SESSION_ACTIVE != session_status()) {
-            ini_set('session.auto_start', 0);
-            $config = Container::get('config')->get('session');
-            if ($config['adapter'] != '') {
-                $class = '\\Kotori\\Http\\Session\\' . ucfirst($config['adapter']);
-                if (!class_exists($class) || !session_set_save_handler(new $class($config))) {
-                    throw new NotFoundException('error session handler:' . $class);
-                }
+        if (!$this->hasSessionStarted) {
+            if (PHP_SESSION_ACTIVE != session_status()) {
+                session_start();
             }
 
-            session_name('KOTORI_SESSID');
-            session_start();
+            $this->hasSessionStarted = true;
         }
     }
 
@@ -254,6 +278,8 @@ class Request
      */
     public function session($key = '', $value = '')
     {
+        $this->sessionStart();
+
         if (is_null($key)) {
             if (empty($_SESSION)) {
                 return null;

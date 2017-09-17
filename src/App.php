@@ -111,7 +111,7 @@ class App
         // @codingStandardsIgnoreEnd
 
         // Init session
-        Container::get('request')->sessionStart();
+        Container::get('request')->sessionInit();
 
         Middleware::register('after_app');
         // Load route class

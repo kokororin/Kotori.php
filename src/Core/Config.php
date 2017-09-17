@@ -55,6 +55,10 @@ class Config
         'app_name' => 'app',
         'url_mode' => 'query_string',
         'time_zone' => 'Asia/Shanghai',
+        'session' => [
+            'adapter' => '',
+            'auto_start' => false,
+        ],
         'middleware' => [
             'before_app' => [],
             'after_app' => [],
