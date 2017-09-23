@@ -66,17 +66,6 @@ class App
         if (!empty($config)) {
             $this->config = $config;
         }
-
-        Container::getInstance()->bind([
-            'cache' => \Kotori\Core\Cache::class,
-            'config' => \Kotori\Core\Config::class,
-            'controller' => \Kotori\Core\Controller::class,
-            'request' => \Kotori\Http\Request::class,
-            'response' => \Kotori\Http\Response::class,
-            'route' => \Kotori\Http\Route::class,
-            'trace' => \Kotori\Debug\Trace::class,
-            'model/provider' => \Kotori\Core\Model\Provider::class,
-        ]);
     }
 
     /**

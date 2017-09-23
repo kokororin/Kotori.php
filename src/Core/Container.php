@@ -27,6 +27,27 @@ class Container
     protected static $instance;
 
     /**
+     * Class constructor
+     *
+     * Bind default accessors
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->bind([
+            'cache' => \Kotori\Core\Cache::class,
+            'config' => \Kotori\Core\Config::class,
+            'controller' => \Kotori\Core\Controller::class,
+            'request' => \Kotori\Http\Request::class,
+            'response' => \Kotori\Http\Response::class,
+            'route' => \Kotori\Http\Route::class,
+            'trace' => \Kotori\Debug\Trace::class,
+            'model/provider' => \Kotori\Core\Model\Provider::class,
+        ]);
+    }
+
+    /**
      * Get singleton
      *
      * @return \Kotori\Core\Container
