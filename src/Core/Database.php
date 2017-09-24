@@ -73,10 +73,11 @@ class Database extends Medoo
      */
     public static function getInstance($key = null)
     {
-        if (count(Container::get('config')->get('db')) == 0) {
+        $config = Container::get('config')->get('db');
+        if (!is_array($config) || count($config) == 0) {
             return null;
         } elseif ($key == null) {
-            $dbKeys = array_keys(Container::get('config')->get('db'));
+            $dbKeys = array_keys($config);
             if (isset($dbKeys[0])) {
                 $key = $dbKeys[0];
             } else {
@@ -88,7 +89,7 @@ class Database extends Medoo
 
         if (!isset(self::$instance[$key])) {
             try {
-                self::$instance[$key] = new self(Container::get('config')->get('db')[$key]);
+                self::$instance[$key] = new self($config[$key]);
             } catch (PDOException $e) {
                 throw new DatabaseException($e);
             } catch (Exception $e) {
