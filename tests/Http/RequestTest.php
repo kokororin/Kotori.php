@@ -27,7 +27,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
             'id' => 1,
             'name' => 'honoka',
         ]);
-        $this->assertEquals('honoka', $response->name);
+        $response = json_decode($response, true);
+        $this->assertEquals('honoka', $response['name']);
     }
 
     public function testPostJSON()
@@ -36,7 +37,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
             'id' => 1,
             'name' => 'honoka',
         ]);
-        $this->assertEquals('honoka', $response->name);
+        $response = json_decode($response, true);
+        $this->assertEquals('honoka', $response['name']);
     }
 
     public function testGet()
@@ -45,7 +47,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
             'id' => 1,
             'name' => 'honoka',
         ]);
-        $this->assertEquals('honoka', $response->name);
+        $response = json_decode($response, true);
+        $this->assertEquals('honoka', $response['name']);
     }
 
     public function testSetAndGetCookie()

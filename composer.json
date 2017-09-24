@@ -21,8 +21,9 @@
         "wyrihaximus/html-compress": "1.2.*"
     },
     "require-dev": {
-        "php-curl-class/php-curl-class": "7.3.*",
+        "guzzlehttp/guzzle": "~6.0",
         "phpunit/phpunit": "^4.0",
+        "scrutinizer/ocular": "^1.4",
         "squizlabs/php_codesniffer": "^2.5"
     },
     "autoload": {

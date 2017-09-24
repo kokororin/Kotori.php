@@ -1,8 +1,9 @@
 <?php
 namespace Kotori\Tests;
 
-use Curl\Curl;
 use Exception;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\RequestException;
 use PDO;
 use PDOException;
 
@@ -10,36 +11,49 @@ class Util
 {
     public static function get($url, $params = [])
     {
-        $curl = new Curl();
-        $curl->get($url, $params);
-        if ($curl->error) {
-            throw new Exception('Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . ' Info: ' . $curl->responseHeaders['Kotori-Debug']);
+        $client = new HttpClient();
+        try {
+            $response = $client->request('GET', $url, [
+                'query' => $params,
+            ]);
+        } catch (RequestException $e) {
+            self::parseErrorResponse($response);
         }
 
-        return $curl->response;
+        return (string) $response->getBody();
     }
 
     public static function post($url, $params = [])
     {
-        $curl = new Curl();
-        $curl->post($url, $params);
-        if ($curl->error) {
-            throw new Exception('Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . ' Info: ' . $curl->responseHeaders['Kotori-Debug']);
+        $client = new HttpClient();
+        try {
+            $response = $client->request('POST', $url, [
+                'form_params' => $params,
+            ]);
+        } catch (RequestException $e) {
+            self::parseErrorResponse($response);
         }
 
-        return $curl->response;
+        return (string) $response->getBody();
     }
 
     public static function postJSON($url, $params = [])
     {
-        $curl = new Curl();
-        $curl->setHeader('Content-Type', 'application/json');
-        $curl->post($url, $params);
-        if ($curl->error) {
-            throw new Exception('Error: ' . $curl->errorCode . ': ' . $curl->errorMessage . ' Info: ' . $curl->responseHeaders['Kotori-Debug']);
+        $client = new HttpClient();
+        try {
+            $response = $client->request('POST', $url, [
+                'body' => json_encode($params),
+            ]);
+        } catch (RequestException $e) {
+            self::parseErrorResponse($response);
         }
 
-        return $curl->response;
+        return (string) $response->getBody();
+    }
+
+    private static function parseErrorResponse($response)
+    {
+        throw new Exception('Error: ' . $response->getStatusCode() . ': ' . $response->getMessage() . ' Info: ' . $response->getHeader('Kotori-Debug'));
     }
 
     public static function startServer()
