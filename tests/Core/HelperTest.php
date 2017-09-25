@@ -15,4 +15,9 @@ class HelperTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue(Helper::import(__DIR__ . '/../../vendor/autoload.php'));
     }
+
+    public function testGetComposerVendorPath()
+    {
+        $this->assertFileExists(Helper::getComposerVendorPath());
+    }
 }
