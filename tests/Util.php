@@ -53,7 +53,7 @@ class Util
 
     private static function parseErrorResponse($response)
     {
-        throw new Exception('Error: ' . $response->getStatusCode() . ': ' . $response->getMessage() . ' Info: ' . $response->getHeader('Kotori-Debug'));
+        throw new Exception('Error: ' . $response->getStatusCode() . ': ' . $response->getMessage() . ' Info: ' . $response->getHeaderLine('Kotori-Debug'));
     }
 
     public static function startServer()
