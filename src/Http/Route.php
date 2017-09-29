@@ -308,15 +308,15 @@ class Route
         }
 
         // Get HTTP verb
-        $http_verb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
+        $httpVerb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
 
         if (null != $routes) {
             foreach ($routes as $key => $val) {
                 // Check if route format is using HTTP verbs
                 if (is_array($val)) {
                     $val = array_change_key_case($val, CASE_LOWER);
-                    if (isset($val[$http_verb])) {
-                        $val = $val[$http_verb];
+                    if (isset($val[$httpVerb])) {
+                        $val = $val[$httpVerb];
                     } else {
                         continue;
                     }
