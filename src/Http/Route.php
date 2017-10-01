@@ -40,6 +40,9 @@ use Kotori\Debug\Hook;
 use Kotori\Exception\ConfigException;
 use Kotori\Exception\NotFoundException;
 use Kotori\Exception\RouteNotFoundException;
+use ReflectionClass;
+use Symfony\Component\Finder\Finder;
+use zpt\anno\Annotations;
 
 class Route
 {
@@ -299,7 +302,51 @@ class Route
      */
     protected function parseRoutes($uri)
     {
-        $routes = Container::get('config')->get('url_route');
+        if (Container::get('config')->get('url_route_annotation')) {
+            $finder = new Finder();
+            $finder
+                ->in(Container::get('config')->get('app_full_path') . '/controllers')
+                ->name('*.php');
+            $controllerNamespaces = [];
+            $routes = [];
+            foreach ($finder as $file) {
+                array_push($controllerNamespaces, '\\' . Container::get('config')->get('namespace_prefix') . 'controllers\\' . $file->getBasename('.' . $file->getExtension()));
+            }
+
+            foreach ($controllerNamespaces as $namespace) {
+                $classReflector = new ReflectionClass($namespace);
+                $classAnnotations = new Annotations($classReflector);
+
+                foreach ($classReflector->getMethods() as $methodReflector) {
+                    $methodAnnotations = new Annotations($methodReflector);
+                    if (!isset($methodAnnotations['route'])) {
+                        continue;
+                    } else {
+                        $routeAnnotations = $methodAnnotations['route'];
+                        if (!isset($routeAnnotations['uri'])) {
+                            throw new ConfigException('Route annotations error');
+                        }
+
+                        $controllerName = $classReflector->getShortName();
+                        $actionName = $methodReflector->getName();
+                        $route = $controllerName . '/' . $actionName;
+                        if (isset($routeAnnotations['regexp'])) {
+                            $route .= '/' . $routeAnnotations['regexp'];
+                        }
+
+                        if (!isset($routeAnnotations['method'])) {
+                            $routes[$routeAnnotations['uri']] = $route;
+                        } else {
+                            $routes[$routeAnnotations['uri']][$routeAnnotations['method']] = $route;
+                        }
+
+                        unset($route);
+                    }
+                }
+            }
+        } else {
+            $routes = Container::get('config')->get('url_route');
+        }
 
         $hostName = Container::get('request')->getHostName();
 

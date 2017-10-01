@@ -59,6 +59,7 @@ class Config
             'adapter' => '',
             'auto_start' => false,
         ],
+        'url_route_annotation' => false,
         'middleware' => [
             'before_app' => [],
             'after_app' => [],

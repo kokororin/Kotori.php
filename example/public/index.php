@@ -47,6 +47,7 @@ $config = [
         'test/get' => 'Test/receiveGet',
         'test/post' => 'Test/receivePost',
     ],
+    'url_route_annotation' => true,
     'middleware' => [
         'before_app' => [],
         'after_app' => [],
@@ -60,6 +61,10 @@ $config = [
         'after_action' => [],
     ],
 ];
+
+if ($config['url_route_annotation']) {
+    unset($config['url_route']);
+}
 
 $app = new \Kotori\App($config);
 

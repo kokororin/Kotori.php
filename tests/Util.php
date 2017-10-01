@@ -17,7 +17,7 @@ class Util
                 'query' => $params,
             ]);
         } catch (RequestException $e) {
-            self::parseErrorResponse($response);
+            self::parseErrorResponse($e);
         }
 
         return (string) $response->getBody();
@@ -31,7 +31,7 @@ class Util
                 'form_params' => $params,
             ]);
         } catch (RequestException $e) {
-            self::parseErrorResponse($response);
+            self::parseErrorResponse($e);
         }
 
         return (string) $response->getBody();
@@ -45,15 +45,16 @@ class Util
                 'body' => json_encode($params),
             ]);
         } catch (RequestException $e) {
-            self::parseErrorResponse($response);
+            self::parseErrorResponse($e);
         }
 
         return (string) $response->getBody();
     }
 
-    private static function parseErrorResponse($response)
+    private static function parseErrorResponse($exception)
     {
-        throw new Exception('Error: ' . $response->getStatusCode() . ': ' . $response->getMessage() . ' Info: ' . $response->getHeaderLine('Kotori-Debug'));
+        $response = $exception->getResponse();
+        throw new Exception('Error: ' . $response->getStatusCode() . ' Info: ' . $response->getHeaderLine('Kotori-Debug'));
     }
 
     public static function startServer()

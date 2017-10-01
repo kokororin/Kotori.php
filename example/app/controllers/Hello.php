@@ -10,6 +10,9 @@ class Hello extends Controller
         parent::__construct();
     }
 
+    /**
+     * @route(uri = "/")
+     */
     public function index()
     {
         $news_list = $this->model->News->getNewsList();
@@ -19,16 +22,25 @@ class Hello extends Controller
             ->display();
     }
 
+    /**
+     * @route(uri = "news/([0-9])", regexp = "$1")
+     */
     public function showNews($id)
     {
         echo 'This is news No.' . $id;
     }
 
+    /**
+     * @route(method = "get", uri = "add")
+     */
     public function addNews()
     {
         $this->view->display();
     }
 
+    /**
+     * @route(method = "post", uri = "add")
+     */
     public function insertNews()
     {
         print_r($this->request->post());
@@ -47,13 +59,19 @@ class Hello extends Controller
         echo '<br/>' . $show;
     }
 
+    /**
+     * @route(uri = "captcha")
+     */
     public function captcha()
     {
         $captcha = new \app\libraries\Captcha();
         $captcha->getImg();
-        $_SESSION['verify'] = md5($vc->getCode());
+        $this->request->session('verify', md5($vc->getCode()));
     }
 
+    /**
+     * @route(uri = "memcache")
+     */
     public function memcache()
     {
         $this->cache->set('testvalue', 'TESTVALUE');
@@ -65,6 +83,9 @@ class Hello extends Controller
         var_dump($this->cache->get('testarray'));
     }
 
+    /**
+     * @route(method="cli", uri = "cliTest", regexp = "$1")
+     */
     public function cli($to = 'World')
     {
         echo "Hello {$to}!" . PHP_EOL;
