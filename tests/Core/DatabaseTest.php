@@ -3,9 +3,9 @@ namespace Kotori\Tests\Core;
 
 use Kotori\Core\Database;
 use Kotori\Facade\Config;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class DatabaseTest extends PHPUnit_Framework_TestCase
+class DatabaseTest extends TestCase
 {
     protected static $db = null;
 

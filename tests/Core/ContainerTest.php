@@ -2,9 +2,9 @@
 namespace Kotori\Tests\Core;
 
 use Kotori\Core\Container;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class ContainerTest extends PHPUnit_Framework_TestCase
+class ContainerTest extends TestCase
 {
     public function testGet()
     {

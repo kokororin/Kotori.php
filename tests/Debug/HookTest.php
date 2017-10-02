@@ -2,9 +2,9 @@
 namespace Kotori\Tests\Hook;
 
 use Kotori\Debug\Hook;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class HookTest extends PHPUnit_Framework_TestCase
+class HookTest extends TestCase
 {
     public function testListenAndGetTags()
     {

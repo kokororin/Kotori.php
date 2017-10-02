@@ -2,9 +2,9 @@
 namespace Kotori\Tests\Core;
 
 use Kotori\Core\Helper;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class HelperTest extends PHPUnit_Framework_TestCase
+class HelperTest extends TestCase
 {
     public function testIsFile()
     {

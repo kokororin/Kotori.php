@@ -3,9 +3,9 @@ namespace Kotori\Tests\Core;
 
 use Kotori\Facade\Cache;
 use Kotori\Facade\Config;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class CacheTest extends PHPUnit_Framework_TestCase
+class CacheTest extends TestCase
 {
 
     protected static $cache = null;

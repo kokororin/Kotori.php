@@ -2,9 +2,9 @@
 namespace Kotori\Tests\Http;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class RouteTest extends PHPUnit_Framework_TestCase
+class RouteTest extends TestCase
 {
     protected static $END_POINT = null;
 

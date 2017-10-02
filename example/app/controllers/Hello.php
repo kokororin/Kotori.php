@@ -84,7 +84,7 @@ class Hello extends Controller
     }
 
     /**
-     * @route(method="cli", uri = "cliTest", regexp = "$1")
+     * @route(method="cli", uri = "cliTest/(.*)", regexp = "$1")
      */
     public function cli($to = 'World')
     {

@@ -4,9 +4,9 @@ namespace Kotori\Tests\Http;
 use Kotori\Facade\Config;
 use Kotori\Facade\Request;
 use Kotori\Tests\Util;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class RequestTest extends PHPUnit_Framework_TestCase
+class RequestTest extends TestCase
 {
 
     protected static $END_POINT = null;

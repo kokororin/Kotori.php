@@ -2,9 +2,9 @@
 namespace Kotori\Tests\Core;
 
 use Kotori\Core\Controller;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class ControllerTest extends PHPUnit_Framework_TestCase
+class ControllerTest extends TestCase
 {
     public function testProperty()
     {

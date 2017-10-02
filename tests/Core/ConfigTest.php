@@ -2,9 +2,9 @@
 namespace Kotori\Tests\Core;
 
 use Kotori\Core\Config;
-use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class ConfigTest extends PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     public function testGetConfig()
     {
