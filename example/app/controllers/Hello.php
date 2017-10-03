@@ -1,7 +1,10 @@
 <?php
 namespace app\controllers;
 
+use app\libraries\Captcha;
 use Kotori\Core\Controller;
+use Kotori\Facade\Cache;
+use Kotori\Facade\Request;
 
 class Hello extends Controller
 {
@@ -43,20 +46,7 @@ class Hello extends Controller
      */
     public function insertNews()
     {
-        print_r($this->request->post());
-    }
-
-    public function pager()
-    {
-        header('Content-Type: text/html;charset=utf-8');
-        $count = $this->db->count("test", "title");
-        $Page = new \app\libraries\Page($count, 20);
-        $show = $Page->show();
-        $data = $this->db->select("test", "title", array(
-            "LIMIT" => array($Page->firstRow, $Page->listRows),
-        ));
-        print_r($data);
-        echo '<br/>' . $show;
+        print_r(Request::post());
     }
 
     /**
@@ -64,7 +54,7 @@ class Hello extends Controller
      */
     public function captcha()
     {
-        $captcha = new \app\libraries\Captcha();
+        $captcha = new Captcha();
         $captcha->getImg();
         $this->request->session('verify', md5($vc->getCode()));
     }
@@ -74,13 +64,13 @@ class Hello extends Controller
      */
     public function memcache()
     {
-        $this->cache->set('testvalue', 'TESTVALUE');
-        var_dump($this->cache->get('testvalue'));
-        $this->cache->set('testarray', array(
+        Cache::set('testvalue', 'TESTVALUE');
+        var_dump(Cache::get('testvalue'));
+        Cache::set('testarray', array(
             'id' => 1,
             'name' => 'abc',
         ));
-        var_dump($this->cache->get('testarray'));
+        var_dump(Cache::get('testarray'));
     }
 
     /**
