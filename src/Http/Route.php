@@ -330,8 +330,8 @@ class Route
                         $controllerName = $classReflector->getShortName();
                         $actionName = $methodReflector->getName();
                         $route = $controllerName . '/' . $actionName;
-                        if (isset($routeAnnotations['regexp'])) {
-                            $route .= '/' . $routeAnnotations['regexp'];
+                        if (isset($routeAnnotations['params'])) {
+                            $route .= '/' . $routeAnnotations['params'];
                         }
 
                         if (!isset($routeAnnotations['method'])) {

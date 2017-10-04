@@ -26,7 +26,7 @@ class Hello extends Controller
     }
 
     /**
-     * @route(uri = "news/([0-9])", regexp = "$1")
+     * @route(uri = "news/([0-9])", params = "$1")
      */
     public function showNews($id)
     {
@@ -74,7 +74,7 @@ class Hello extends Controller
     }
 
     /**
-     * @route(method="cli", uri = "cliTest/(.*)", regexp = "$1")
+     * @route(method="cli", uri = "cliTest/(.*)", params = "$1")
      */
     public function cli($to = 'World')
     {

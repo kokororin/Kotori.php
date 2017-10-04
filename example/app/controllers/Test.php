@@ -2,6 +2,8 @@
 namespace app\controllers;
 
 use Kotori\Core\Controller;
+use Kotori\Facade\Request;
+use Kotori\Facade\Response;
 
 class Test extends Controller
 {
@@ -15,7 +17,7 @@ class Test extends Controller
      */
     public function receiveGet()
     {
-        $this->response->throwJSON($this->request->get());
+        Response::throwJSON(Request::get());
     }
 
     /**
@@ -23,7 +25,7 @@ class Test extends Controller
      */
     public function receivePost()
     {
-        $this->response->throwJSON($this->request->post());
+        Response::throwJSON(Request::post());
     }
 
 }

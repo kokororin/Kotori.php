@@ -154,8 +154,8 @@ class Response
         if (strpos(PHP_SAPI, 'cgi') === 0) {
             header('Status: ' . $code . ' ' . $text, true);
         } else {
-            $server_protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
-            header($server_protocol . ' ' . $code . ' ' . $text, true, $code);
+            $protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
+            header($protocol . ' ' . $code . ' ' . $text, true, $code);
         }
     }
 

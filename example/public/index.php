@@ -31,22 +31,22 @@ $config = [
     //     'adapter' => 'memcached',
     // ],
     'url_mode' => 'path_info',
-    'url_route' => [
-        '/' => 'Hello/index',
-        'news/([0-9])' => 'Hello/showNews/$1',
-        'add' => [
-            'get' => 'Hello/addNews',
-            'post' => 'Hello/insertNews',
-            'delete' => 'Hello/deleteNews',
-        ],
-        'captcha' => 'Hello/captcha',
-        'memcache' => 'Hello/memcache',
-        'cliTest/(.*)' => [
-            'cli' => 'Hello/cli/$1',
-        ],
-        'test/get' => 'Test/receiveGet',
-        'test/post' => 'Test/receivePost',
-    ],
+    // 'url_route' => [
+    //     '/' => 'Hello/index',
+    //     'news/([0-9])' => 'Hello/showNews/$1',
+    //     'add' => [
+    //         'get' => 'Hello/addNews',
+    //         'post' => 'Hello/insertNews',
+    //         'delete' => 'Hello/deleteNews',
+    //     ],
+    //     'captcha' => 'Hello/captcha',
+    //     'memcache' => 'Hello/memcache',
+    //     'cliTest/(.*)' => [
+    //         'cli' => 'Hello/cli/$1',
+    //     ],
+    //     'test/get' => 'Test/receiveGet',
+    //     'test/post' => 'Test/receivePost',
+    // ],
     'url_route_annotation' => true,
     'middleware' => [
         'before_app' => [],
@@ -61,10 +61,6 @@ $config = [
         'after_action' => [],
     ],
 ];
-
-if ($config['url_route_annotation']) {
-    unset($config['url_route']);
-}
 
 $app = new \Kotori\App($config);
 
