@@ -62,3 +62,14 @@ Learn more at these links:
 - [ThinkPHP](https://github.com/top-think/thinkphp)
 - [CodeIgniter](https://github.com/bcit-ci/CodeIgniter)
 - [Typecho](https://github.com/typecho/typecho)
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+| [<img src="https://avatars0.githubusercontent.com/u/10093992?v=4" width="100px;"/><br /><sub>そら</sub>](http://kokororin.github.io)<br />[💻](https://github.com/kokororin/Kotori.php/commits?author=kokororin "Code") [📖](https://github.com/kokororin/Kotori.php/commits?author=kokororin "Documentation") [🤔](#ideas-kokororin "Ideas, Planning, & Feedback") [⚠️](https://github.com/kokororin/Kotori.php/commits?author=kokororin "Tests") | [<img src="https://avatars0.githubusercontent.com/u/12712012?v=4" width="100px;"/><br /><sub>吟夢ちゃん</sub>](https://kirainmoe.com/)<br />[💻](https://github.com/kokororin/Kotori.php/commits?author=kirainmoe "Code") [📖](https://github.com/kokororin/Kotori.php/commits?author=kirainmoe "Documentation") | [<img src="https://avatars2.githubusercontent.com/u/10379210?v=4" width="100px;"/><br /><sub>かすみ</sub>](https://github.com/kasumi9863)<br />[🔧](#tool-kasumi9863 "Tools") |
+| :---: | :---: | :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
