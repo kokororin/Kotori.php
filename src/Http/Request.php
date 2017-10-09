@@ -247,7 +247,7 @@ class Request
         }
 
         session_name('KOTORI_SESSID');
-        if ($config['auto_start']) {
+        if (isset($config['auto_start']) && $config['auto_start']) {
             session_start();
             $this->hasSessionStarted = true;
         }
