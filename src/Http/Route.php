@@ -89,6 +89,13 @@ class Route
     protected $params = [];
 
     /**
+     * Parsed routes
+     *
+     * @var array
+     */
+    protected $routes = [];
+
+    /**
      * Class constructor
      *
      * Initialize route class.
@@ -292,6 +299,16 @@ class Route
     }
 
     /**
+     * Returns routes
+     *
+     * @return array
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
      * Parse Routes
      *
      * Matches any routes that may exist in URL_ROUTE array
@@ -308,7 +325,6 @@ class Route
                 ->in(Container::get('config')->get('app_full_path') . '/controllers')
                 ->name('*.php');
             $controllerNamespaces = [];
-            $routes = [];
             foreach ($finder as $file) {
                 array_push($controllerNamespaces, '\\' . Container::get('config')->get('namespace_prefix') . 'controllers\\' . $file->getBasename('.' . $file->getExtension()));
             }
@@ -335,9 +351,9 @@ class Route
                         }
 
                         if (!isset($routeAnnotations['method'])) {
-                            $routes[$routeAnnotations['uri']] = $route;
+                            $this->routes[$routeAnnotations['uri']] = $route;
                         } else {
-                            $routes[$routeAnnotations['uri']][$routeAnnotations['method']] = $route;
+                            $this->routes[$routeAnnotations['uri']][$routeAnnotations['method']] = $route;
                         }
 
                         unset($route);
@@ -345,20 +361,20 @@ class Route
                 }
             }
         } else {
-            $routes = Container::get('config')->get('url_route');
+            $this->routes = Container::get('config')->get('url_route');
         }
 
         $hostName = Container::get('request')->getHostName();
 
-        if (isset($routes[$hostName])) {
-            $routes = $routes[$hostName];
+        if (isset($this->routes[$hostName])) {
+            $this->routes = $this->routes[$hostName];
         }
 
         // Get HTTP verb
         $httpVerb = isset($_SERVER['REQUEST_METHOD']) ? strtolower($_SERVER['REQUEST_METHOD']) : 'cli';
 
-        if (null != $routes) {
-            foreach ($routes as $key => $val) {
+        if (null != $this->routes) {
+            foreach ($this->routes as $key => $val) {
                 // Check if route format is using HTTP verbs
                 if (is_array($val)) {
                     $val = array_change_key_case($val, CASE_LOWER);
