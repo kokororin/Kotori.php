@@ -22,5 +22,6 @@ class ControllerTest extends TestCase
         $this->assertInstanceOf(\Kotori\Core\Model\Provider::class, $instance->model);
         $this->assertInstanceOf(\Kotori\Core\Config::class, $instance->config);
         $this->assertInstanceOf(\Kotori\Core\Cache::class, $instance->cache);
+        $this->assertInstanceOf(\Kotori\Debug\Logger::class, $instance->logger);
     }
 }
