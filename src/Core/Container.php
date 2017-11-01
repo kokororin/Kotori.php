@@ -44,6 +44,7 @@ class Container
             'route' => \Kotori\Http\Route::class,
             'trace' => \Kotori\Debug\Trace::class,
             'model/provider' => \Kotori\Core\Model\Provider::class,
+            'logger' => \Kotori\Debug\Logger::class,
         ]);
     }
 

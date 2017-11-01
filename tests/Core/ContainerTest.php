@@ -16,6 +16,7 @@ class ContainerTest extends TestCase
         $this->assertNotEmpty(Container::get('route'));
         $this->assertNotEmpty(Container::get('trace'));
         $this->assertNotEmpty(Container::get('model/provider'));
+        $this->assertNotEmpty(Container::get('logger'));
     }
 
 }

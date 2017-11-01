@@ -33,7 +33,6 @@ namespace Kotori\Core;
 
 use Exception;
 use Highlight\Highlighter;
-use Kotori\Debug\Log;
 use Kotori\Exception\ResponseException;
 use Symfony\Component\Console\Application as ConsoleApp;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -142,7 +141,7 @@ abstract class Handle
         $text = self::renderErrorText($type, $errstr, $errline, $errfile);
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
-        Log::normal($txt);
+        Container::get('logger')->normal($txt);
         if (Container::get('request')->isCli()) {
             self::outputCliError($errstr);
         } else {
@@ -164,7 +163,7 @@ abstract class Handle
     {
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
-        Log::normal($txt);
+        Container::get('logger')->normal($txt);
         if (Container::get('request')->isCli()) {
             self::outputCliError($exception->getMessage());
         } else {
@@ -197,7 +196,7 @@ abstract class Handle
 
             $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
 
-            Log::normal($txt);
+            Container::get('logger')->normal($txt);
             if (Container::get('request')->isCli()) {
                 self::outputCliError($last_error['message']);
             } else {

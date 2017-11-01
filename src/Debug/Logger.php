@@ -34,38 +34,41 @@ namespace Kotori\Debug;
 use Kotori\Core\Container;
 use Kotori\Core\Helper;
 
-abstract class Log
+class Logger
 {
     /**
-     * Write Log File
+     * Class constructor
      *
-     * Support Sina App Engine
+     * Initialize Logger.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        Hook::listen(__CLASS__);
+    }
+
+    /**
+     * Write Log File
      *
      * @param  string $msg
      * @param  string $level
      * @return void
      */
-    protected static function write($msg, $level = '')
+    public function write($msg, $level = 'APP')
     {
-        if (!Container::get('config')->get('app_debug')) {
+        if (!Container::get('config')->get('app_debug') && $level != 'APP') {
             return;
         }
 
-        if (function_exists('saeAutoLoader')) {
-            $msg = "[{$level}]" . $msg;
-            sae_set_display_errors(false);
-            sae_debug(trim($msg));
-            sae_set_display_errors(true);
-        } else {
-            $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
-            $logPath = Container::get('config')->get('app_full_path') . '/logs';
-            if (!file_exists($logPath)) {
-                Helper::mkdirs($logPath);
-            }
+        $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
+        $logPath = Container::get('config')->get('app_full_path') . '/logs';
+        if (!file_exists($logPath)) {
+            Helper::mkdirs($logPath);
+        }
 
-            if (file_exists($logPath)) {
-                file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
-            }
+        if (file_exists($logPath)) {
+            file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
         }
     }
 
@@ -74,9 +77,9 @@ abstract class Log
      *
      * @param string $msg
      */
-    public static function normal($msg)
+    public function normal($msg)
     {
-        self::write($msg, 'NORMAL');
+        $this->write($msg, 'NORMAL');
     }
 
     /**
@@ -84,8 +87,8 @@ abstract class Log
      *
      * @param string $msg
      */
-    public static function sql($msg)
+    public function sql($msg)
     {
-        self::write($msg, 'SQL');
+        $this->write($msg, 'SQL');
     }
 }

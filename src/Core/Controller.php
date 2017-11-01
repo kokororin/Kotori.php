@@ -65,6 +65,7 @@ class Controller
         $this->model = Container::get('model/provider');
         $this->config = Container::get('config');
         $this->cache = Container::get('cache');
+        $this->logger = Container::get('logger');
         Hook::listen(__CLASS__);
     }
 

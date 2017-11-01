@@ -33,7 +33,6 @@ namespace Kotori\Core;
 
 use Kotori\Core\Container;
 use Kotori\Debug\Hook;
-use Kotori\Debug\Log;
 
 class Cache
 {
@@ -83,7 +82,7 @@ class Cache
         $this->{$this->adapter} = new $className();
 
         if (!$this->isSupported($this->adapter)) {
-            Log::normal('[Error] Cache adapter "' . $this->adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
+            Container::get('logger')->normal('[Error] Cache adapter "' . $this->adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
             $this->adapter = 'dummy';
         }
 

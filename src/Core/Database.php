@@ -33,7 +33,6 @@ namespace Kotori\Core;
 
 use Exception;
 use Kotori\Debug\Hook;
-use Kotori\Debug\Log;
 use Kotori\Exception\DatabaseException;
 use Medoo\Medoo;
 use PDOException;
@@ -133,7 +132,7 @@ class Database extends Medoo
     {
         $statement = parent::exec($query, $map);
         $lastSQL = parent::last();
-        Log::sql($lastSQL);
+        Container::get('logger')->sql($lastSQL);
         array_push(self::$queries, $lastSQL);
         return $statement;
     }
@@ -149,7 +148,7 @@ class Database extends Medoo
     {
         $statement = parent::exec($query, $map);
         $lastSQL = parent::last();
-        Log::sql($lastSQL);
+        Container::get('logger')->sql($lastSQL);
         array_push(self::$queries, $lastSQL);
         return $statement;
     }
