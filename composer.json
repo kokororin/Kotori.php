@@ -16,6 +16,7 @@
     "require": {
         "php": ">=5.5.0",
         "catfan/Medoo": "1.4.*",
+        "psr/container": "^1.0",
         "psr/log": "^1.0",
         "scrivo/highlight.php": "8.*",
         "symfony/console": "~2.8 | ~3.3",

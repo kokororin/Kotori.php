@@ -1,7 +1,9 @@
 <?php
 namespace Kotori\Core;
 
+use Kotori\Exception\ContainerException;
 use ReflectionClass;
+use ReflectionException;
 
 class Container
 {
@@ -78,11 +80,17 @@ class Container
      *
      * @param  string $abstract
      * @return object
+     *
+     * @throws \Kotori\Exception\ContainerException
      */
     public static function get($abstract)
     {
         if (!isset(self::getInstance()->containers[$abstract])) {
-            $reflect = new ReflectionClass(self::getInstance()->bind[$abstract]);
+            try {
+                $reflect = new ReflectionClass(self::getInstance()->bind[$abstract]);
+            } catch (ReflectionException $e) {
+                throw new ContainerException('Cannot find "' . $abstract . '" in container');
+            }
             self::set($abstract, $reflect->newInstanceArgs([]));
         }
 
