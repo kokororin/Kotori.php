@@ -91,6 +91,7 @@ class Container
             } catch (ReflectionException $e) {
                 throw new ContainerException('Cannot find "' . $abstract . '" in container');
             }
+
             self::set($abstract, $reflect->newInstanceArgs([]));
         }
 
