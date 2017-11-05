@@ -82,7 +82,7 @@ class Cache
         $this->{$this->adapter} = new $className();
 
         if (!$this->isSupported($this->adapter)) {
-            Container::get('logger')->normal('[Error] Cache adapter "' . $this->adapter . '" is unavailable. Cache is now using "Dummy" adapter.');
+            Container::get('logger')->error('Cache adapter "{adapter}" is unavailable. Cache is now using "Dummy" adapter.', ['adapter' => $this->adapter]);
             $this->adapter = 'dummy';
         }
 

@@ -33,8 +33,9 @@ namespace Kotori\Debug;
 
 use Kotori\Core\Container;
 use Kotori\Core\Helper;
+use Psr\Log\LoggerInterface;
 
-class Logger
+class Logger implements LoggerInterface
 {
     /**
      * Class constructor
@@ -49,46 +50,165 @@ class Logger
     }
 
     /**
-     * Write Log File
+     * System is unusable.
      *
-     * @param  string $msg
-     * @param  string $level
+     * @param string $message
+     * @param array  $context
+     *
      * @return void
      */
-    public function write($msg, $level = 'APP')
+    public function emergency($message, array $context = [])
+    {
+        $this->log('EMERGENCY', $message, $context);
+    }
+
+    /**
+     * Action must be taken immediately.
+     *
+     * Example: Entire website down, database unavailable, etc. This should
+     * trigger the SMS alerts and wake you up.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function alert($message, array $context = [])
+    {
+        $this->log('ALERT', $message, $context);
+    }
+
+    /**
+     * Critical conditions.
+     *
+     * Example: Application component unavailable, unexpected exception.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function critical($message, array $context = [])
+    {
+        $this->log('CRITICAL', $message, $context);
+    }
+
+    /**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function error($message, array $context = [])
+    {
+        $this->log('ERROR', $message, $context);
+    }
+
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * Example: Use of deprecated APIs, poor use of an API, undesirable things
+     * that are not necessarily wrong.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function warning($message, array $context = [])
+    {
+        $this->log('WARNING', $message, $context);
+    }
+
+    /**
+     * Normal but significant events.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function notice($message, array $context = [])
+    {
+        $this->log('NOTICE', $message, $context);
+    }
+
+    /**
+     * Interesting events.
+     *
+     * Example: User logs in, SQL logs.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function info($message, array $context = [])
+    {
+        $this->log('INFO', $message, $context);
+    }
+
+    /**
+     * Detailed debug information.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function debug($message, array $context = [])
+    {
+        $this->log('DEBUG', $message, $context);
+    }
+
+    /**
+     * Shortcut for app information.
+     *
+     * @param string $message
+     * @param array  $context
+     *
+     * @return void
+     */
+    public function app($message, array $context = [])
+    {
+        $this->log('APP', $message, $context);
+    }
+
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed  $level
+     * @param string $message
+     * @param array  $context
+     * @return void
+     */
+    public function log($level, $message, array $context = [])
     {
         if (!Container::get('config')->get('app_debug') && $level != 'APP') {
             return;
         }
 
-        $msg = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $msg . "\r\n\r\n";
+        // build a replacement array with braces around the context keys
+        $replace = [];
+        foreach ($context as $key => $val) {
+            // check that the value can be casted to string
+            if (!is_array($val) && (!is_object($val) || method_exists($val, '__toString'))) {
+                $replace['{' . $key . '}'] = $val;
+            }
+        }
+
+        $message = strtr($message, $replace);
+        $message = date('[Y-m-d H:i:s]') . "\r\n" . "[{$level}]" . "\r\n" . $message . "\r\n\r\n";
         $logPath = Container::get('config')->get('app_full_path') . '/logs';
         if (!file_exists($logPath)) {
             Helper::mkdirs($logPath);
         }
 
         if (file_exists($logPath)) {
-            file_put_contents($logPath . '/' . date('Ymd') . '.log', $msg, FILE_APPEND);
+            file_put_contents($logPath . '/' . date('Ymd') . '.log', $message, FILE_APPEND);
         }
-    }
-
-    /**
-     * Write Normal Log
-     *
-     * @param string $msg
-     */
-    public function normal($msg)
-    {
-        $this->write($msg, 'NORMAL');
-    }
-
-    /**
-     * Write SQL Log
-     *
-     * @param string $msg
-     */
-    public function sql($msg)
-    {
-        $this->write($msg, 'SQL');
     }
 }

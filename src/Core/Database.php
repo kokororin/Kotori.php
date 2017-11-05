@@ -132,7 +132,7 @@ class Database extends Medoo
     {
         $statement = parent::exec($query, $map);
         $lastSQL = parent::last();
-        Container::get('logger')->sql($lastSQL);
+        Container::get('logger')->info($lastSQL);
         array_push(self::$queries, $lastSQL);
         return $statement;
     }
@@ -148,7 +148,7 @@ class Database extends Medoo
     {
         $statement = parent::exec($query, $map);
         $lastSQL = parent::last();
-        Container::get('logger')->sql($lastSQL);
+        Container::get('logger')->info($lastSQL);
         array_push(self::$queries, $lastSQL);
         return $statement;
     }

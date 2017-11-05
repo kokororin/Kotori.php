@@ -141,7 +141,7 @@ abstract class Handle
         $text = self::renderErrorText($type, $errstr, $errline, $errfile);
         $txt = self::renderLogBody($type, $errstr, $errline, $errfile);
         array_push(self::$errors, $text);
-        Container::get('logger')->normal($txt);
+        Container::get('logger')->warning($txt);
         if (Container::get('request')->isCli()) {
             self::outputCliError($errstr);
         } else {
@@ -163,7 +163,7 @@ abstract class Handle
     {
         $text = self::renderHaltBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
         $txt = self::renderLogBody(get_class($exception), $exception->getMessage(), $exception->getLine(), $exception->getFile());
-        Container::get('logger')->normal($txt);
+        Container::get('logger')->critical($txt);
         if (Container::get('request')->isCli()) {
             self::outputCliError($exception->getMessage());
         } else {
@@ -196,7 +196,7 @@ abstract class Handle
 
             $txt = self::renderLogBody($type, $last_error['message'], $last_error['file'], $last_error['line']);
 
-            Container::get('logger')->normal($txt);
+            Container::get('logger')->error($txt);
             if (Container::get('request')->isCli()) {
                 self::outputCliError($last_error['message']);
             } else {
