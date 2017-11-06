@@ -54,10 +54,10 @@ class Dummy
      *
      * Since this is the dummy class, it's always going to return FALSE.
      *
-     * @param   string  $id
+     * @param   string  $key
      * @return  boolean
      */
-    public function get($id)
+    public function get($key)
     {
         return false;
     }
@@ -65,13 +65,13 @@ class Dummy
     /**
      * Cache Set
      *
-     * @param   string  $id
-     * @param   mixed   $data
+     * @param   string  $key
+     * @param   mixed   $value
      * @param   int     $ttl
      * @param   boolean $raw
      * @return  boolean
      */
-    public function set($id, $data, $ttl = 60, $raw = false)
+    public function set($key, $value, $ttl = 60, $raw = false)
     {
         return true;
     }
@@ -79,34 +79,10 @@ class Dummy
     /**
      * Delete from Cache
      *
-     * @param   mixed   $id
+     * @param   mixed   $key
      * @return  boolean
      */
-    public function delete($id)
-    {
-        return true;
-    }
-
-    /**
-     * Increment a raw value
-     *
-     * @param   string  $id
-     * @param   int     $offset
-     * @return  mixed
-     */
-    public function increment($id, $offset = 1)
-    {
-        return true;
-    }
-
-    /**
-     * Decrement a raw value
-     *
-     * @param   string $id
-     * @param   int    $offset
-     * @return  mixed
-     */
-    public function decrement($id, $offset = 1)
+    public function delete($key)
     {
         return true;
     }
@@ -116,31 +92,9 @@ class Dummy
      *
      * @return boolean
      */
-    public function clean()
+    public function clear()
     {
         return true;
-    }
-
-    /**
-     * Cache Info
-     *
-     * @param   string $type
-     * @return  boolean
-     */
-    public function cacheInfo($type = null)
-    {
-        return false;
-    }
-
-    /**
-     * Get Cache Metadata
-     *
-     * @param   mixed $id
-     * @return  boolean
-     */
-    public function getMetadata($id)
-    {
-        return false;
     }
 
     /**

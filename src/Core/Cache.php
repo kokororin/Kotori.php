@@ -33,8 +33,9 @@ namespace Kotori\Core;
 
 use Kotori\Core\Container;
 use Kotori\Debug\Hook;
+use Psr\SimpleCache\CacheInterface;
 
-class Cache
+class Cache implements CacheInterface
 {
     /**
      * Valid cache drivers
@@ -44,6 +45,7 @@ class Cache
     protected $validDrivers = [
         'dummy',
         'memcached',
+        'redis',
     ];
 
     /**
@@ -90,98 +92,115 @@ class Cache
     }
 
     /**
-     * Get
+     * Fetches a value from the cache.
      *
-     * Look for a value in the cache. If it exists, return the data
-     * if not, return FALSE
-     *
-     * @param string $id
+     * @param  string $key
+     * @param  mixed  $default
      * @return mixed
      */
-    public function get($id)
+    public function get($key, $default = null)
     {
-        return $this->{$this->adapter}->get($this->keyPrefix . $id);
+        $value = $this->{$this->adapter}->get($this->keyPrefix . $key);
+        return $value ? $value : $default;
     }
 
     /**
-     * Cache Set
+     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
      *
-     * @param  string   $id
-     * @param  mixed    $data
+     * @param  string   $key
+     * @param  mixed    $value
      * @param  int      $ttl
-     * @param  boolean  $raw
      * @return boolean
      */
-    public function set($id, $data, $ttl = 60, $raw = false)
+    public function set($key, $value, $ttl = null)
     {
-        return $this->{$this->adapter}->set($this->keyPrefix . $id, $data, $ttl, $raw);
+        return $this->{$this->adapter}->set($this->keyPrefix . $key, $value, $ttl);
     }
 
     /**
-     * Delete from Cache
+     * Delete an item from the cache by its unique key.
      *
-     * @param  string  $id
+     * @param  string  $key
      * @return boolean
      */
-    public function delete($id)
+    public function delete($key)
     {
-        return $this->{$this->adapter}->delete($this->keyPrefix . $id);
+        return $this->{$this->adapter}->delete($this->keyPrefix . $key);
     }
 
     /**
-     * Increment a raw value
-     *
-     * @param  string  $id
-     * @param  int     $offset
-     * @return mixed
-     */
-    public function increment($id, $offset = 1)
-    {
-        return $this->{$this->adapter}->increment($this->keyPrefix . $id, $offset);
-    }
-
-    /**
-     * Decrement a raw value
-     *
-     * @param  string  $id
-     * @param  int     $offset
-     * @return mixed
-     */
-    public function decrement($id, $offset = 1)
-    {
-        return $this->{$this->adapter}->decrement($this->keyPrefix . $id, $offset);
-    }
-
-    /**
-     * Clean the cache
+     * Wipes clean the entire cache's keys.
      *
      * @return boolean
      */
-    public function clean()
+    public function clear()
     {
-        return $this->{$this->adapter}->clean();
+        return $this->{$this->adapter}->clear();
     }
 
     /**
-     * Cache Info
+     * Obtains multiple cache items by their unique keys.
      *
-     * @param  string $type
-     * @return mixed
+     * @param  iterable $keys
+     * @param  mixed    $default
+     * @return iterable
      */
-    public function cacheInfo($type = 'user')
+    public function getMultiple($keys, $default = null)
     {
-        return $this->{$this->adapter}->cacheInfo($type);
+        $values = [];
+        foreach ($keys as $key) {
+            $values[$key] = $this->get($key, $default);
+        }
+
+        return $values;
     }
 
     /**
-     * Get Cache Metadata
+     * Persists a set of key => value pairs in the cache, with an optional TTL.
      *
-     * @param  string $id
-     * @return mixed
+     * @param  iterable $values
+     * @param  int      $ttl
+     * @return boolean
      */
-    public function getMetadata($id)
+    public function setMultiple($values, $ttl = null)
     {
-        return $this->{$this->adapter}->getMetadata($this->keyPrefix . $id);
+        $failTimes = 0;
+        foreach ($values as $key => $value) {
+            if (!$this->set($key, $value, $ttl)) {
+                $failTimes++;
+            }
+        }
+
+        return $failTimes == 0;
+    }
+
+    /**
+     * Deletes multiple cache items in a single operation.
+     *
+     * @param  iterable $keys
+     * @return boolean
+     */
+    public function deleteMultiple($keys)
+    {
+        $failTimes = 0;
+        foreach ($keys as $key) {
+            if (!$this->delete($key)) {
+                $failTimes++;
+            }
+        }
+
+        return $failTimes == 0;
+    }
+
+    /**
+     * Determines whether an item is present in the cache.
+     *
+     * @param  string $key
+     * @return boolean
+     */
+    public function has($key)
+    {
+        return (bool) $this->get($key);
     }
 
     /**

@@ -107,7 +107,7 @@ class Database extends Medoo
      * @param  array $config
      * @return void
      */
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         parent::__construct([
             'database_type' => $options['type'],

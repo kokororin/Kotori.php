@@ -92,7 +92,7 @@ class Config
      *
      * @throws \Kotori\Exception\ConfigException
      */
-    public function initialize($config = [])
+    public function initialize(array $config = [])
     {
         $this->config = $config;
         if (is_array($this->config)) {

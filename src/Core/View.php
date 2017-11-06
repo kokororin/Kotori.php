@@ -146,7 +146,7 @@ class View
      * @param  array  $data
      * @return void
      */
-    public function need($path, $data = [])
+    public function need($path, array $data = [])
     {
         $this->needData = [
             'path' => Container::get('config')->get('app_full_path') . '/views/' . $path . '.html',

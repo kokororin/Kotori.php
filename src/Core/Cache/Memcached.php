@@ -129,35 +129,35 @@ class Memcached
     /**
      * Fetch from cache
      *
-     * @param  string $id
+     * @param  string $key
      * @return mixed
      */
-    public function get($id)
+    public function get($key)
     {
-        $data = $this->memcached->get($id);
+        $value = $this->memcached->get($key);
 
-        return is_array($data) ? $data[0] : $data;
+        return is_array($value) ? $value[0] : $value;
     }
 
     /**
      * Set
      *
-     * @param  string   $id
-     * @param  mixed    $data
+     * @param  string   $key
+     * @param  mixed    $value
      * @param  int      $ttl
      * @param  boolean  $raw
      * @return boolean
      */
-    public function set($id, $data, $ttl = 60, $raw = false)
+    public function set($key, $value, $ttl = 60, $raw = false)
     {
         if ($raw !== true) {
-            $data = [$data, time(), $ttl];
+            $value = [$value, time(), $ttl];
         }
 
         if (get_class($this->memcached) === 'Memcached') {
-            return $this->memcached->set($id, $data, $ttl);
+            return $this->memcached->set($key, $value, $ttl);
         } elseif (get_class($this->memcached) === 'Memcache') {
-            return $this->memcached->set($id, $data, 0, $ttl);
+            return $this->memcached->set($key, $value, 0, $ttl);
         }
 
         return false;
@@ -166,36 +166,12 @@ class Memcached
     /**
      * Delete from Cache
      *
-     * @param  mixed    $id
+     * @param  mixed    $key
      * @return boolean
      */
-    public function delete($id)
+    public function delete($key)
     {
-        return $this->memcached->delete($id);
-    }
-
-    /**
-     * Increment a raw value
-     *
-     * @param  string   $id
-     * @param  int      $offset
-     * @return mixed
-     */
-    public function increment($id, $offset = 1)
-    {
-        return $this->memcached->increment($id, $offset);
-    }
-
-    /**
-     * Decrement a raw value
-     *
-     * @param  string $id
-     * @param  int    $offset
-     * @return mixed
-     */
-    public function decrement($id, $offset = 1)
-    {
-        return $this->memcached->decrement($id, $offset);
+        return $this->memcached->delete($key);
     }
 
     /**
@@ -203,42 +179,9 @@ class Memcached
      *
      * @return boolean
      */
-    public function clean()
+    public function clear()
     {
         return $this->memcached->flush();
-    }
-
-    /**
-     * Cache Info
-     *
-     * @return mixed
-     */
-    public function cacheInfo()
-    {
-        return $this->memcached->getStats();
-    }
-
-    /**
-     * Get Cache Metadata
-     *
-     * @param  mixed  $id
-     * @return mixed
-     */
-    public function getMetadata($id)
-    {
-        $stored = $this->memcached->get($id);
-
-        if (count($stored) !== 3) {
-            return false;
-        }
-
-        list($data, $time, $ttl) = $stored;
-
-        return [
-            'expire' => $time + $ttl,
-            'mtime' => $time,
-            'data' => $data,
-        ];
     }
 
     /**

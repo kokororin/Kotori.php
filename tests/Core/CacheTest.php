@@ -35,14 +35,47 @@ class CacheTest extends TestCase
     {
         Cache::set('name', 'honoka');
         Cache::delete('name');
-        $this->assertFalse(Cache::get('name'));
+        $this->assertNull(Cache::get('name'));
     }
 
-    public function testClean()
+    public function testClear()
     {
         Cache::set('name', 'honoka');
-        Cache::clean();
-        $this->assertFalse(Cache::get('name'));
+        Cache::clear();
+        $this->assertNull(Cache::get('name'));
+    }
+
+    public function testSetMultipleAndGetMultiple()
+    {
+        $values = [
+            'name' => 'honoka',
+            'country' => 'japan',
+        ];
+        Cache::setMultiple($values);
+        $this->assertEquals($values, Cache::getMultiple(array_keys($values)));
+    }
+
+    public function testDeleteMultiple()
+    {
+        $values = [
+            'name' => 'honoka',
+            'country' => 'japan',
+        ];
+        $assertValues = [
+            'name' => null,
+            'country' => null,
+        ];
+        Cache::setMultiple($values);
+        Cache::deleteMultiple(array_keys($values));
+        $this->assertEquals($assertValues, Cache::getMultiple(array_keys($values)));
+    }
+
+    public function testHas()
+    {
+        Cache::set('name', 'honoka');
+        $this->assertTrue(Cache::has('name'));
+        Cache::delete('name');
+        $this->assertFalse(Cache::has('name'));
     }
 
 }

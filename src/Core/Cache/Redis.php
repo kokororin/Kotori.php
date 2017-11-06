@@ -109,23 +109,23 @@ class Redis
      */
     public function get($key)
     {
-        $data = $this->redis->hMGet($key, ['type', 'value']);
+        $value = $this->redis->hMGet($key, ['type', 'value']);
 
-        if (!isset($data['type'], $data['value']) or $data['value'] === false) {
+        if (!isset($value['type'], $value['value']) or $value['value'] === false) {
             return false;
         }
 
-        switch ($data['type']) {
+        switch ($value['type']) {
             case 'array':
             case 'object':
-                return unserialize($data['value']);
+                return unserialize($value['value']);
             case 'boolean':
             case 'integer':
             case 'double': // Yes, 'double' is returned and NOT 'float'
             case 'string':
             case 'NULL':
-                return settype($data['value'], $data['type'])
-                ? $data['value']
+                return settype($value['value'], $value['type'])
+                ? $value['value']
                 : false;
             case 'resource':
             default:
@@ -136,19 +136,19 @@ class Redis
     /**
      * Save cache
      *
-     * @param   string    $id
-     * @param   mixed     $data
+     * @param   string    $key
+     * @param   mixed     $value
      * @param   int       $ttl
      * @return  boolean
      */
-    public function set($id, $data, $ttl = 60)
+    public function set($key, $value, $ttl = 60)
     {
-        $dataType = gettype($data);
+        $dataType = gettype($value);
 
         switch ($dataType) {
             case 'array':
             case 'object':
-                $data = serialize($data);
+                $value = serialize($value);
                 break;
             case 'boolean':
             case 'integer':
@@ -161,10 +161,10 @@ class Redis
                 return false;
         }
 
-        if (!$this->redis->hMSet($id, ['type' => $dataType, 'value' => $data])) {
+        if (!$this->redis->hMSet($key, ['type' => $dataType, 'value' => $value])) {
             return false;
         } elseif ($ttl) {
-            $this->redis->expireAt($id, time() + $ttl);
+            $this->redis->expireAt($key, time() + $ttl);
         }
 
         return true;
@@ -182,67 +182,13 @@ class Redis
     }
 
     /**
-     * Increment a raw value
-     *
-     * @param   string  $id
-     * @param   int     $offset
-     * @return  mixed
-     */
-    public function increment($id, $offset = 1)
-    {
-        return $this->redis->hIncrBy($id, 'data', $offset);
-    }
-
-    /**
-     * Decrement a raw value
-     *
-     * @param   string  $id
-     * @param   int     $offset
-     * @return  mixed
-     */
-    public function decrement($id, $offset = 1)
-    {
-        return $this->redis->hIncrBy($id, 'data', -$offset);
-    }
-
-    /**
      * Clean cache
      *
      * @return  boolean
      */
-    public function clean()
+    public function clear()
     {
         return $this->redis->flushDB();
-    }
-
-    /**
-     * Get cache driver info
-     *
-     * @return  array
-     */
-    public function cacheInfo()
-    {
-        return $this->redis->info();
-    }
-
-    /**
-     * Get cache metadata
-     *
-     * @param   string  $key
-     * @return  array
-     */
-    public function getMetadata($key)
-    {
-        $value = $this->get($key);
-
-        if ($value !== false) {
-            return [
-                'expire' => time() + $this->redis->ttl($key),
-                'data' => $value,
-            ];
-        }
-
-        return false;
     }
 
     /**
