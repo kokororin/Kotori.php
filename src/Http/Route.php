@@ -189,7 +189,14 @@ class Route
         if (isset($this->controllers[$this->controller])) {
             $class = $this->controllers[$this->controller];
         } else {
-            $class = new $controllerClassName();
+            $constructInstances = $this->getMethodInstances($controllerClassName);
+            if (!$constructInstances) {
+                $class = new $controllerClassName();
+            } else {
+                $reflect = new ReflectionClass($controllerClassName);
+                $class = $reflect->newInstanceArgs($constructInstances);
+            }
+
             $this->controllers[$this->controller] = $class;
         }
 
@@ -298,15 +305,20 @@ class Route
     /**
      * Returns the request params instances
      *
-     * @param  string $className
+     * @param  mixed  $class
      * @param  string $methodName
      * @return mixed
      *
      * @throws \Kotori\Exception\NotFoundException
      */
-    private function getMethodInstances($className, $methodName = '__construct')
+    private function getMethodInstances($class, $methodName = '__construct')
     {
-        $reflectClass = new ReflectionClass($className);
+        if (is_object($class)) {
+            $reflectClass = new ReflectionClass(get_class($class));
+        } else {
+            $reflectClass = new ReflectionClass($class);
+        }
+
         $instances = [];
 
         if ($reflectClass->hasMethod($methodName)) {
