@@ -236,7 +236,14 @@ class Route
 
         Middleware::register('before_action');
         // Call the requested method
-        call_user_func_array($callback, $this->params);
+
+        $methodInstances = $this->getMethodInstances($callback[0], $callback[1]);
+        if (!$methodInstances) {
+            call_user_func_array($callback, $this->params);
+        } else {
+            call_user_func_array($callback, $methodInstances);
+        }
+
         Middleware::register('after_action');
     }
 
@@ -286,6 +293,48 @@ class Route
         $params = $this->uris;
         unset($params[0], $params[1]);
         return array_merge($params);
+    }
+
+    /**
+     * Returns the request params instances
+     *
+     * @param  string $className
+     * @param  string $methodName
+     * @return mixed
+     *
+     * @throws \Kotori\Exception\NotFoundException
+     */
+    private function getMethodInstances($className, $methodName = '__construct')
+    {
+        $reflectClass = new ReflectionClass($className);
+        $instances = [];
+
+        if ($reflectClass->hasMethod($methodName)) {
+            $reflectMethod = $reflectClass->getMethod($methodName);
+
+            $params = $reflectMethod->getParameters();
+
+            $hasDI = false;
+
+            if (count($params) > 0) {
+                foreach ($params as $param) {
+                    $paramClass = $param->getClass();
+                    if ($paramClass) {
+                        $paramClassName = $paramClass->getName();
+                        array_push($instances, Container::getByClassName($paramClassName));
+                        $hasDI = true;
+                    } elseif ($hasDI) {
+                        throw new NotFoundException('Dependency Injection cannot work with normal params');
+                    }
+                }
+            }
+        }
+
+        if ($hasDI) {
+            return $instances;
+        }
+
+        return false;
     }
 
     /**

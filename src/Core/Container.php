@@ -99,6 +99,27 @@ class Container
     }
 
     /**
+     * Get the object instance in the container by class name
+     *
+     * @param  string $className
+     * @return object
+     *
+     * @throws \Kotori\Exception\ContainerException
+     */
+    public static function getByClassName($className)
+    {
+        $bind = self::getInstance()->bind;
+
+        foreach ($bind as $abstract => $abstractClassName) {
+            if ($className == $abstractClassName) {
+                return self::get($abstract);
+            }
+        }
+
+        throw new ContainerException('Cannot find "' . $className . '" in container');
+    }
+
+    /**
      * bind object maps for the container
      *
      * @param  mixed  $abstract

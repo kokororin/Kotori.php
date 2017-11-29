@@ -4,7 +4,8 @@ namespace app\controllers;
 use app\libraries\Captcha;
 use Kotori\Core\Controller;
 use Kotori\Facade\Cache;
-use Kotori\Facade\Request;
+use Kotori\Facade\Request as FacadeRequest;
+use Kotori\Http\Request;
 
 class Hello extends Controller
 {
@@ -44,9 +45,10 @@ class Hello extends Controller
     /**
      * @route(method = "post", uri = "add")
      */
-    public function insertNews()
+    public function insertNews(Request $request)
     {
-        print_r(Request::post());
+        print_r(FacadeRequest::post());
+        print_r($request->post());
     }
 
     /**
