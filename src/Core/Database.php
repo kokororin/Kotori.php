@@ -66,6 +66,7 @@ class Database extends Medoo
     /**
      * Get singleton
      *
+     * @param  string  $key
      * @return object
      *
      * @throws \Kotori\Exception\DatabaseException
@@ -104,7 +105,6 @@ class Database extends Medoo
      *
      * Initialize Database.
      *
-     * @param  array $config
      * @return void
      */
     public function __construct(array $options = [])

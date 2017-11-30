@@ -117,7 +117,7 @@ class Response
     /**
      * Set current charset
      *
-     * @param string $charset
+     * @param  string $charset
      * @return void
      */
     public function setCharset($charset = null)
