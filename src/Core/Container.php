@@ -32,8 +32,6 @@ class Container
      * Class constructor
      *
      * Bind default accessors
-     *
-     * @return void
      */
     public function __construct()
     {

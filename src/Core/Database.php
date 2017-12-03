@@ -104,8 +104,6 @@ class Database extends Medoo
      * Class constructor
      *
      * Initialize Database.
-     *
-     * @return void
      */
     public function __construct(array $options = [])
     {

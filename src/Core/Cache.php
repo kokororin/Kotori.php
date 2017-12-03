@@ -66,8 +66,6 @@ class Cache implements CacheInterface
      * Constructor
      *
      * Initialize class properties based on the configuration array.
-     *
-     * @return void
      */
     public function __construct()
     {

@@ -48,8 +48,6 @@ class Provider
      * Class constructor
      *
      * Initialize Model Provider.
-     *
-     * @return void
      */
     public function __construct()
     {

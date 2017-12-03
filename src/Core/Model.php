@@ -41,8 +41,6 @@ class Model
      * Class constructor
      *
      * Initialize Model.
-     *
-     * @return void
      */
     public function __construct()
     {

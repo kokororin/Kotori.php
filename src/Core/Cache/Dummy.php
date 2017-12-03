@@ -41,8 +41,6 @@ class Dummy
      * Class constructor
      *
      * Setup Memcache(d)
-     *
-     * @return void
      */
     public function __construct()
     {

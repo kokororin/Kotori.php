@@ -63,7 +63,6 @@ class Memcached
      * Setup Memcache(d)
      *
      * @param  array $config
-     * @return void
      *
      * @throws \Kotori\Exception\CacheException
      */
@@ -194,6 +193,6 @@ class Memcached
      */
     public function isSupported()
     {
-        return (extension_loaded('memcached') or extension_loaded('memcache'));
+        return (extension_loaded('memcached') || extension_loaded('memcache'));
     }
 }

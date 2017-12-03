@@ -62,8 +62,6 @@ class Request
      * Class constructor
      *
      * Initialize Request.
-     *
-     * @return void
      */
     public function __construct()
     {

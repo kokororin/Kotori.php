@@ -52,7 +52,6 @@ class App
      * Initialize Framework.
      *
      * @param  array $config
-     * @return void
      */
     public function __construct($config = [])
     {

@@ -76,8 +76,6 @@ class Config
      * Class constructor
      *
      * Initialize Config.
-     *
-     * @return void
      */
     public function __construct()
     {

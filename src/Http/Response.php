@@ -95,8 +95,6 @@ class Response
      * Class constructor
      *
      * Initialize Response.
-     *
-     * @return void
      */
     public function __construct()
     {

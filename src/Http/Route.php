@@ -99,8 +99,6 @@ class Route
      * Class constructor
      *
      * Initialize route class.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -320,13 +318,12 @@ class Route
         }
 
         $instances = [];
+        $hasDI = false;
 
         if ($reflectClass->hasMethod($methodName)) {
             $reflectMethod = $reflectClass->getMethod($methodName);
 
             $params = $reflectMethod->getParameters();
-
-            $hasDI = false;
 
             if (count($params) > 0) {
                 foreach ($params as $param) {

@@ -41,8 +41,6 @@ class Logger implements LoggerInterface
      * Class constructor
      *
      * Initialize Logger.
-     *
-     * @return void
      */
     public function __construct()
     {

@@ -60,8 +60,6 @@ class Trace
      * Class constructor
      *
      * Initialize Trace.
-     *
-     * @return void
      */
     public function __construct()
     {

@@ -66,7 +66,6 @@ class Redis
      * if a Redis connection can't be established.
      *
      * @param   array $config
-     * @return  void
      *
      * @throws \Kotori\Exception\CacheException
      */
@@ -111,7 +110,7 @@ class Redis
     {
         $value = $this->redis->hMGet($key, ['type', 'value']);
 
-        if (!isset($value['type'], $value['value']) or $value['value'] === false) {
+        if (!isset($value['type'], $value['value']) || $value['value'] === false) {
             return false;
         }
 
@@ -205,8 +204,6 @@ class Redis
      * Class destructor
      *
      * Closes the connection to Redis if present.
-     *
-     * @return  void
      */
     public function __destruct()
     {

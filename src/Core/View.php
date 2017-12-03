@@ -72,7 +72,6 @@ class View
      * Class constructor
      *
      * @param  string $tplDir
-     * @return void
      */
     public function __construct($tplDir = null)
     {

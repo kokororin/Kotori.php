@@ -52,8 +52,6 @@ class Controller
      * Class constructor
      *
      * Initialize view and database classes.
-     *
-     * @return void
      */
     public function __construct()
     {

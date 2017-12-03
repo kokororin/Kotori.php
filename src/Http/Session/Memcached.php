@@ -54,7 +54,6 @@ class Memcached implements SessionHandlerInterface
      * Setup Memcache(d)
      *
      * @param  array $config
-     * @return void
      */
     public function __construct($config = [])
     {

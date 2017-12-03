@@ -57,7 +57,6 @@ class Redis implements SessionHandlerInterface
      * Setup Redis
      *
      * @param  array $config
-     * @return void
      */
     public function __construct($config = [])
     {
