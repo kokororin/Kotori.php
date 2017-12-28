@@ -15,9 +15,9 @@
     }],
     "require": {
         "php": ">=5.4.0",
-        "catfan/Medoo": "^1.0",
-        "wyrihaximus/html-compress": "^1.2",
-        "scrivo/highlight.php": "8.*"
+        "catfan/Medoo": "~1.2.0",
+        "wyrihaximus/html-compress": "~1.2",
+        "scrivo/highlight.php": "~8.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^2.5",
