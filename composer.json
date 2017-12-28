@@ -28,7 +28,7 @@
     "require-dev": {
         "guzzlehttp/guzzle": "~6.0",
         "phpfmt-next/fmt": "^19.6",
-        "phpunit/phpunit": "^4.0",
+        "phpunit/phpunit": "^5.0",
         "scrutinizer/ocular": "^1.4",
         "squizlabs/php_codesniffer": "^2.5"
     },
