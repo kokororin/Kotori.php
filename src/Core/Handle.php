@@ -65,7 +65,11 @@ abstract class Handle
             $message = '404 Not Found.';
         }
 
-        $tplPath = Container::get('config')->get('error_tpl');
+        if (Container::get('config')->get('app_debug')) {
+            $tplPath = null;
+        } else {
+            $tplPath = Container::get('config')->get('error_tpl');
+        }
 
         if ($tplPath == null || !Helper::isFile(Container::get('config')->get('app_full_path') . '/views/' . $tplPath . '.html')) {
             $tpl = '<!DOCTYPE html>
