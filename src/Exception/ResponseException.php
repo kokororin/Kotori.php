@@ -34,4 +34,5 @@ namespace Kotori\Exception;
 
 use RuntimeException;
 
-class ResponseException extends RuntimeException {}
+class ResponseException extends RuntimeException
+{}

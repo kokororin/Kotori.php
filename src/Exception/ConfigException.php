@@ -34,4 +34,5 @@ namespace Kotori\Exception;
 
 use RuntimeException;
 
-class ConfigException extends RuntimeException {}
+class ConfigException extends RuntimeException
+{}

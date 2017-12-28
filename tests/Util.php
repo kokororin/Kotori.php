@@ -1,6 +1,7 @@
 <?php
 namespace Kotori\Tests;
 
+use Composer\Script\Event;
 use Exception;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\RequestException;
@@ -155,39 +156,13 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
         return $result;
     }
 
-    public static function convertArraysToSquareBrackets()
+    public static function format(Event $event)
     {
         $fileList = self::getFileList();
+        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
+
         foreach ($fileList as $file) {
-            $code = file_get_contents($file);
-            $out = '';
-            $brackets = [];
-            $tokens = token_get_all($code);
-            $l = count($tokens);
-            for ($i = 0; $i < $l; $i++) {
-                $token = $tokens[$i];
-                if ($token === '(') {
-                    $brackets[] = false;
-                } elseif ($token === ')') {
-                    $token = array_pop($brackets) ? ']' : ')';
-                } elseif (is_array($token) && $token[0] === T_ARRAY) {
-                    $a = $i + 1;
-                    if (isset($tokens[$a]) && $tokens[$a][0] === T_WHITESPACE) {
-                        $a++;
-                    }
-
-                    if (isset($tokens[$a]) && $tokens[$a] === '(') {
-                        $i = $a;
-                        $brackets[] = true;
-                        $token = '[';
-                    }
-                }
-
-                $out .= is_array($token) ? $token[1] : $token;
-            }
-
-            echo 'converting ' . $file . PHP_EOL;
-            file_put_contents($file, $out);
+            exec(PHP_BINARY . ' ' . $vendorDir . '/bin/fmt.phar --config=' . __DIR__ . '/../.phpfmt.ini ' . $file);
         }
     }
 }

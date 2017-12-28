@@ -27,6 +27,7 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "~6.0",
+        "phpfmt-next/fmt": "^19.6",
         "phpunit/phpunit": "^4.0",
         "scrutinizer/ocular": "^1.4",
         "squizlabs/php_codesniffer": "^2.5"
@@ -43,12 +44,12 @@
     },
     "scripts": {
         "test": [
-            "@pre-test-cmd",
+            "@format",
             "@phpunit",
             "@phpcs"
         ],
         "dev": "php -S localhost:3000 -t example/public",
-        "pre-test-cmd": "Kotori\\Tests\\Util::convertArraysToSquareBrackets",
+        "format": "Kotori\\Tests\\Util::format",
         "phpunit": "php vendor/bin/phpunit --debug",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"

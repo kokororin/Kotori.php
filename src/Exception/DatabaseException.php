@@ -34,4 +34,5 @@ namespace Kotori\Exception;
 
 use RuntimeException;
 
-class DatabaseException extends RuntimeException {}
+class DatabaseException extends RuntimeException
+{}

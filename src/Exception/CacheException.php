@@ -34,4 +34,5 @@ namespace Kotori\Exception;
 
 use RuntimeException;
 
-class CacheException extends RuntimeException {}
+class CacheException extends RuntimeException
+{}

@@ -32,4 +32,5 @@
  */
 namespace Kotori\Exception;
 
-class RouteNotFoundException extends NotFoundException {}
+class RouteNotFoundException extends NotFoundException
+{}

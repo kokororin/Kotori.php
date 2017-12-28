@@ -31,8 +31,8 @@
  */
 namespace Kotori\Core\Model;
 
-use Kotori\Debug\Hook;
 use Kotori\Core\Container;
+use Kotori\Debug\Hook;
 use Kotori\Exception\NotFoundException;
 
 class Provider
