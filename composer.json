@@ -36,5 +36,10 @@
         "phpunit": "php vendor/bin/phpunit",
         "phpcs": "php vendor/bin/phpcs",
         "phpcbf": "php vendor/bin/phpcbf"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-4.0": "4.0-dev"
+        }
     }
 }
