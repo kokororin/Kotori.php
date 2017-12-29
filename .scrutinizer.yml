@@ -25,5 +25,6 @@ tools:
 
 filter:
     excluded_paths:
+        - "coverage/"
         - "example/"
         - "tests/"
