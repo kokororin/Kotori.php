@@ -105,5 +105,4 @@ class App
         // Load route class
         Container::get('route')->dispatch();
     }
-
 }

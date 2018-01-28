@@ -66,5 +66,4 @@ class Controller
         $this->logger = Container::get('logger');
         Hook::listen(__CLASS__);
     }
-
 }

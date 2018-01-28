@@ -150,5 +150,4 @@ class Database extends Medoo
         array_push(self::$queries, $lastSQL);
         return $statement;
     }
-
 }

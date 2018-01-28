@@ -217,5 +217,4 @@ class Cache implements CacheInterface
 
         return $support[$driver];
     }
-
 }

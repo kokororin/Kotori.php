@@ -30,7 +30,7 @@
         "phpfmt-next/fmt": "^19.6",
         "phpunit/phpunit": "^5.0",
         "scrutinizer/ocular": "^1.4",
-        "squizlabs/php_codesniffer": "^2.5"
+        "squizlabs/php_codesniffer": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -46,12 +46,13 @@
         "test": [
             "@format",
             "@phpunit",
+            "@phpcbf",
             "@phpcs"
         ],
         "dev": "php -S localhost:3000 -t example/public",
         "format": "Kotori\\Tests\\Util::format",
         "phpunit": "php vendor/bin/phpunit --debug",
-        "phpcs": "php vendor/bin/phpcs",
+        "phpcs": "php vendor/bin/phpcs -s",
         "phpcbf": "php vendor/bin/phpcbf"
     },
     "config": {

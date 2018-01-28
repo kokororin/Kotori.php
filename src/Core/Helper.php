@@ -67,7 +67,6 @@ abstract class Helper
         }
 
         return self::$require[$path];
-
     }
 
     /**
@@ -256,5 +255,4 @@ abstract class Helper
 -->
 ';
     }
-
 }

@@ -210,7 +210,6 @@ abstract class Handle
 
             exit;
         }
-
     }
 
     /**
@@ -425,5 +424,4 @@ abstract class Handle
 
         return $source;
     }
-
 }

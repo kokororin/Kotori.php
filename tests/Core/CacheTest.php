@@ -77,5 +77,4 @@ class CacheTest extends TestCase
         Cache::delete('name');
         $this->assertFalse(Cache::has('name'));
     }
-
 }

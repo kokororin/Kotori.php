@@ -82,8 +82,7 @@ class Redis
 
         $this->redis = new \Redis();
 
-        try
-        {
+        try {
             if (!$this->redis->connect($config['host'], ($config['host'][0] === '/' ? 0 : $config['port']), $config['timeout'])) {
                 throw new CacheException('Redis connection failed. Check your configuration.');
             }

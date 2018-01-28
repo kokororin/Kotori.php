@@ -117,7 +117,6 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
         } catch (PDOException $e) {
             throw $e;
         }
-
     }
 
     public static function dropTestDatabase()

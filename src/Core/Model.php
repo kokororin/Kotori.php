@@ -46,5 +46,4 @@ class Model
     {
         Hook::listen(__CLASS__);
     }
-
 }

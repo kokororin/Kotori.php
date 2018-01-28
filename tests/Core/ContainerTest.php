@@ -18,5 +18,4 @@ class ContainerTest extends TestCase
         $this->assertNotEmpty(Container::get('model/provider'));
         $this->assertNotEmpty(Container::get('logger'));
     }
-
 }

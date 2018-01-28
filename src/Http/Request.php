@@ -99,7 +99,6 @@ class Request
         }
 
         return $value;
-
     }
 
     /**

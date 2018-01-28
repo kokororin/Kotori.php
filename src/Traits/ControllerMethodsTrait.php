@@ -80,5 +80,4 @@ trait ControllerMethodsTrait
 
         return call_user_func_array($callback, $arguments);
     }
-
 }

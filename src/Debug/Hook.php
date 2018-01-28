@@ -64,5 +64,4 @@ abstract class Hook
 
         return self::$tags[$name];
     }
-
 }

@@ -105,5 +105,4 @@ class Dummy
     {
         return true;
     }
-
 }

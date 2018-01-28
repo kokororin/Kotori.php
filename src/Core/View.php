@@ -155,5 +155,4 @@ class View
         extract($this->needData['data']);
         include $this->needData['path'];
     }
-
 }

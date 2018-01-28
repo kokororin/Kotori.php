@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Kotori.php coding tests">
-    <description>Kotori.php coding tests</description>
+<ruleset name="Kotori.php coding standard">
+    <description>Kotori.php coding standard</description>
 
     <!-- display progress -->
     <arg value="p"/>
@@ -8,50 +8,11 @@
     <arg name="colors"/>
 
     <!-- inherit rules from: -->
-    <rule ref="Generic.Classes.DuplicateClassName"/>
-    <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
-    <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
-    <rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall"/>
-    <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
-    <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
-    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
-    <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
-    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
-    <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
-    <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
-    <rule ref="Generic.WhiteSpace.ScopeIndent"/>
-    <rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman"/>
-    <rule ref="Generic.Metrics.NestingLevel">
-        <properties>
-            <property name="nestingLevel" value="6"/>
-            <property name="absoluteNestingLevel" value="11"/>
-        </properties>
+    <rule ref="PSR2">
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNotAlone"/>
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore"/>
     </rule>
-    <rule ref="Generic.NamingConventions.ConstructorName"/>
-    <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
-    <rule ref="Generic.PHP.DeprecatedFunctions"/>
-    <rule ref="Generic.PHP.ForbiddenFunctions"/>
-    <rule ref="Generic.PHP.LowerCaseConstant"/>
-    <rule ref="Generic.PHP.NoSilencedErrors"/>
-    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
-    <rule ref="MySource.PHP.EvalObjectFactory"/>
-    <rule ref="PSR1.Classes.ClassDeclaration"/>
-    <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
-    <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
-    <rule ref="PSR2.Namespaces.UseDeclaration"/>
-    <rule ref="Squiz.PHP.DisallowMultipleAssignments"/>
-    <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops"/>
-    <rule ref="Squiz.PHP.Eval"/>
-    <rule ref="Squiz.PHP.GlobalKeyword"/>
-    <rule ref="Squiz.PHP.InnerFunctions"/>
-    <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
-    <rule ref="Squiz.PHP.NonExecutableCode"/>
-    <rule ref="Squiz.Scope.MemberVarScope"/>
-    <rule ref="Squiz.Scope.MethodScope"/>
-    <rule ref="Squiz.Scope.StaticThisUsage"/>
-    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing"/>
-    <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing"/>
-    <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
 
     <!-- Paths to check -->
     <file>src</file>

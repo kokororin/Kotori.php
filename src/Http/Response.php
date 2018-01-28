@@ -231,5 +231,4 @@ class Response
         $this->setHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
         $this->setHeader('Cache-Control', 'immutable');
     }
-
 }
