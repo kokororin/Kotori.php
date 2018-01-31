@@ -244,18 +244,21 @@ class Route
 
         $methodInstances = $this->getMethodInstances($callback[0], $callback[1]);
         if (!$methodInstances) {
-            call_user_func_array($callback, $this->params);
+            $output = call_user_func_array($callback, $this->params);
         } else {
-            call_user_func_array($callback, $methodInstances);
+            $output = call_user_func_array($callback, $methodInstances);
         }
 
         Middleware::register('after_action');
+        if (is_array($output)) {
+            Container::get('response')->throwJSON($output);
+        }
     }
 
     /**
      * Returns the controller name
      *
-     * @return      string
+     * @return string
      *
      * @throws \Kotori\Exception\NotFoundException
      */
@@ -273,7 +276,7 @@ class Route
     /**
      * Returns the action name
      *
-     * @return      string
+     * @return string
      *
      * @throws \Kotori\Exception\NotFoundException
      */

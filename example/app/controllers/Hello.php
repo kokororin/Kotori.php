@@ -76,7 +76,17 @@ class Hello extends Controller
     }
 
     /**
-     * @route(method="cli", uri = "cliTest/(.*)", params = "$1")
+     * @route(uri = "json")
+     */
+    public function json()
+    {
+        return [
+            'hello' => 'world',
+        ];
+    }
+
+    /**
+     * @route(method = "cli", uri = "cliTest/(.*)", params = "$1")
      */
     public function cli($to = 'World')
     {
