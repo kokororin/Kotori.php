@@ -10,7 +10,7 @@
 
 Kotori.php is a Tiny Model-View-Controller(MVC) PHP Framework.
 
-![](https://cdn.rawgit.com/kokororin/Kotori.php/master/src/Kotori.jpg)
+![](https://kokororin.github.io/Kotori.php/src/Kotori.jpg)
 
 ## Installation
 
