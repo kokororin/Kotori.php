@@ -1,7 +1,6 @@
 <?php
 namespace Kotori\Tests;
 
-use Composer\Script\Event;
 use Exception;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\RequestException;
@@ -153,15 +152,5 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
         }
 
         return $result;
-    }
-
-    public static function format(Event $event)
-    {
-        $fileList = self::getFileList();
-        $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
-
-        foreach ($fileList as $file) {
-            exec(PHP_BINARY . ' ' . $vendorDir . '/bin/fmt.phar --config=' . __DIR__ . '/../.phpfmt.ini ' . $file);
-        }
     }
 }
