@@ -455,8 +455,8 @@ class Route
 
                         // Execute the callback using the values in matches as its parameters.
                         $val = call_user_func_array($val, $matches);
-                    } // Are we using the default routing method for back-references?
-                    elseif (strpos($val, '$') !== false && strpos($key, '(') !== false) {
+                    } elseif (strpos($val, '$') !== false && strpos($key, '(') !== false) {
+                        // Are we using the default routing method for back-references?
                         $val = preg_replace('#^' . $key . '$#', $val, $uri);
                     }
 
