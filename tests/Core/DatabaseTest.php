@@ -3,13 +3,13 @@ namespace Kotori\Tests\Core;
 
 use Kotori\Core\Database;
 use Kotori\Facade\Config;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class DatabaseTest extends TestCase
 {
     protected static $db = null;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Config::initialize([
             'app_debug' => false,

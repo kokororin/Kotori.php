@@ -55,8 +55,8 @@ class App
      */
     public function __construct($config = [])
     {
-        if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-            exit('Kotori.php requires PHP >= 5.5.0 !');
+        if (version_compare(PHP_VERSION, '7.3.0', '<')) {
+            exit('Kotori.php requires PHP >= 7.3.0 !');
         }
 
         ini_set('display_errors', 'off');

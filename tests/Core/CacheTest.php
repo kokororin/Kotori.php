@@ -3,22 +3,22 @@ namespace Kotori\Tests\Core;
 
 use Kotori\Facade\Cache;
 use Kotori\Facade\Config;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class CacheTest extends TestCase
 {
 
     protected static $cache = null;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         Config::initialize([
             'app_debug' => false,
             'cache' => [
-                'adapter' => 'memcached',
+                'adapter' => 'redis',
                 'prefix' => '',
                 'host' => '127.0.0.1',
-                'port' => 11211,
+                'port' => 6379,
                 'weight' => 1,
             ],
         ]);

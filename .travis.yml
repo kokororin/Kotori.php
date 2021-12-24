@@ -1,10 +1,10 @@
 language: php
 matrix:
   include:
-  - php: 7.0
-  - php: 7.1
-  - php: 7.2
   - php: 7.3
+  - php: 7.4
+  - php: 8.0
+  - php: 8.1
 
 services:
   - mysql
@@ -18,7 +18,8 @@ cache:
 
 before_install:
   - composer self-update
-  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - phpenv config-rm xdebug.ini
+  - before_script: echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 before_script:
   - composer install
@@ -27,4 +28,4 @@ script:
   - composer test
 
 after_script:
-  - if [[ "$TRAVIS_PHP_VERSION" == '7.0' ]]; then php vendor/bin/ocular code-coverage:upload --format=php-clover coverage/coverage.clover ; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == '8.0' ]]; then php vendor/bin/ocular code-coverage:upload --format=php-clover coverage/coverage.clover ; fi

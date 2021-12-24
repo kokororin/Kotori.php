@@ -3,7 +3,7 @@
 [![Build Status](https://api.travis-ci.org/kokororin/Kotori.php.svg)](https://travis-ci.org/kokororin/Kotori.php)
 [![Version](https://badge.fury.io/ph/kokororin%2Fkotori-php.svg)](https://packagist.org/packages/kokororin/kotori-php)
 [![Packagist](https://img.shields.io/packagist/dt/kokororin/kotori-php.svg?maxAge=2592000)](https://packagist.org/packages/kokororin/kotori-php)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.5-8892BF.svg)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/kokororin/Kotori.php/blob/master/LICENSE)
 [![Code Coverage](https://scrutinizer-ci.com/g/kokororin/Kotori.php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kokororin/Kotori.php/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kokororin/Kotori.php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kokororin/Kotori.php/?branch=master)

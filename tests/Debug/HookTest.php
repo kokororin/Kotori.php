@@ -2,7 +2,7 @@
 namespace Kotori\Tests\Hook;
 
 use Kotori\Debug\Hook;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class HookTest extends TestCase
 {

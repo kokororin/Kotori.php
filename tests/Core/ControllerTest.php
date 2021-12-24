@@ -2,7 +2,7 @@
 namespace Kotori\Tests\Core;
 
 use Kotori\Core\Controller;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ControllerTest extends TestCase
 {

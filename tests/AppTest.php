@@ -2,7 +2,7 @@
 namespace Kotori\Tests;
 
 use Kotori\App;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class AppTest extends TestCase
 {

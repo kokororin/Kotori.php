@@ -17,3 +17,6 @@ composer.lock
 
 ## coverage
 coverage/
+
+## PHPUnit
+.phpunit.*.cache

@@ -2,7 +2,7 @@
 namespace Kotori\Tests\Core;
 
 use Kotori\Core\Container;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class ContainerTest extends TestCase
 {

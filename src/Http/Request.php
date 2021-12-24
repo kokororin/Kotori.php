@@ -150,7 +150,7 @@ class Request
      * @param  mixed  $options
      * @return mixed
      */
-    public function cookie($key = '', $value = '', $options = null)
+    public function cookie($key = '', $value = '', $options = [])
     {
         $defaultOptions = [
             'prefix' => '',

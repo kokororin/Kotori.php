@@ -4,14 +4,14 @@ namespace Kotori\Tests\Http;
 use Kotori\Facade\Config;
 use Kotori\Facade\Request;
 use Kotori\Tests\Util;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
 
     protected static $END_POINT = null;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$END_POINT = 'http://' . getenv('WEB_SERVER_HOST') . ':' . getenv('WEB_SERVER_PORT') . '/test';
         Config::initialize([
