@@ -22,7 +22,7 @@
         "scrivo/highlight.php": "~8.0",
         "symfony/console": "~2.8 | ~3.3",
         "symfony/finder": "~2.8 | ~3.3",
-        "wyrihaximus/html-compress": "~1.2",
+        "wyrihaximus/html-compress": "~3.0 | ~4.1",
         "zeptech/annotations": "~1.1"
     },
     "require-dev": {

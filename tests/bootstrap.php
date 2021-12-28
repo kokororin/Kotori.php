@@ -33,11 +33,6 @@ if (!$connected) {
     );
 }
 
-// Set env
-if (getenv('CI')) {
-    putenv('MYSQL_PWD=');
-}
-
 // Create test database
 Util::createTestDatabase();
 

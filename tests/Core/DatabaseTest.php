@@ -20,6 +20,7 @@ class DatabaseTest extends TestCase
                     'host' => getenv('MYSQL_HOST'),
                     'user' => getenv('MYSQL_USER'),
                     'pwd' => getenv('MYSQL_PWD'),
+                    'port' => getenv('MYSQL_PORT'),
                 ],
             ],
         ]);

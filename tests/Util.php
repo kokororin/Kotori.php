@@ -95,13 +95,13 @@ class Util
     public static function killProcess($pid)
     {
         echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
-        exec('kill ' . (int) $pid);
+        exec('kill -9 ' . (int) $pid);
     }
 
     public static function createTestDatabase()
     {
         try {
-            $pdo = new PDO('mysql:host=' . getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PWD'));
+            $pdo = new PDO('mysql:host=' . getenv('MYSQL_HOST') . '; port=' . getenv('MYSQL_PORT'), getenv('MYSQL_USER'), getenv('MYSQL_PWD'));
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->exec('DROP DATABASE IF EXISTS `' . getenv('MYSQL_DB') . '`;
 CREATE DATABASE `' . getenv('MYSQL_DB') . '`;
@@ -121,7 +121,7 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
     public static function dropTestDatabase()
     {
         try {
-            $pdo = new PDO('mysql:host=' . getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PWD'));
+            $pdo = new PDO('mysql:host=' . getenv('MYSQL_HOST') . '; port=' . getenv('MYSQL_PORT'), getenv('MYSQL_USER'), getenv('MYSQL_PWD'));
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->exec('DROP DATABASE IF EXISTS `' . getenv('MYSQL_DB') . '`;');
             echo 'Drop test db successfully' . PHP_EOL;

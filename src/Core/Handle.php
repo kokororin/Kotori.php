@@ -221,7 +221,7 @@ abstract class Handle
     protected static function setDebugHeader($txt)
     {
         if (Container::get('config')->get('app_debug')) {
-            Container::get('response')->setHeader('Kotori-Debug', str_replace("\r\n", ' ', $txt));
+            Container::get('response')->setHeader('Kotori-Debug', str_replace(["\r", "\n", "\r\n"], ' ', $txt));
         }
     }
 

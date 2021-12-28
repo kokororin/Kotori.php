@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: test
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis
+        ports:
+          - 6379/tcp
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ['7.3', '7.4', '8.0', '8.1']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Prepare
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install lsof -y
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, intl, redis, pdo_mysql
+
+      - name: Start mysql service
+        run: sudo systemctl start mysql
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-progress --optimize-autoloader
+
+      - name: Test with phpunit
+        run: composer test
+        env:
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+          MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+
+      - name: Upload coverage
+        if: ${{ matrix.php-versions == '8.0' }}
+        run: php vendor/bin/ocular code-coverage:upload --format=php-clover coverage/coverage.clover
