@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     services:
       mysql:
-        image: mysql:8
+        image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: 123456
