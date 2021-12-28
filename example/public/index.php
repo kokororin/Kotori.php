@@ -21,6 +21,7 @@ $config = [
             'user' => getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root',
             'pwd' => getenv('MYSQL_PWD') ? getenv('MYSQL_PWD') : '123456',
             'name' => getenv('MYSQL_DB') ? getenv('MYSQL_DB') : 'test',
+            'port' => getenv('MYSQL_PORT') ? getenv('MYSQL_PORT') : 3306,
             'type' => 'mysql',
         ],
     ],
