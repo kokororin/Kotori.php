@@ -67,3 +67,7 @@ jobs:
         env:
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
           MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+
+      - name: Upload coverage
+        if: ${{ matrix.php-versions == '8.0' }}
+        run: php vendor/bin/ocular code-coverage:upload --format=php-clover coverage/coverage.clover
