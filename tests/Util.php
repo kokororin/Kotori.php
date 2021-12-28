@@ -121,7 +121,7 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
     public static function dropTestDatabase()
     {
         try {
-            $pdo = new PDO('mysql:host=' . getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PWD'));
+            $pdo = new PDO('mysql:host=' . getenv('MYSQL_HOST') . '; port=' . getenv('MYSQL_PORT'), getenv('MYSQL_USER'), getenv('MYSQL_PWD'));
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $pdo->exec('DROP DATABASE IF EXISTS `' . getenv('MYSQL_DB') . '`;');
             echo 'Drop test db successfully' . PHP_EOL;

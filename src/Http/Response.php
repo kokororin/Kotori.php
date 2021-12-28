@@ -169,7 +169,11 @@ class Response
      */
     public function setHeader($name, $value)
     {
-        header($name . ': ' . $value, true);
+        if ($name === 'Kotori-Debug') {
+            @header($name . ': ' . $value, true);
+        } else {
+            header($name . ': ' . $value, true);
+        }
     }
 
     /**
