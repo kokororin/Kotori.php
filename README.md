@@ -1,6 +1,6 @@
 # 🐦Kotori.php
 
-[![Build Status](https://api.travis-ci.org/kokororin/Kotori.php.svg)](https://travis-ci.org/kokororin/Kotori.php)
+![Build Status](https://github.com/kokororin/Kotori.php/actions/workflows/ci.yml/badge.svg)
 [![Version](https://badge.fury.io/ph/kokororin%2Fkotori-php.svg)](https://packagist.org/packages/kokororin/kotori-php)
 [![Packagist](https://img.shields.io/packagist/dt/kokororin/kotori-php.svg?maxAge=2592000)](https://packagist.org/packages/kokororin/kotori-php)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)

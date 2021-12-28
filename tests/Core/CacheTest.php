@@ -18,7 +18,7 @@ class CacheTest extends TestCase
                 'adapter' => 'redis',
                 'prefix' => '',
                 'host' => '127.0.0.1',
-                'port' => 6379,
+                'port' => getenv('REDIS_PORT'),
                 'weight' => 1,
             ],
         ]);
