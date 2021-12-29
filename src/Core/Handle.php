@@ -36,7 +36,6 @@ use Highlight\Highlighter;
 use Kotori\Exception\ResponseException;
 use Symfony\Component\Console\Application as ConsoleApp;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use WyriHaximus\HtmlCompress\Factory as HtmlCompress;
 
 abstract class Handle
 {
@@ -120,7 +119,6 @@ abstract class Handle
         }
 
         $tpl = str_replace('{$message}', $message, $tpl);
-        $tpl = HtmlCompress::construct()->compress($tpl);
         exit($tpl);
     }
 

@@ -35,7 +35,6 @@ use Kotori\Core\Container;
 use Kotori\Core\Database;
 use Kotori\Core\Handle;
 use Kotori\Core\Helper;
-use WyriHaximus\HtmlCompress\Factory as HtmlCompress;
 
 class Trace
 {
@@ -194,7 +193,7 @@ class Trace
         }
 
         $tpl .= '</div><img width="30" style="border-left:2px solid black;border-top:2px solid black;border-bottom:2px solid black;" title="ShowPageTrace" src="' . Helper::logo() . '"></div>';
-        $tpl .= HtmlCompress::construct()->compress('<script type="text/javascript">
+        $tpl .= '<script type="text/javascript">
 (function() {
 \'use strict\';
 var tab_tit = document.getElementById(\'page_trace_tab_tit\').getElementsByTagName(\'span\'),
@@ -242,7 +241,7 @@ for (var i = 0; i < tab_tit.length; i++) {
 parseInt(history[0]) && open.click();
 tab_tit[history[1]].click();
 })();
-</script>');
+</script>';
         return $tpl;
     }
 }
