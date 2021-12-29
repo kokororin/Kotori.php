@@ -7,22 +7,22 @@ use PHPUnit\Framework\TestCase;
 
 class CacheTest extends TestCase
 {
-
-    protected static $cache = null;
-
-    public static function setUpBeforeClass(): void
+    protected function setUp(): void
     {
-        Config::initialize([
-            'app_debug' => false,
-            'cache' => [
-                'adapter' => 'redis',
-                'prefix' => '',
-                'host' => '127.0.0.1',
-                'port' => getenv('REDIS_PORT'),
-                'weight' => 1,
-            ],
-        ]);
-        // You must have php-memcached installed
+        if (extension_loaded('redis') && is_resource(@fsockopen(getenv('REDIS_HOST'), getenv('REDIS_PORT')))) {
+            Config::initialize([
+                'app_debug' => false,
+                'cache' => [
+                    'adapter' => 'redis',
+                    'prefix' => '',
+                    'host' => getenv('REDIS_HOST'),
+                    'port' => getenv('REDIS_PORT'),
+                    'weight' => 1,
+                ],
+            ]);
+        } else {
+            $this->markTestIncomplete();
+        }
     }
 
     public function testSetAndGet()

@@ -39,8 +39,6 @@ class Dummy
 
     /**
      * Class constructor
-     *
-     * Setup Memcache(d)
      */
     public function __construct()
     {

@@ -1,64 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.7/phpunit.xsd"
-         backupGlobals="false"
-         backupStaticAttributes="false"
-         beStrictAboutTestsThatDoNotTestAnything="true"
-         beStrictAboutChangesToGlobalState="true"
-         beStrictAboutOutputDuringTests="true"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         bootstrap="tests/bootstrap.php"
->
-    <testsuites>
-        <testsuite name="Kotori Test Suite">
-            <directory>./tests/</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory>./src/</directory>
-        </whitelist>
-    </filter>
-
-    <php>
-        <const name ="KOTORI_PHP_TEST_ENV" value="1" />
-        <env name="WEB_SERVER_HOST" value="127.0.0.1" />
-        <env name="WEB_SERVER_PORT" value="2333" />
-        <env name="WEB_SERVER_DOCROOT" value="./example/public" />
-        <env name="WEB_SERVER_TIMEOUT" value="1000" />
-        <env name="MYSQL_HOST" value="127.0.0.1" />
-        <env name="MYSQL_USER" value="root" />
-        <env name="MYSQL_PWD" value="123456" />
-        <env name="MYSQL_PORT" value="3306" />
-        <env name="MYSQL_DB" value="kotori_php_test" />
-        <env name="MYSQL_TABLE" value="test_table" />
-        <env name="REDIS_PORT" value="6379" />
-        <server name="HTTP_HOST" value="kotori.php.dev" />
-        <server name="HTTP_CONNECTION" value="keep-alive" />
-        <server name="HTTP_CACHE_CONTROL" value="max-age=0" />
-        <server name="HTTP_USER_AGENT" value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36" />
-        <server name="HTTP_REFERER" value="http://kotori.php.dev" />
-        <server name="SERVER_NAME" value="kotori.php.dev" />
-        <server name="SERVER_ADDR" value="127.0.0.1" />
-        <server name="SERVER_PORT" value="80" />
-        <server name="REMOTE_ADDR" value="127.0.0.1" />
-        <server name="REQUEST_SCHEME" value="http" />
-        <server name="SERVER_PROTOCOL" value="HTTP/1.1" />
-        <server name="REQUEST_METHOD" value="GET" />
-        <server name="QUERY_STRING" value="" />
-        <server name="SCRIPT_NAME" value="/index.php" />
-    </php>
-
-    <logging>
-        <log type="coverage-clover" target="coverage/coverage.clover" />
-        <log type="coverage-html" target="coverage" />
-    </logging>
-
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    beStrictAboutChangesToGlobalState="true"
+    beStrictAboutOutputDuringTests="true"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    bootstrap="tests/bootstrap.php">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory>./src/</directory>
+    </include>
+    <report>
+      <clover outputFile="coverage/coverage.clover"/>
+      <html outputDirectory="coverage"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="Kotori Test Suite">
+      <directory>./tests/</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <const name="KOTORI_PHP_TEST_ENV" value="1"/>
+    <env name="WEB_SERVER_HOST" value="127.0.0.1"/>
+    <env name="WEB_SERVER_PORT" value="2333"/>
+    <env name="WEB_SERVER_DOCROOT" value="./example/public"/>
+    <env name="WEB_SERVER_TIMEOUT" value="1000"/>
+    <env name="MYSQL_HOST" value="127.0.0.1"/>
+    <env name="MYSQL_USER" value="root"/>
+    <env name="MYSQL_PWD" value="123456"/>
+    <env name="MYSQL_PORT" value="3306"/>
+    <env name="MYSQL_DB" value="kotori_php_test"/>
+    <env name="MYSQL_TABLE" value="test_table"/>
+    <env name="REDIS_HOST" value="127.0.0.1"/>
+    <env name="REDIS_PORT" value="6379"/>
+    <server name="HTTP_HOST" value="kotori.php.dev"/>
+    <server name="HTTP_CONNECTION" value="keep-alive"/>
+    <server name="HTTP_CACHE_CONTROL" value="max-age=0"/>
+    <server name="HTTP_USER_AGENT" value="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"/>
+    <server name="HTTP_REFERER" value="http://kotori.php.dev"/>
+    <server name="SERVER_NAME" value="kotori.php.dev"/>
+    <server name="SERVER_ADDR" value="127.0.0.1"/>
+    <server name="SERVER_PORT" value="80"/>
+    <server name="REMOTE_ADDR" value="127.0.0.1"/>
+    <server name="REQUEST_SCHEME" value="http"/>
+    <server name="SERVER_PROTOCOL" value="HTTP/1.1"/>
+    <server name="REQUEST_METHOD" value="GET"/>
+    <server name="QUERY_STRING" value=""/>
+    <server name="SCRIPT_NAME" value="/index.php"/>
+  </php>
+  <logging/>
 </phpunit>

@@ -26,10 +26,10 @@ $config = [
         ],
     ],
     // 'cache' => [
-    //     'adapter' => 'memcached',
+    //     'adapter' => 'redis',
     // ],
     // 'session' => [
-    //     'adapter' => 'memcached',
+    //     'adapter' => 'redis',
     // ],
     'url_mode' => 'path_info',
     // 'url_route' => [
