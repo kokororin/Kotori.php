@@ -2,8 +2,8 @@
 namespace Kotori\Tests;
 
 use Exception;
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\RequestException;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use PDO;
 use PDOException;
 
@@ -11,50 +11,50 @@ class Util
 {
     public static function get($url, $params = [])
     {
-        $client = new HttpClient();
+        $client = HttpClient::create();
+        $response = $client->request('GET', $url, [
+            'query' => $params,
+        ]);
+
         try {
-            $response = $client->request('GET', $url, [
-                'query' => $params,
-            ]);
-        } catch (RequestException $e) {
+            return (string) $response->getContent();
+        } catch (ServerException $e) {
             self::parseErrorResponse($e);
         }
-
-        return (string) $response->getBody();
     }
 
     public static function post($url, $params = [])
     {
-        $client = new HttpClient();
+        $client = HttpClient::create();
+        $response = $client->request('POST', $url, [
+            'body' => $params,
+        ]);
+
         try {
-            $response = $client->request('POST', $url, [
-                'form_params' => $params,
-            ]);
-        } catch (RequestException $e) {
+            return (string) $response->getContent();
+        } catch (ServerException $e) {
             self::parseErrorResponse($e);
         }
-
-        return (string) $response->getBody();
     }
 
     public static function postJSON($url, $params = [])
     {
-        $client = new HttpClient();
+        $client = HttpClient::create();
+        $response = $client->request('POST', $url, [
+            'body' => json_encode($params),
+        ]);
+
         try {
-            $response = $client->request('POST', $url, [
-                'body' => json_encode($params),
-            ]);
-        } catch (RequestException $e) {
+            return (string) $response->getContent();
+        } catch (ServerException $e) {
             self::parseErrorResponse($e);
         }
-
-        return (string) $response->getBody();
     }
 
     private static function parseErrorResponse($exception)
     {
         $response = $exception->getResponse();
-        throw new Exception('Error: ' . $response->getStatusCode() . ' Info: ' . $response->getHeaderLine('Kotori-Debug'));
+        throw new Exception('Error: ' . $response->getStatusCode(false) . ' Info: ' . $response->getHeaders(false)['kotori-debug'][0]);
     }
 
     public static function startServer()

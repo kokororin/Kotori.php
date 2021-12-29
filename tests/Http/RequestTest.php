@@ -24,7 +24,7 @@ class RequestTest extends TestCase
     public function testPost()
     {
         $response = Util::post(self::$END_POINT . '/post', [
-            'id' => 1,
+            'id' => '1',
             'name' => 'honoka',
         ]);
         $response = json_decode($response, true);
@@ -34,7 +34,7 @@ class RequestTest extends TestCase
     public function testPostJSON()
     {
         $response = Util::postJSON(self::$END_POINT . '/post', [
-            'id' => 1,
+            'id' => '1',
             'name' => 'honoka',
         ]);
         $response = json_decode($response, true);
