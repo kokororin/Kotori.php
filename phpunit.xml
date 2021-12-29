@@ -37,7 +37,7 @@
         <env name="MYSQL_USER" value="root" />
         <env name="MYSQL_PWD" value="123456" />
         <env name="MYSQL_PORT" value="3306" />
-        <env name="MYSQL_DB" value="kotori_php_test_db" />
+        <env name="MYSQL_DB" value="kotori_php_test" />
         <env name="MYSQL_TABLE" value="test_table" />
         <env name="REDIS_PORT" value="6379" />
         <server name="HTTP_HOST" value="kotori.php.dev" />

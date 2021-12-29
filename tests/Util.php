@@ -114,7 +114,7 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;');
             echo 'Create test db successfully' . PHP_EOL;
         } catch (PDOException $e) {
-            throw $e;
+            echo 'Failed to create test db' . PHP_EOL;
         }
     }
 
@@ -126,7 +126,7 @@ CREATE TABLE `' . getenv('MYSQL_TABLE') . '` (
             $pdo->exec('DROP DATABASE IF EXISTS `' . getenv('MYSQL_DB') . '`;');
             echo 'Drop test db successfully' . PHP_EOL;
         } catch (PDOException $e) {
-            throw $e;
+            echo 'Failed to drop test db' . PHP_EOL;
         }
     }
 

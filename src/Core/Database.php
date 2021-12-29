@@ -36,6 +36,7 @@ use Kotori\Debug\Hook;
 use Kotori\Exception\DatabaseException;
 use Medoo\Medoo;
 use PDOException;
+use PDOStatement;
 
 class Database extends Medoo
 {
@@ -108,9 +109,9 @@ class Database extends Medoo
     public function __construct(array $options = [])
     {
         parent::__construct([
-            'database_type' => $options['type'],
-            'database_name' => $options['name'],
-            'server' => $options['host'],
+            'type' => $options['type'],
+            'database' => $options['name'],
+            'host' => $options['host'],
             'username' => $options['user'],
             'password' => $options['pwd'],
             'charset' => $options['charset'],
@@ -126,7 +127,7 @@ class Database extends Medoo
      * @param  array  $map
      * @return \PDOStatement
      */
-    public function query($query, $map = [])
+    public function query(string $query, array $map = []): ?PDOStatement
     {
         $statement = parent::exec($query, $map);
         $lastSQL = parent::last();
@@ -142,9 +143,9 @@ class Database extends Medoo
      * @param  array  $map
      * @return \PDOStatement
      */
-    public function exec($query, $map = [])
+    public function exec(string $query, array $map = [], callable $callback = null): ?PDOStatement
     {
-        $statement = parent::exec($query, $map);
+        $statement = parent::exec($query, $map, $callback);
         $lastSQL = parent::last();
         Container::get('logger')->info($lastSQL);
         array_push(self::$queries, $lastSQL);
