@@ -1,4 +1,5 @@
 <?php
+
 namespace Kotori\Core;
 
 use Kotori\Exception\ContainerException;

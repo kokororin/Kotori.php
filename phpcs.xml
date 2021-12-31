@@ -8,11 +8,15 @@
     <arg name="colors"/>
 
     <!-- inherit rules from: -->
-    <rule ref="PSR2">
+    <rule ref="PSR12">
         <exclude name="Generic.Files.LineLength.TooLong"/>
-        <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNotAlone"/>
-        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore"/>
     </rule>
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <!-- Slevomat Coding Standard -->
+    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
 
     <!-- Paths to check -->
     <file>src</file>

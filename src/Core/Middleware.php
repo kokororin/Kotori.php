@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Kotori.php
  *
@@ -6,7 +7,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2022 kokororin. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +71,7 @@ class Middleware
                     throw new NotFoundException('middleware class ' . $className . ' is not found');
                 }
 
-                $class = new $className;
+                $class = new $className();
                 if (!method_exists($class, 'handle')) {
                     throw new NotFoundException('middleware class should implement a handle() method');
                 }

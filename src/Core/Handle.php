@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Kotori.php
  *
@@ -6,7 +7,7 @@
  *
  * This content is released under the Apache 2 License
  *
- * Copyright (c) 2015-2017 Kotori Technology. All rights reserved.
+ * Copyright (c) 2015-2022 kokororin. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,8 +192,10 @@ abstract class Handle
     public static function end()
     {
         $last_error = error_get_last();
-        if (isset($last_error) &&
-            ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))) {
+        if (
+            isset($last_error) &&
+            ($last_error['type'] & (E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING))
+        ) {
             $type = self::getErrorType($last_error['type']);
             $text = self::renderHaltBody($type, $last_error['message'], $last_error['line'], $last_error['file']);
 

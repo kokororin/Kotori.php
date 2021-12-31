@@ -10,7 +10,7 @@
         "source": "https://github.com/kokororin/Kotori.php"
     },
     "authors": [{
-        "name": "Sora",
+        "name": "kokororin",
         "email": "ritsuka.sunny@gmail.com"
     }],
     "require": {
@@ -26,9 +26,11 @@
         "zeptech/annotations": "~1.1"
     },
     "require-dev": {
+        "phpstan/phpstan": "^1.2",
         "phpunit/phpunit": "^9.5",
         "scrutinizer/ocular": "^1.4",
-        "squizlabs/php_codesniffer": "^3.0"
+        "slevomat/coding-standard": "~7.0",
+        "squizlabs/php_codesniffer": "^3.6"
     },
     "autoload": {
         "psr-4": {
@@ -49,15 +51,19 @@
         "dev": "php -S 0.0.0.0:3000 -t example/public",
         "phpunit": "php vendor/bin/phpunit --debug",
         "phpcs": "php vendor/bin/phpcs -s",
-        "phpcbf": "php vendor/bin/phpcbf"
+        "phpcbf": "php vendor/bin/phpcbf",
+        "phpstan": "phpstan --memory-limit=-1"
     },
     "config": {
         "process-timeout": 0,
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false
+        }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.1-dev"
+            "dev-master": "master"
         }
     },
     "suggest": {
